@@ -4,3 +4,4 @@ onlyBuiltDependencies:
   - esbuild
   - protobufjs
   - ssh2
+  - unrs-resolver

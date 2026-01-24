@@ -2,6 +2,9 @@ import {GenericContainer, StartedTestContainer, Wait} from "testcontainers";
 
 const BASE_ENTRYPOINT = [
     "anvil",
+    "--block-time",
+    "1",
+    "--auto-impersonate"
 ];
 
 /*const LOG_LEVEL_1 = "-v";
@@ -14,7 +17,7 @@ export class AnvilContainer extends GenericContainer {
 
     private entryPoint: string[] = BASE_ENTRYPOINT;
 
-    constructor(image: string = "ghcr.io/foundry-rs/foundry") {
+    constructor(image: string = "hellaweb3/foundry-anvil:1.6") {
         super(image);
         this.withExposedPorts(8545);
         this.withWaitStrategy(Wait.forLogMessage(/Listening on 0\.0\.0\.0:8545/));
