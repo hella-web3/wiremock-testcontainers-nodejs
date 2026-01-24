@@ -1,0 +1,52 @@
+{
+  "name": "foundryanvil-testcontainers-nodejs",
+  "version": "0.1.0",
+  "license": "MIT",
+  "author": "Chris Anatalio",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "tsdx dev",
+    "build": "tsdx build",
+    "test": "tsdx test",
+    "test:watch": "tsdx test --watch",
+    "lint": "tsdx lint",
+    "format": "tsdx format",
+    "format:check": "tsdx format --check",
+    "typecheck": "tsdx typecheck",
+    "prepublishOnly": "bun run build"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.10",
+    "bunchee": "^6.9.4",
+    "tsdx": "^2.0.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
+  },
+  "dependencies": {
+    "testcontainers": "^11.11.0",
+    "viem": "^2.44.4"
+  }
+}
