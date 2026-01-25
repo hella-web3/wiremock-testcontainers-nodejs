@@ -14,6 +14,7 @@ console.log(`Current block number: ${blockNumber}`);
 const block = await client.getBlock({blockNumber});
 console.log(block);
 
+const startTime = performance.now();
 await client.mine({blocks: 1});
 
 const waitForBlock = setInterval(async () => {
@@ -24,6 +25,9 @@ const waitForBlock = setInterval(async () => {
         console.log(`Current block number after mining: ${blockNumberAfterMining}`);
         const nextBlock = await client.getBlock({blockNumber: blockNumberAfterMining});
         console.log(nextBlock);
+        const endTime = performance.now();
+        const duration = endTime - startTime;
+        console.log(`Took ${duration} milliseconds to mine a block.`);
 
         clearInterval(waitForBlock);
     }

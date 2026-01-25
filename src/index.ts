@@ -1,6 +1,8 @@
 import {AbstractStartedContainer, GenericContainer, StartedTestContainer, Wait} from "testcontainers";
 import {createTestClient, http, parseEther, publicActions, walletActions} from "viem";
 import {foundry} from "viem/chains";
+import * as fs from "node:fs";
+import path from "node:path";
 
 const BASE_ENTRYPOINT = [
     "anvil",
@@ -103,16 +105,57 @@ export class StartedAnvilContainer extends AbstractStartedContainer {
         return this._client;
     }
 
-    getAddresses() {
+    addresses() {
         return this._client.getAddresses();
     }
 
-    sendTransaction(from: AddressString, to: AddressString, amount: string) {
+    sendEthTransaction(from: AddressString, to: AddressString, amount: string) {
         return this._client.sendTransaction({
             account: from,
             from: from,
             to: to,
             value: parseEther(amount)
         });
+    }
+
+    async deployContract(abi, bytecode, account: AddressString) {
+        const hash = await this._client.deployContract({
+            abi: abi,
+            bytecode: bytecode,
+            account
+        });
+        await this._client.mine({blocks: 1});
+
+        const receipt = await this._client.waitForTransactionReceipt({hash});
+        console.log(`Contract deployed to: ${receipt.contractAddress}`);
+
+        return receipt;
+    }
+
+    /**
+     * Get local testing artifact contract ABI for deployment to anvil.
+     * @example
+     * ```typescript
+     * contractAbi('WrappedEther/WrappedEther.json')
+     * ```
+     *
+     * @param abiLocation location of the ABI file relative to the test/artifacts directory
+     */
+    contractAbi(abiLocation: string) {
+        const abiJson = fs.readFileSync(path.join(__dirname, `../test/artifacts/${abiLocation}`), 'utf8');
+        return JSON.parse(abiJson);
+    }
+
+    /**
+     * Get local testing artifact contract bytecode for deployment to anvil.
+     * @example
+     * ```typescript
+     * contractBytecode('WrappedEther/WrappedEther.bin')
+     * ```
+     *
+     * @param binLocation location of the bytecode file relative to the test/artifacts directory
+     */
+    contractBytecode(binLocation: string) {
+        return fs.readFileSync(path.join(__dirname, `../test/artifacts/${binLocation}`), 'utf8');
     }
 }

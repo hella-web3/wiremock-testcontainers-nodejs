@@ -27,9 +27,9 @@ describe("AnvilContainer", () => {
 
     it("test send transaction", async () => {
 
-        let addresses = await container.getAddresses();
+        let addresses = await container.addresses();
 
-        const hash: AddressString = await container.sendTransaction(addresses[0], addresses[1], "1");
+        const hash: AddressString = await container.sendEthTransaction(addresses[0], addresses[1], "1");
         expect(hash).toBeDefined();
 
         await container.client.mine({blocks: 1});
@@ -40,5 +40,18 @@ describe("AnvilContainer", () => {
         expect(receipt.transactionHash).toBeDefined();
         expect(receipt.from).toBe(addresses[0].toLowerCase() as AddressString);
         expect(receipt.to).toBe(addresses[1].toLowerCase() as AddressString);
+    });
+
+    it("test deploy contract", async () => {
+
+        let addresses = await container.addresses();
+
+        const receipt: TransactionReceipt = await container.deployContract(
+            container.contractAbi('WrappedEther/WrappedEther.json'),
+            container.contractBytecode('WrappedEther/WrappedEther.bin'),
+            addresses[0]);
+        expect(receipt).toBeDefined();
+
+        console.log(receipt);
     });
 });
