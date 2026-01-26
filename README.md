@@ -1,10 +1,24 @@
-# Anvil Testcontainers Typescript Module Node.js
+<!--suppress HtmlDeprecatedAttribute -->
+<div align="center">
 
-This repository provides a [Testcontainers](https://testcontainers.com/) module for Node.js to run a customized
+<h1>Foundry Anvil Testcontainers NodeJS Module</h1>
+
+<a href="https://github.com/hella-web3/foundryanvil-testcontainers-nodejs/actions/workflows/main.yml">
+    <img alt="Build+Test Status" src="https://github.com/hella-web3/foundryanvil-testcontainers-nodejs/actions/workflows/main.yml/badge.svg">
+</a>
+
+</div>
+
+## Description
+
+This repository provides a [Testcontainers](https://testcontainers.com/) module
+for Node.js to run a customized
 Anvil node in your E2E tests.
 
-This Typescript module provides a Fluent API style method of configuring and starting the Anvil node. And during your
-test execution, the module provides a [viem test client](https://viem.sh/docs/clients/test) and
+This Typescript module provides a Fluent API style method of configuring and
+starting the Anvil node. And during your
+test execution, the module provides
+a [viem test client](https://viem.sh/docs/clients/test) and
 streamlined helper methods to interact with the node.
 
 **Base image:** https://github.com/foundry-rs/foundry/blob/master/Dockerfile
@@ -15,7 +29,7 @@ streamlined helper methods to interact with the node.
 
 **Custom image:** `hellaweb3/foundry-anvil:1.6`
 
-**Custom image DockerHub:** https://hub.docker.com/repository/docker/hellaweb3/0.1-eth-anvil/general
+[Custom image DockerHub](https://hub.docker.com/repository/docker/hellaweb3/0.1-eth-anvil/general)
 
 ---
 
@@ -29,7 +43,8 @@ pnpm add -D @hellaweb3/foundry-anvil-testcontainers
 
 ### Setup
 
-Use the `AnvilContainer` module to start up a new Anvil testcontainer in your test suite.
+Use the `AnvilContainer` module to start up a new Anvil testcontainer in your
+test suite.
 
 - Set up the container in a `beforeAll` hook.
 - Add an `afterAll` hook to stop the container.
@@ -55,7 +70,8 @@ describe("AnvilContainer", () => {
 
 ### Test
 
-The `StartedAnvilContainer` provides a viem test client that you can use to interact with the node.
+The `StartedAnvilContainer` provides a viem test client that you can use to
+interact with the node.
 
 - Access the viem test client via `container.client`.
 - Use container test helpers like `addresses()` and `sendEthTransaction()`.
@@ -78,16 +94,16 @@ it("test send transaction", async () => {
 
 ## Scripts
 
-| Script                 | Description                       |
-| ---------------------- | --------------------------------- |
-| `pnpm run dev`         | Start development mode with watch |
-| `pnpm run build`       | Build for production              |
-| `pnpm run test`        | Run tests                         |
-| `pnpm run test:watch`  | Run tests in watch mode           |
-| `pnpm run lint`        | Lint code                         |
-| `pnpm run format`      | Format code                       |
+| Script                  | Description                       |
+|-------------------------|-----------------------------------|
+| `pnpm run dev`          | Start development mode with watch |
+| `pnpm run build`        | Build for production              |
+| `pnpm run test`         | Run tests                         |
+| `pnpm run test:watch`   | Run tests in watch mode           |
+| `pnpm run lint`         | Lint code                         |
+| `pnpm run format`       | Format code                       |
 | `pnpm run format:check` | Check if code is formatted        |
-| `pnpm run typecheck`   | Run TypeScript type checking      |
+| `pnpm run typecheck`    | Run TypeScript type checking      |
 
 ---
 
@@ -108,14 +124,18 @@ const container = await new AnvilContainer()
 
 TSDX wraps these modern, high-performance tools:
 
-- **[Bunchee](https://github.com/huozhi/bunchee)** - Zero-config bundler for npm packages
+- **[Bunchee](https://github.com/huozhi/bunchee)** - Zero-config bundler for npm
+  packages
 - **[Vitest](https://vitest.dev/)** - Next-generation testing framework
-- **[Oxlint](https://oxc.rs/docs/guide/usage/linter.html)** - Rust-powered linter (50-100x faster than ESLint)
-- **[Oxfmt](https://oxc.rs/docs/guide/usage/formatter)** - Rust-powered formatter (35x faster than Prettier)
+- **[Oxlint](https://oxc.rs/docs/guide/usage/linter.html)** - Rust-powered
+  linter (50-100x faster than ESLint)
+- **[Oxfmt](https://oxc.rs/docs/guide/usage/formatter)** - Rust-powered
+  formatter (35x faster than Prettier)
 
 ## Module Formats
 
-This library exports both ESM and CommonJS formats, with full TypeScript support:
+This library exports both ESM and CommonJS formats, with full TypeScript
+support:
 
 - `dist/index.js` - ESM
 - `dist/index.cjs` - CommonJS

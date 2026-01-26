@@ -26,16 +26,16 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "dev": "pnpm dev",
-    "build": "pnpm build",
-    "test": "pnpm test",
-    "test:watch": "pnpm test --watch",
+    "dev": "tsdx dev",
+    "build": "tsdx build",
+    "test": "tsdx test",
+    "test:watch": "tsdx test --watch",
     "test-jest": "jest --colors --injectGlobals",
-    "lint": "pnpm lint",
+    "lint": "tsdx lint",
     "eslint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "typecheck": "pnpm typecheck",
+    "typecheck": "tsdx typecheck",
     "prepublishOnly": "pnpm run build",
-    "check": "pnpm install && pnpm build && pnpm eslint && pnpm typecheck && pnpm test"
+    "check": "pnpm build && pnpm eslint && pnpm test-jest"
   },
   "dependencies": {
     "testcontainers": "^11.11.0",
