@@ -35,7 +35,7 @@
     "eslint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "typecheck": "tsdx typecheck",
     "prepublishOnly": "pnpm run build",
-    "check": "pnpm install && pnpm build && pnpm lint && pnpm eslint && pnpm typecheck && pnpm test"
+    "check": "pnpm install && pnpm build && pnpm eslint && pnpm typecheck && pnpm test"
   },
   "dependencies": {
     "testcontainers": "^11.11.0",
