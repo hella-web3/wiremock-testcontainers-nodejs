@@ -1,4 +1,4 @@
-name: Publish
+name: Docker Push Image
 
 on:
   workflow_dispatch:
@@ -9,7 +9,7 @@ env:
 
 jobs:
   release:
-    name: Publish
+    name: Docker Push Image
     runs-on: ubuntu-latest
     permissions:
       contents: read
