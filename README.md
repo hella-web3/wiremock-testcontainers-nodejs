@@ -127,10 +127,6 @@ TSDX wraps these modern, high-performance tools:
 - **[Bunchee](https://github.com/huozhi/bunchee)** - Zero-config bundler for npm
   packages
 - **[Vitest](https://vitest.dev/)** - Next-generation testing framework
-- **[Oxlint](https://oxc.rs/docs/guide/usage/linter.html)** - Rust-powered
-  linter (50-100x faster than ESLint)
-- **[Oxfmt](https://oxc.rs/docs/guide/usage/formatter)** - Rust-powered
-  formatter (35x faster than Prettier)
 
 ## Module Formats
 
