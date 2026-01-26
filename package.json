@@ -1,7 +1,7 @@
 {
   "name": "@hellaweb3/foundryanvil-testcontainers-nodejs",
   "description": "This Typescript module provides a Fluent API style method of configuring and starting a Anvil testcontainers node. During your test execution, the module provides a viem test client and streamlined helper methods to interact with the node.",
-  "version": "0.1.1",
+  "version": "0.1.0",
   "license": "MIT",
   "author": "Chris Anatalio",
   "files": [
