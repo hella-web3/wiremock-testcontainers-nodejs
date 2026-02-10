@@ -5,8 +5,8 @@
 
 <p>A library for easily using WireMock with Testcontainers in Node.js applications.</p>
 
-<a href="https://github.com/hella-web3/wiremock-testcontainers-nodejs/actions/workflows/main.yml/badge.svg">
-    <img alt="Build Status" src="https://github.com/hella-web3/wiremock-testcontainers-nodejs/actions/workflows/main.yml" />
+<a href="https://github.com/hella-web3/wiremock-testcontainers-nodejs/actions/workflows/main.yml ">
+    <img alt="Build Status" src="https://github.com/hella-web3/wiremock-testcontainers-nodejs/actions/workflows/main.yml/badge.svg" />
 </a>
 
 <a href="https://www.npmjs.com/package/@hellaweb3/wiremock-testcontainers-nodejs">
