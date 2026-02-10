@@ -23,7 +23,3 @@ jobs:
             --title "Release ${{ github.ref_name }}" \
             --generate-notes
 
-  publish:
-    needs: release
-    uses: ./.github/workflows/publish.yml
-    secrets: inherit
