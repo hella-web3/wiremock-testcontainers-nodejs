@@ -1,8 +1,13 @@
-name: Size
+name: Package size
 
 on:
   pull_request:
-    branches: [main, master]
+    branches: [main]
+
+# Fails if the published tarball grows beyond the budget, so bloat
+# (accidentally shipped tests, configs, sourcemaps, bundled deps) is caught in review.
+env:
+  MAX_TARBALL_KB: 25
 
 jobs:
   size:
@@ -11,18 +16,32 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v6
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
         with:
-          bun-version: latest
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: bun install
+        run: pnpm install --frozen-lockfile
 
-      - name: Build
-        run: bun run build
-
-      - name: Check bundle size
+      - name: Build and pack
         run: |
-          echo "📦 Bundle size:"
-          du -sh dist/*
+          pnpm build
+          pnpm pack --pack-destination /tmp/pack
+
+      - name: Report and enforce tarball budget
+        run: |
+          tgz=$(ls /tmp/pack/*.tgz)
+          echo "## 📦 Published package contents" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          tar -tzvf "$tgz" | awk '{printf "%7d  %s\n", $3, $6}' | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          kb=$(( $(stat -c %s "$tgz") / 1024 ))
+          echo "Tarball: ${kb} kB (budget: ${MAX_TARBALL_KB} kB)" | tee -a "$GITHUB_STEP_SUMMARY"
+          test "$kb" -le "$MAX_TARBALL_KB"

@@ -1,0 +1,22 @@
+{
+  "id" : "5b0f4a6e-8d2c-4f1a-9c3e-7a1d2b4c6e8f",
+  "priority" : 1,
+  "request" : {
+    "url" : "/cards?page=0",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 400,
+    "bodyFileName" : "body-cards-bad-request-400.json",
+    "headers" : {
+      "RateLimit-Remaining" : "19",
+      "Strict-Transport-Security" : "max-age=31536000; includeSubDomains",
+      "RateLimit-Reset" : "1",
+      "RateLimit-Policy" : "20;w=1",
+      "Access-Control-Allow-Origin" : "*",
+      "RateLimit-Limit" : "20",
+      "Content-Type" : "application/json; charset=utf-8"
+    }
+  },
+  "uuid" : "5b0f4a6e-8d2c-4f1a-9c3e-7a1d2b4c6e8f"
+}

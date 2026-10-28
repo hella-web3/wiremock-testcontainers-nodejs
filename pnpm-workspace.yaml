@@ -1,10 +1,10 @@
 packages:
-  - "."
+  - .
+
+minimumReleaseAge: 1440
 
 onlyBuiltDependencies:
-  - "@swc/core"
   - cpu-features
   - esbuild
   - protobufjs
   - ssh2
-  - unrs-resolver

@@ -2,6 +2,7 @@ name: CI
 
 on:
   workflow_dispatch:
+  pull_request:
   push:
     branches:
       - main
@@ -12,7 +13,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        node: [ "20", "22", "24" ]
+        # Active LTS lines only; testcontainers >= 12 requires Node >= 22.22.
+        node: [ "22", "24" ]
         os: [ ubuntu-latest ]
 
     steps:
@@ -33,5 +35,24 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run check
-        run: pnpm check
+      # Runtime dependencies only; dev tooling is audited by Dependabot.
+      - name: Audit runtime dependencies
+        run: pnpm audit --prod --audit-level=high
+
+      # Also runs publint + "Are the types wrong?" on the emitted package.
+      - name: Build
+        run: pnpm build
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Lint
+        run: pnpm lint
+
+      # Docker-free. Coverage of src/ is collected and enforced here (>= 95%).
+      - name: Unit tests (with coverage)
+        run: pnpm test:unit --coverage
+
+      # Starts a real WireMock container; ubuntu-latest runners ship with Docker.
+      - name: E2E tests
+        run: pnpm test:e2e

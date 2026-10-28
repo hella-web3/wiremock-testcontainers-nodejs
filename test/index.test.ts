@@ -1,4 +1,5 @@
-import { StartedWiremockContainer, WiremockContainer } from "../src";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { type StartedWiremockContainer, WiremockContainer } from "../src";
 
 describe("WiremockContainer", () => {
   let container: StartedWiremockContainer;

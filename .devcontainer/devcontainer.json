@@ -1,0 +1,15 @@
+{
+  "name": "wiremock-testcontainers-nodejs",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:24",
+  "features": {
+    // Runs a Docker daemon inside the dev container so `pnpm test:e2e` works
+    // in GitHub Codespaces / VS Code Dev Containers without host access.
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+  "postCreateCommand": "corepack enable && corepack prepare pnpm@10 --activate && pnpm install --frozen-lockfile",
+  "customizations": {
+    "vscode": {
+      "extensions": ["vitest.explorer", "oxc.oxc-vscode"]
+    }
+  }
+}

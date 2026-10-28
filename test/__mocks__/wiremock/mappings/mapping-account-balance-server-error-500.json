@@ -1,0 +1,23 @@
+{
+  "id" : "9e3c1d7a-2f4b-4e6c-8a1d-3b5f7c9e1a2d",
+  "priority" : 1,
+  "request" : {
+    "url" : "/account/balance",
+    "method" : "GET",
+    "headers" : {
+      "X-Mock-Scenario" : {
+        "equalTo" : "server-error"
+      }
+    }
+  },
+  "response" : {
+    "status" : 500,
+    "bodyFileName" : "body-account-balance-server-error-500.json",
+    "headers" : {
+      "Strict-Transport-Security" : "max-age=31536000; includeSubDomains",
+      "Access-Control-Allow-Origin" : "*",
+      "Content-Type" : "application/json; charset=utf-8"
+    }
+  },
+  "uuid" : "9e3c1d7a-2f4b-4e6c-8a1d-3b5f7c9e1a2d"
+}

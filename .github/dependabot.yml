@@ -1,0 +1,17 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 3
+    groups:
+      dev-tooling:
+        dependency-type: development
+    # testcontainers is the only runtime dependency; review its bumps individually.
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

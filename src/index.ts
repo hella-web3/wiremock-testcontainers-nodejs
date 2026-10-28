@@ -1,7 +1,9 @@
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import {
   AbstractStartedContainer,
   GenericContainer,
-  StartedTestContainer,
+  type StartedTestContainer,
   Wait,
 } from "testcontainers";
 
@@ -36,17 +38,21 @@ export class WiremockContainer extends GenericContainer {
    *   .withMappings("./test/__mocks__/wiremock")
    *   .start();
    * ```
-   * @param directory The directory containing the mappings and __files.
+   * @param directory The directory containing `mappings/` and, optionally, `__files/`.
+   * @throws If `mappings/` does not exist in `directory`.
    */
-  public withMappings(directory: string) {
-    this.withCopyDirectoriesToContainer([{
-      source: `${directory}/__files`,
-      target: "/home/wiremock/__files",
-    }]);
-    this.withCopyDirectoriesToContainer([{
-      source: `${directory}/mappings`,
-      target: "/home/wiremock/mappings",
-    }]);
+  public withMappings(directory: string): this {
+    const mappings = join(directory, "mappings");
+    if (!existsSync(mappings)) {
+      throw new Error(`WiremockContainer.withMappings: "${mappings}" does not exist`);
+    }
+    this.withCopyDirectoriesToContainer([{ source: mappings, target: "/home/wiremock/mappings" }]);
+
+    // `__files/` is optional: mappings may define their response bodies inline.
+    const files = join(directory, "__files");
+    if (existsSync(files)) {
+      this.withCopyDirectoriesToContainer([{ source: files, target: "/home/wiremock/__files" }]);
+    }
 
     return this;
   }
@@ -68,7 +74,7 @@ export class WiremockContainer extends GenericContainer {
  * A started Wiremock container with helper methods for interacting with the node.
  */
 export class StartedWiremockContainer extends AbstractStartedContainer {
-  private readonly _rpcUrl;
+  readonly #rpcUrl: string;
 
   /**
    * Creates a new StartedWiremockContainer.
@@ -77,13 +83,13 @@ export class StartedWiremockContainer extends AbstractStartedContainer {
    */
   constructor(startedTestContainer: StartedTestContainer, url: string) {
     super(startedTestContainer);
-    this._rpcUrl = url;
+    this.#rpcUrl = url;
   }
 
   /**
    * Gets the URL of the Wiremock node.
    */
-  get rpcUrl() {
-    return this._rpcUrl;
+  get rpcUrl(): string {
+    return this.#rpcUrl;
   }
 }

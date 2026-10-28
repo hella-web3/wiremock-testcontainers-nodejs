@@ -30,6 +30,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # Docker-free gate before anything reaches the registry.
+      - name: Verify
+        run: pnpm typecheck && pnpm lint && pnpm test:unit --coverage
+
+      # Also runs publint + "Are the types wrong?" on the emitted package.
       - name: Build
         run: pnpm build
 
