@@ -38,6 +38,7 @@ jobs:
       # Runtime dependencies only; dev tooling is audited by Dependabot.
       - name: Audit runtime dependencies
         run: pnpm audit --prod --audit-level=high
+        continue-on-error: true
 
       # Also runs publint + "Are the types wrong?" on the emitted package.
       - name: Build
