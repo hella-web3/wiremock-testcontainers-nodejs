@@ -1,10 +1,9 @@
 packages:
   - .
 
+allowBuilds:
+  cpu-features: true
+  esbuild: true
+  protobufjs: true
+  ssh2: true
 minimumReleaseAge: 1440
-
-onlyBuiltDependencies:
-  - cpu-features
-  - esbuild
-  - protobufjs
-  - ssh2

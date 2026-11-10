@@ -1,0 +1,6 @@
+{
+  "mappings": [
+    { "request": { "method": "GET", "url": "/greeting" }, "response": { "status": 200, "bodyFileName": "greeting.txt" } },
+    { "request": { "method": "GET", "url": "/farewell" }, "response": { "status": 200, "body": "Goodbye" } }
+  ]
+}

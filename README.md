@@ -25,8 +25,10 @@
 a [WireMock](https://wiremock.org/)
 instance with [Testcontainers](https://node.testcontainers.org/). It provides a
 fluent API to configure and start WireMock
-containers, including support for loading mappings and files from recorded
-Wiremock sessions.
+containers from recorded WireMock directories, individual named mappings
+(local files, npm packages, module-relative files or inline JSON) and static
+files – an API modelled on the official
+[Java module](https://github.com/wiremock/wiremock-testcontainers-java).
 
 ## Installation
 
@@ -38,7 +40,7 @@ Requires Node.js >= 22.22 and a reachable Docker daemon (anything
 [Testcontainers](https://node.testcontainers.org/supported-container-runtimes/)
 supports).
 
-**What you get:** an ~8 kB package – dual ESM (`dist/index.js`) and CJS
+**What you get:** a ~17 kB package – dual ESM (`dist/index.js`) and CJS
 (`dist/index.cjs`) builds with matching declarations, `sideEffects: false`
 for tree-shaking, `testcontainers` as the single runtime dependency (never
 bundled), and the TypeScript source for go-to-definition.
@@ -132,6 +134,113 @@ const container = await new WiremockContainer()
   .start();
 ```
 
+### Individual mappings and files
+
+`withMapping(name, source)` registers one stub at `mappings/<name>.json` and
+`withFiles(...files)` registers response bodies in `__files/` – no recorded
+directory required. A mapping file holds one WireMock stub, or several under
+`"mappings"`:
+
+```json
+{ "request": { "method": "GET", "url": "/health" }, "response": { "status": 200, "jsonBody": { "status": "UP" } } }
+```
+
+#### Mapping sources
+
+**Local file** – a path relative to the working directory, or absolute:
+
+```typescript
+new WiremockContainer().withMapping("health", "./test/fixtures/health.json"); // → mappings/health.json
+```
+
+**`file:` URL** – e.g. relative to the current module:
+
+```typescript
+new WiremockContainer().withMapping("health", new URL("./fixtures/health.json", import.meta.url));
+```
+
+**`{ file }`** – a path or URL in object form:
+
+```typescript
+new WiremockContainer().withMapping("health", { file: "./test/fixtures/health.json" });
+```
+
+**`{ package, file }`** – a file inside an installed npm package, e.g. shared
+fixtures. Resolved like `require()` from the working directory; the file does
+not need to be exported and may not leave the package:
+
+```typescript
+new WiremockContainer().withMapping("cards/list", { package: "@acme/api-fixtures", file: "wiremock/cards.json" }); // → mappings/cards/list.json
+```
+
+**`{ module, file }`** – a file relative to a module, like a Java classpath
+resource:
+
+```typescript
+new WiremockContainer().withMapping("balance", { module: import.meta.url, file: "./__mocks__/balance.json" }); // ESM
+new WiremockContainer().withMapping("balance", { module: __dirname, file: "./__mocks__/balance.json" });       // CJS (or __filename)
+```
+
+**`{ json }` (object)** – an inline stub, serialised as-is:
+
+```typescript
+new WiremockContainer().withMapping("ping", {
+  json: { request: { method: "GET", url: "/ping" }, response: { status: 200, body: "pong" } },
+});
+```
+
+**`{ json }` (string)** – inline JSON, copied verbatim:
+
+```typescript
+new WiremockContainer().withMapping("ping", { json: '{ "request": { "url": "/ping" }, "response": { "status": 200 } }' });
+```
+
+**Several stubs in one mapping** – any source may hold `{ "mappings": [...] }`:
+
+```typescript
+new WiremockContainer().withMapping("greetings", {
+  json: {
+    mappings: [
+      { request: { url: "/hello" }, response: { status: 200, body: "Hello" } },
+      { request: { url: "/bye" }, response: { status: 200, body: "Bye" } },
+    ],
+  },
+});
+```
+
+#### Static files
+
+`withFiles()` takes the same file sources (not `{ json }`). A file keeps its
+base name unless an object source sets `name`; mappings reference it as
+`bodyFileName`:
+
+```typescript
+new WiremockContainer().withFiles(
+  "./test/fixtures/body-cards.json",                                     // → __files/body-cards.json
+  { file: "./test/fixtures/logo.png", name: "images/logo.png" },        // → __files/images/logo.png
+  { package: "@acme/api-fixtures", file: "wiremock/__files/user.json" }, // → __files/user.json
+);
+```
+
+#### Combining them
+
+All three methods chain with each other and with every Testcontainers builder:
+
+```typescript
+const container = await new WiremockContainer()
+  .withMappings("./test/__mocks__/wiremock")
+  .withMapping("health", "./test/fixtures/health.json")
+  .withMapping("cards/list", { package: "@acme/api-fixtures", file: "wiremock/cards.json" })
+  .withFiles({ file: "./test/fixtures/cards.json", name: "cards/body.json" })
+  .start();
+```
+
+Registrations are validated immediately, before any image is pulled: sources
+must exist, mappings must be WireMock stubs, and no registration may overwrite a
+file of another or reuse a stub `id` (WireMock would refuse to start).
+Registering the same file at the same path again is a no-op. Sources are only
+read – mappings are copied byte-for-byte as of registration.
+
 ## API
 
 ### `WiremockContainer`
@@ -142,6 +251,11 @@ const container = await new WiremockContainer()
   `__files/` (optional) from the specified local directory into the container.
   Throws immediately if `mappings/` does not exist, so a typo fails before any
   image is pulled.
+- `withMapping(name: string, source: WiremockMappingSource)`: Registers one stub
+  at `mappings/<name>.json` (`name` may contain `/`; `.json` is optional).
+- `withFiles(...files: WiremockStaticFile[])`: Registers files at
+  `__files/<name>` – the base name unless an object source sets `name`. A call
+  registers all files or none.
 - `start()`: Starts the container and returns a `StartedWiremockContainer`.
   Runtime failures (no daemon, image pull denied, start-up timeout, name or
   port conflicts) are propagated unchanged.
@@ -181,7 +295,7 @@ Node version: see `.nvmrc`.
 | `pnpm build`         | ESM + CJS + declarations into `dist/`, then `publint` + `attw` checks    | No           |
 | `pnpm typecheck`     | `tsc --noEmit` over `src/` and `test/`                                   | No           |
 | `pnpm lint`          | `oxlint --deny-warnings` with the rules in `.oxlintrc.json`              | No           |
-| `pnpm test:unit`     | `test/unit/**` – container wrapper logic and fixture integrity checks    | No           |
+| `pnpm test:unit`     | `test/unit/**` – container wrapper logic, registration API and fixture integrity checks | No |
 | `pnpm test:e2e`      | `test/index.test.ts` – a real WireMock container serving the fixtures    | **Yes**      |
 | `pnpm test`          | Both suites, no coverage (fast local loop)                               | **Yes**      |
 | `pnpm test:coverage` | Both suites with coverage of `src/`, thresholds enforced                 | **Yes**      |
@@ -276,6 +390,11 @@ Negative cases are hand-written stubs alongside the recorded ones:
   WireMock pattern for simulating outages on demand.
 
 Unmatched requests (unknown path, wrong method) get WireMock's default 404.
+
+`test/__mocks__/standalone` holds loose fixtures for `withMapping()` and
+`withFiles()`. Their unit tests need no Docker: `test/helpers/container.ts`
+reads the tar archive Testcontainers would upload and asserts exactly which
+files land where.
 
 ## Maintainers
 

@@ -1,4 +1,4 @@
-import { mkdtempSync, mkdirSync, rmSync } from "node:fs";
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { GenericContainer, type StartedTestContainer, Wait } from "testcontainers";
@@ -95,19 +95,22 @@ describe("WiremockContainer", () => {
       ]);
     });
 
-    it("copies only mappings/ when __files/ is absent (inline response bodies)", () => {
+    it("copies only mappings/ – verbatim, even malformed files – when __files/ is absent", () => {
       mkdirSync(join(tmp, "mappings"));
+      writeFileSync(join(tmp, "mappings", "broken.json"), "{ not json");
       const container = new WiremockContainer().withMappings(tmp);
       expect(internals(container).directoriesToCopy).toEqual([
         { source: join(tmp, "mappings"), target: "/home/wiremock/mappings" },
       ]);
     });
 
-    it("fails fast, before any image is pulled, when mappings/ is missing", () => {
+    it("fails fast, before any image is pulled, when mappings/ is missing or is not a directory", () => {
       expect(() => new WiremockContainer().withMappings(tmp)).toThrow(
         `WiremockContainer.withMappings: "${join(tmp, "mappings")}" does not exist`,
       );
       expect(() => new WiremockContainer().withMappings(join(tmp, "nope"))).toThrow("does not exist");
+      writeFileSync(join(tmp, "mappings"), "a file, not a directory");
+      expect(() => new WiremockContainer().withMappings(tmp)).toThrow(`"${join(tmp, "mappings")}" is not a directory`);
     });
 
     it("returns the same instance and accumulates directories when chained", () => {
