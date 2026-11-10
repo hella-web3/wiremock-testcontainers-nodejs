@@ -96,8 +96,8 @@ describe("WireMock fixtures: test/__mocks__/wiremock", () => {
         ["57590f13-c0b9-496d-b3ef-b82758b4d583", "Test User3", "1730"],
         ["6b413690-f559-4c97-b5ea-877136030086", "Test User2", "8377"],
         ["aa2a96a3-c1ad-4ea3-9b86-2abd47f3cc22", "Test User2", "8454"],
-        ["70b7b08f-0b15-4c9c-9183-1afe88e8f78f", "Chris Anatalio", "9162"],
-        ["507e7dd7-5c8f-480f-9cf3-2500ae807e16", "Chris Anatalio", "1213"],
+        ["70b7b08f-0b15-4c9c-9183-1afe88e8f78f", "Test User4", "9162"],
+        ["507e7dd7-5c8f-480f-9cf3-2500ae807e16", "Test User4", "1213"],
         ["8b15cddc-c638-49bb-89a7-8f7ed3048351", "string", "7860"],
       ]);
     });
