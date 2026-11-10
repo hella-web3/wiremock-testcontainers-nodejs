@@ -47,7 +47,7 @@
         "email": "test@hella.com",
         "otpPhoneNumber": {
           "dialCode": 1,
-          "phoneNumber": "5033471234"
+          "phoneNumber": "1233456789"
         }
       }
     },
@@ -98,7 +98,7 @@
         "email": "test@hella.com",
         "otpPhoneNumber": {
           "dialCode": 1,
-          "phoneNumber": "5033471234"
+          "phoneNumber": "1233456789"
         }
       }
     },
@@ -149,13 +149,13 @@
         "email": "test@hella.com",
         "otpPhoneNumber": {
           "dialCode": 1,
-          "phoneNumber": "5033471234"
+          "phoneNumber": "1233456789"
         }
       }
     },
     {
       "id": "70b7b08f-0b15-4c9c-9183-1afe88e8f78f",
-      "cardName": "Chris Anatalio",
+      "cardName": "Test User 3",
       "secondaryCardName": "",
       "last4": "9162",
       "cardType": "virtual",
@@ -197,16 +197,16 @@
       "bulkShippingID": null,
       "meta": {
         "id": "string",
-        "email": "user@example.com",
+        "email": "testuser@example.com",
         "otpPhoneNumber": {
           "dialCode": 1,
-          "phoneNumber": "5033472552"
+          "phoneNumber": "1233456789"
         }
       }
     },
     {
       "id": "507e7dd7-5c8f-480f-9cf3-2500ae807e16",
-      "cardName": "Chris Anatalio",
+      "cardName": "Test User 4",
       "secondaryCardName": "",
       "last4": "1213",
       "cardType": "virtual",
@@ -248,10 +248,10 @@
       "bulkShippingID": null,
       "meta": {
         "id": "string",
-        "email": "user@example.com",
+        "email": "testuser@example.com",
         "otpPhoneNumber": {
           "dialCode": 1,
-          "phoneNumber": "5033472552"
+          "phoneNumber": "1233456789"
         }
       }
     },
@@ -299,10 +299,10 @@
       "bulkShippingID": null,
       "meta": {
         "id": "string",
-        "email": "user@example.com",
+        "email": "testuser@example.com",
         "otpPhoneNumber": {
           "dialCode": 1,
-          "phoneNumber": "5033472552"
+          "phoneNumber": "1233456789"
         }
       }
     }
