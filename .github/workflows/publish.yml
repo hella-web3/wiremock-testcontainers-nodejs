@@ -13,15 +13,15 @@ jobs:
       id-token: write
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
         with:
           version: 10
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: 24
           registry-url: 'https://registry.npmjs.org'
@@ -34,7 +34,6 @@ jobs:
       - name: Verify
         run: pnpm typecheck && pnpm lint && pnpm test:unit --coverage
 
-      # Also runs publint + "Are the types wrong?" on the emitted package.
       - name: Build
         run: pnpm build
 
