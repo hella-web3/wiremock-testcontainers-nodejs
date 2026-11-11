@@ -105,4 +105,4 @@ jobs:
       # Never --no-docker: refused in CI.
       - name: Run the end-user E2E flow
         working-directory: examples
-        run: npm test
+        run: npm test:e2e
