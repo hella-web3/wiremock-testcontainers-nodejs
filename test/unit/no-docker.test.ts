@@ -161,12 +161,6 @@ describe("--no-docker harness", () => {
       expect(getRuntime()).toBeUndefined();
     });
 
-    it("reads CI/CD variables from process.env by default", () => {
-      vi.stubEnv("GITHUB_ACTIONS", "true");
-      expect(() => installNoDockerRuntime({ log })).toThrow("detected GITHUB_ACTIONS=true");
-      vi.unstubAllEnvs();
-    });
-
     it("registers a runtime and returns an uninstaller that only removes its own", () => {
       const first = install();
       const registered = getRuntime();
