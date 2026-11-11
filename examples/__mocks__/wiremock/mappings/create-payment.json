@@ -1,0 +1,21 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/payments",
+    "headers": {
+      "Content-Type": {
+        "equalTo": "application/json"
+      }
+    }
+  },
+  "response": {
+    "status": 201,
+    "jsonBody": {
+      "id": "0d1a73f7-3bd5-4f65-b1a9-2f1d55e7c0a4",
+      "status": "PENDING"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

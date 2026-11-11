@@ -2,7 +2,7 @@
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "plugins": ["typescript", "unicorn", "oxc", "import", "promise", "node", "vitest"],
   "env": { "node": true, "es2024": true },
-  "ignorePatterns": ["dist/**", "coverage/**", "node_modules/**"],
+  "ignorePatterns": ["dist/**", "coverage/**", "node_modules/**", "examples/**"],
   "categories": {
     "correctness": "error",
     "suspicious": "error",
@@ -80,6 +80,10 @@
     {
       "files": ["*.config.ts"],
       "rules": { "import/no-default-export": "off" }
+    },
+    {
+      "files": ["scripts/**/*.mjs"],
+      "rules": { "eslint/no-console": "off" }
     }
   ]
 }

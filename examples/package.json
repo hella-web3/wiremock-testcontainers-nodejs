@@ -1,0 +1,23 @@
+{
+  "name": "wiremock-testcontainers-nodejs-examples",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Standalone consumer project: imports @hellaweb3/wiremock-testcontainers-nodejs via npm link and runs an end-to-end user-flow test against a real WireMock container.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "link:library": "npm link @hellaweb3/wiremock-testcontainers-nodejs",
+    "typecheck": "tsc --noEmit",
+    "test": "node scripts/test-e2e.mjs",
+    "test:e2e": "node scripts/test-e2e.mjs e2e"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "typescript": "^7.0.2",
+    "vitest": "^5.1.0",
+    "wiremock": "^3.13.2"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

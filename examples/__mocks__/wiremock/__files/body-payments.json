@@ -1,0 +1,7 @@
+{
+  "items": [
+    { "id": "7f9352bb-36c5-4be4-9b63-bbd10fcba8e4", "amount": "42.00", "currency": "USD", "status": "SETTLED" },
+    { "id": "2e01f6cc-9809-4b6b-94f2-44f1c8a7a141", "amount": "7.50", "currency": "USD", "status": "PENDING" }
+  ],
+  "meta": { "totalItems": 2 }
+}

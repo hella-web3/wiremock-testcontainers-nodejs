@@ -6,11 +6,7 @@ import { fileURLToPath } from "node:url";
 /** A path (relative to the working directory) or a `file:` URL. */
 export type WiremockPath = string | URL;
 
-/**
- * A fixture file: a local path or `file:` URL, `{ file }`, a file inside an installed npm
- * package `{ package, file }` (its `exports` are ignored), or a file next to a module
- * `{ module: import.meta.url | __filename | __dirname, file }`.
- */
+/** A path or `file:` URL, `{ file }`, a file of an installed package `{ package, file }`, or one next to a module `{ module, file }`. */
 export type WiremockFileSource =
   | WiremockPath
   | { readonly file: WiremockPath }
@@ -29,7 +25,7 @@ export type WiremockMappingSource =
   | WiremockFileSource
   | { readonly json: string | WiremockStubMapping | { readonly mappings: readonly WiremockStubMapping[] } };
 
-/** A file source; object forms may set `name`, the path below `__files/` (default: the base name). */
+/** A file source; object forms may set `name`, the path below `__files/`. */
 export type WiremockStaticFile = WiremockPath | (Exclude<WiremockFileSource, WiremockPath> & { readonly name?: string });
 
 const PACKAGE_NAME = /^(?:@[a-z0-9-~][a-z0-9-._~]*\/)?[a-z0-9-~][a-z0-9-._~]*$/u;

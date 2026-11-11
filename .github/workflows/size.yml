@@ -7,7 +7,7 @@ on:
 # Fails if the published tarball grows beyond the budget, so bloat
 # (accidentally shipped tests, configs, sourcemaps, bundled deps) is caught in review.
 env:
-  MAX_TARBALL_KB: 25
+  MAX_TARBALL_KB: 20
 
 jobs:
   size:

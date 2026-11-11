@@ -1,17 +1,19 @@
 import { defineConfig } from "vitest/config";
 
 /**
- * Test runner configuration.
+ * - `pnpm test:unit` → `test/unit/**`, no Docker.
+ * - `pnpm test:e2e`  → `test/index.test.ts` in Docker; with `--no-docker`, `scripts/test-e2e.mjs`
+ *   sets `WIREMOCK_NO_DOCKER=1` and the setup file below serves WireMock from a local JVM.
  *
- * - `pnpm test:unit` → `test/unit/**`   (no Docker required)
- * - `pnpm test:e2e`  → `test/index.test.ts` (starts a real WireMock container)
- *
- * Coverage is measured on `src/` only and enforced at 95 %.
+ * Coverage covers `src/` only and is enforced at 95 %.
  */
+const noDocker = process.env.WIREMOCK_NO_DOCKER === "1";
+
 export default defineConfig({
   test: {
     environment: "node",
     include: ["test/**/*.test.ts"],
+    setupFiles: noDocker ? ["./test/harness/no-docker.setup.ts"] : [],
     testTimeout: 30_000,
     hookTimeout: 60_000,
     coverage: {

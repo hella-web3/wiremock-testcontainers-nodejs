@@ -1,7 +1,6 @@
 import { expect } from "vitest";
 import type {
   AccountBalanceResponse,
-  AdminMappingsResponse,
   AtmControl,
   Card,
   CardMeta,
@@ -17,8 +16,7 @@ import type {
 } from "./fixtures";
 
 /**
- * Schema-driven assertions shared by the unit suite (run against the fixture
- * files) and the E2E suite (run against the live WireMock container).
+ * Schema-driven assertions, run by the unit suite against the fixture files.
  *
  * A `Schema<T>` must supply a {@link Check} for **every** key of `T`, so the
  * compiler guarantees each field of a JSON payload has an assertion.
@@ -27,10 +25,9 @@ import type {
  * keys.
  *
  * Adding an endpoint: (1) drop the recorded `mapping-*.json` + `body-*.json`
- * into `test/__mocks__/wiremock` – the mapping-driven E2E test picks it up
- * automatically; (2) declare its body interface in `fixtures.ts`; (3) write a
- * `Schema<T>` below – the compiler lists any field you forget; (4) call
- * `expectObject(actual, fixture, schema)` from the unit and E2E suites.
+ * into `test/__mocks__/wiremock`; (2) declare its body interface in
+ * `fixtures.ts`; (3) write a `Schema<T>` below – the compiler lists any field
+ * you forget; (4) assert it in `test/unit/fixtures.test.ts`.
  */
 
 // ---------------------------------------------------------------------------
@@ -71,8 +68,7 @@ const isPrimitive = (value: unknown): boolean => value === null || typeof value 
 /**
  * Runs `check` and, for primitive values, asserts equality with the fixture.
  * Containers recurse through {@link objectOf}/{@link arrayOf}/{@link recordOf}
- * until primitives are reached, so equality is always verified at the leaves
- * while `partialOf` can tolerate extra keys at any depth.
+ * until primitives are reached, so equality is always verified at the leaves.
  */
 const verify = <T>(check: Check<T>, actual: T, expected: T): void => {
   check(actual, expected);
@@ -81,19 +77,13 @@ const verify = <T>(check: Check<T>, actual: T, expected: T): void => {
 
 /**
  * Asserts that every field declared in `schema` passes its check and equals
- * the corresponding field of `expected`. With `exact` (the default) `actual`
- * must also carry exactly the schema's keys – use {@link partialOf} for
- * responses whose full shape is owned by a third party.
+ * the corresponding field of `expected`, and that `actual` carries exactly the
+ * schema's keys.
  */
-export function expectObject<T extends object>(
-  actual: T,
-  expected: T,
-  schema: Schema<T>,
-  exact = true,
-): void {
+export function expectObject<T extends object>(actual: T, expected: T, schema: Schema<T>): void {
   expect(actual).toEqual(expect.any(Object));
   const declared = Object.keys(schema) as (keyof T & string)[];
-  if (exact) for (const key of Object.keys(actual)) expect(declared, `undeclared field "${key}"`).toContain(key);
+  for (const key of Object.keys(actual)) expect(declared, `undeclared field "${key}"`).toContain(key);
   for (const key of declared) {
     if (!(key in actual) && schema[key].optional) continue;
     expect(actual, `missing field "${key}"`).toHaveProperty(key);
@@ -105,17 +95,11 @@ export function expectObject<T extends object>(
 export const expectShape = <T extends object>(actual: T, schema: Schema<T>): void =>
   expectObject(actual, actual, schema);
 
-/** Lifts a {@link Schema} into a {@link Check} for nesting (exact keys). */
+/** Lifts a {@link Schema} into a {@link Check} for nesting. */
 export const objectOf =
   <T extends object>(schema: Schema<T>): Check<T> =>
   (actual, expected) =>
     expectObject(actual, expected, schema);
-
-/** Like {@link objectOf} but tolerates additional, undeclared keys. */
-export const partialOf =
-  <T extends object>(schema: Schema<T>): Check<T> =>
-  (actual, expected) =>
-    expectObject(actual, expected, schema, false);
 
 /** Checks an array element-wise and positionally against the fixture. */
 export const arrayOf =
@@ -296,15 +280,6 @@ export const mappingSchema: Schema<WiremockMapping> = {
   uuid,
 };
 
-/**
- * `GET /__admin/mappings`. Each entry must contain the recorded stub; WireMock
- * owns the full shape of its admin API, so extra keys are tolerated.
- */
-export const adminMappingsSchema: Schema<AdminMappingsResponse> = {
-  mappings: arrayOf(partialOf(mappingSchema)),
-  meta: objectOf({ total: nonNegativeInteger }),
-};
-
 // ---------------------------------------------------------------------------
 // Payload assertions (schema + cross-field invariants)
 // ---------------------------------------------------------------------------
@@ -336,24 +311,4 @@ export function expectErrorResponse(actual: ErrorResponse, status: number, expec
 export function expectMapping(actual: WiremockMapping): void {
   expectShape(actual, mappingSchema);
   expect(actual.uuid).toBe(actual.id);
-}
-
-// ---------------------------------------------------------------------------
-// HTTP assertions
-// ---------------------------------------------------------------------------
-
-/**
- * Response headers owned by the servlet container (Jetty) that it may
- * legitimately regenerate; they are not part of the stub contract.
- */
-export const SERVER_CONTROLLED_HEADERS: ReadonlySet<string> = new Set(["date", "server"]);
-
-/** Asserts the status and every stub-controlled header recorded in `mapping`. */
-export function expectStubResponse(response: Response, mapping: WiremockMapping): void {
-  expect(response.status).toBe(mapping.response.status);
-  for (const [name, value] of Object.entries(mapping.response.headers)) {
-    if (!SERVER_CONTROLLED_HEADERS.has(name.toLowerCase())) {
-      expect(response.headers.get(name)).toBe(value);
-    }
-  }
 }

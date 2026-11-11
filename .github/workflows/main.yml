@@ -54,6 +54,55 @@ jobs:
       - name: Unit tests (with coverage)
         run: pnpm test:unit --coverage
 
-      # Starts a real WireMock container; ubuntu-latest runners ship with Docker.
+      # A real WireMock container (ubuntu-latest ships Docker). Never --no-docker: refused in CI.
       - name: E2E tests
         run: pnpm test:e2e
+
+  # The built package, consumed via `npm link` by the standalone examples/ project.
+  examples:
+    name: Examples – npm-link consumer E2E on Node ${{ matrix.node }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [ "22", "24" ]
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v7
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 10
+
+      - name: Setup Node.js ${{ matrix.node }}
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ matrix.node }}
+          cache: 'pnpm'
+
+      - name: Install library dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build the library
+        run: pnpm build
+
+      - name: Register the package globally (npm link)
+        run: npm link
+
+      - name: Install the examples project
+        working-directory: examples
+        run: npm install
+
+      - name: Link the library into the examples project
+        working-directory: examples
+        run: npm run link:library
+
+      - name: Typecheck the examples project
+        working-directory: examples
+        run: npm run typecheck
+
+      # Never --no-docker: refused in CI.
+      - name: Run the end-user E2E flow
+        working-directory: examples
+        run: npm test

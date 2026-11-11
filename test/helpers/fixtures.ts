@@ -160,11 +160,6 @@ export interface WiremockMapping {
 }
 
 /** `GET /__admin/mappings` from the WireMock admin API. */
-export interface AdminMappingsResponse {
-  mappings: WiremockMapping[];
-  meta: { total: number };
-}
-
 /** A mapping paired with the parsed body file it references. */
 export interface LoadedMapping<T = unknown> {
   /** File name inside `mappings/`, e.g. `mapping-cards-FA6eA.json`. */
