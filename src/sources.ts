@@ -46,9 +46,9 @@ export function within<T>(context: string, fn: () => T): T {
 export const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null && !Array.isArray(value);
 
-const show = (value: unknown): string => (value instanceof URL ? value.href : (JSON.stringify(value) ?? String(value)));
+export const show = (value: unknown): string => (value instanceof URL ? value.href : (JSON.stringify(value) ?? String(value)));
 
-const text = (value: unknown, field: string): string =>
+export const text = (value: unknown, field: string): string =>
   typeof value === "string" && value.trim() !== "" ? value : fail(`"${field}" must be a non-empty string, got ${show(value)}`);
 
 const toPath = (value: unknown, field: string): string => {
@@ -73,21 +73,24 @@ const packageRoot = (name: string): string => {
   return root ?? fail(`package "${name}" is not installed (searched from "${process.cwd()}")`);
 };
 
-/** Resolves a {@link WiremockFileSource} to the absolute path of an existing file. */
-export function resolveFile(source: unknown): string {
-  if (typeof source === "string" || source instanceof URL) return existingFile(toPath(source, "source"));
+/** Resolves a {@link WiremockFileSource} to an absolute path, which may not exist or be a directory. */
+export function resolvePath(source: unknown): string {
+  if (typeof source === "string" || source instanceof URL) return toPath(source, "source");
   if (!isRecord(source)) return fail(`unsupported source ${show(source)}; expected a path, a file: URL, { file }, { package, file } or { module, file }`);
   const { file, package: pkg, module } = source;
   if (pkg !== undefined && module !== undefined) fail('a source may set "package" or "module", not both');
   if (pkg !== undefined) {
     const root = packageRoot(text(pkg, "package"));
     const path = resolve(root, text(file, "file"));
-    return relative(root, path).split(sep)[0] === ".." ? fail(`"${String(file)}" must point to a file inside package "${pkg}"`) : existingFile(path);
+    return relative(root, path).split(sep)[0] === ".." ? fail(`"${String(file)}" must point to a file inside package "${pkg}"`) : path;
   }
-  if (module === undefined) return existingFile(toPath(file, "file"));
+  if (module === undefined) return toPath(file, "file");
   const anchor = toPath(module, "module");
-  return existingFile(resolve(statSync(anchor, { throwIfNoEntry: false })?.isDirectory() ? anchor : dirname(anchor), text(file, "file")));
+  return resolve(statSync(anchor, { throwIfNoEntry: false })?.isDirectory() ? anchor : dirname(anchor), text(file, "file"));
 }
+
+/** Resolves a {@link WiremockFileSource} to the absolute path of an existing file. */
+export const resolveFile = (source: unknown): string => existingFile(resolvePath(source));
 
 /** Validates a `/`-separated relative container name (no empty, `.` or `..` segments). */
 export const containerName = (name: unknown): string => {

@@ -104,7 +104,7 @@ export function writeFiles(files: Record<string, string | Buffer | object>): voi
 }
 
 /** An npm package below `<project>/node_modules` whose `exports` deliberately hide its fixtures. */
-export function writePackage(project: string, name: string, files: Record<string, string | object>): void {
+export function writePackage(project: string, name: string, files: Record<string, string | Buffer | object>): void {
   const root = join(project, "node_modules", name);
   const all = { "package.json": { name, exports: { "./package.json": "./package.json" } }, ...files };
   writeFiles(Object.fromEntries(Object.entries(all).map(([path, content]) => [join(root, path), content])));

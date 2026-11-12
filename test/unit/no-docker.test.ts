@@ -3,7 +3,7 @@ import { type ChildProcess, spawn } from "node:child_process";
 import { EventEmitter } from "node:events";
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, realpathSync, rmSync, utimesSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { basename, dirname, join } from "node:path";
+import { basename, delimiter, dirname, join } from "node:path";
 import { Readable } from "node:stream";
 import { text } from "node:stream/consumers";
 import { GenericContainer } from "testcontainers";
@@ -11,6 +11,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { StartedWiremockContainer, WiremockContainer } from "../../src";
 import { detectCI, installNoDockerRuntime, isNoDockerRequested, NO_DOCKER_ENV, type NoDockerOptions } from "../../src/no-docker";
 import { getRuntime, setRuntime, type WiremockStartRequest } from "../../src/runtime";
+import { CLASSES, EXAMPLE_JAR, UppercaseExtension, zip } from "../helpers/extensions";
 import { ABSOLUTE, STANDALONE, WIREMOCK_FIXTURE_DIR } from "../helpers/fixtures";
 
 /**
@@ -72,6 +73,9 @@ const spawnCall = (index = 0) => {
 /** The value of the JVM flag `-XX:<name>=…` of the `index`-th spawned JVM. */
 const flag = (index: number, name: string): string | undefined =>
   spawnCall(index).args.find((arg) => arg.startsWith(`-XX:${name}=`))?.split("=")[1];
+
+/** A container with the example extension JAR on its class path. */
+const withExtensions = (): WiremockContainer => new WiremockContainer().withExtension(UppercaseExtension);
 
 const tempDirs = (): string[] => readdirSync(tmpdir()).filter((name) => name.startsWith("wiremock-no-docker-"));
 
@@ -278,6 +282,36 @@ describe("--no-docker harness", () => {
       expect(childEnv).toMatchObject({ FOO: "bar", PATH: process.env.PATH });
     });
 
+    it("puts extension JARs on the class path like the image does – `-cp <jar>:/var/wiremock/extensions/*` and the JAR's Main-Class", async () => {
+      install();
+      await start(new WiremockContainer().withCommand(["--verbose"]).withExtension(UppercaseExtension));
+      const { args, home } = spawnCall();
+      const extensions = join(home, "../../var/wiremock/extensions");
+      expect(readFileSync(join(extensions, "example-extensions.jar"))).toEqual(readFileSync(EXAMPLE_JAR));
+      expect(args.slice(2, 5)).toEqual(["-cp", [JAR_PATH, join(extensions, "*")].join(delimiter), "wiremock.Run"]);
+      expect(args).not.toContain("-jar");
+      expect(args.slice(-3)).toEqual(["--verbose", "--extensions", CLASSES.uppercase]);
+    });
+
+    it("runs the Main-Class of a custom WireMock JAR with extensions, and WireMock 3's entry point if its manifest names none", async () => {
+      const dir = mkdtempSync(join(tmpdir(), "custom-jar-"));
+      writeFileSync(join(dir, "custom.jar"), zip({ "META-INF/MANIFEST.MF": "Manifest-Version: 1.0\nMain-Class: com.acme.WireMockMain\n" }));
+      writeFileSync(join(dir, "bare.jar"), zip({}));
+      install({ jar: join(dir, "custom.jar") });
+      await start(new WiremockContainer().withExtension(UppercaseExtension));
+      await start(new WiremockContainer().withExtension(UppercaseExtension)); // the manifest is read once
+      install({ jar: join(dir, "bare.jar") });
+      await start(new WiremockContainer().withExtension(UppercaseExtension));
+      expect([0, 1, 2].map((index) => spawnCall(index).args[4])).toEqual(["com.acme.WireMockMain", "com.acme.WireMockMain", "wiremock.Run"]);
+      rmSync(dir, { recursive: true, force: true });
+    });
+
+    it("keeps `-jar` when the extension directory holds no JAR", async () => {
+      install();
+      await start(new WiremockContainer().withCopyContentToContainer([{ content: "notes", target: "/var/wiremock/extensions/README.md" }]));
+      expect(spawnCall().args).toContain("-jar");
+    });
+
     it("warns on every start – image, JAR version, pid, URL and the CI/CD prohibition", async () => {
       install();
       const container = await start();
@@ -472,6 +506,18 @@ describe("--no-docker harness", () => {
       expect(flag(1, "SharedArchiveFile")).toBe(join(cacheDir, archive));
       expect(flag(1, "ArchiveClassesAtExit")).toBeUndefined();
       expect(jvms[1].kill).toHaveBeenCalledExactlyOnceWith("SIGKILL");
+    });
+
+    it("with extension JARs, never records an archive – it would not fit plain starts – but uses an existing one", async () => {
+      install({ cacheDir });
+      await (await start(withExtensions())).stop();
+      expect(spawnCall(0).args.some((arg) => /Archive/u.test(arg))).toBe(false);
+      expect(jvms[0].kill).toHaveBeenCalledExactlyOnceWith("SIGKILL");
+      expect(archives()).toEqual([]);
+
+      await (await start()).stop(); // a plain start records it
+      await (await start(withExtensions())).stop();
+      expect(flag(2, "SharedArchiveFile")).toBe(join(cacheDir, archives()[0]));
     });
 
     it("keys the archive by JAR and Java, so neither ever loads a foreign one", async () => {

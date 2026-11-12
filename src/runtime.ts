@@ -14,13 +14,19 @@ interface WiremockContentCopy {
   readonly target: string;
 }
 
+/**
+ * WireMock's extension directory in the official image: every `*.jar` directly in it is on the
+ * class path. A {@link WiremockRuntime} must put the JARs copied there on WireMock's class path.
+ */
+export const EXTENSIONS_DIR = "/var/wiremock/extensions";
+
 /** The fully configured container a {@link WiremockRuntime} is asked to start. */
 export interface WiremockStartRequest {
   /** Docker image reference, e.g. `wiremock/wiremock:latest`. */
   readonly image: string;
   /** Name set with `withName()`, if any. */
   readonly name?: string;
-  /** Arguments set with `withCommand()` – WireMock CLI flags. */
+  /** Arguments set with `withCommand()` – WireMock CLI flags – followed by those extensions need. */
   readonly command: readonly string[];
   /** Variables set with `withEnvironment()`. */
   readonly environment: Readonly<Record<string, string>>;

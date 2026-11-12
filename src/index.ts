@@ -7,12 +7,25 @@ import {
   Wait,
 } from "testcontainers";
 import {
+  contribution,
+  type ExtensionContribution,
+  type ExtensionInput,
+  type ExtensionJar,
+  mergeOptions,
+  optionName,
+  resolveJars,
+  verifyClassNames,
+  type WiremockExtensionJar,
+  type WiremockExtensionOptions,
+} from "./extensions";
+import {
   containerName,
   fail,
   inlineJson,
   isRecord,
   listFiles,
   resolveFile,
+  show,
   stubIds,
   stubIdsOf,
   within,
@@ -21,6 +34,20 @@ import {
 } from "./sources";
 import { getRuntime, type WiremockStartRequest } from "./runtime";
 
+export type {
+  ExtensionConstructor,
+  ExtensionInput,
+  WireMockExtension,
+  WiremockExtensionJar,
+  WiremockExtensionOptions,
+} from "./extensions";
+export {
+  detectCI,
+  installNoDockerRuntime,
+  isNoDockerRequested,
+  NO_DOCKER_ENV,
+  type NoDockerOptions,
+} from "./no-docker";
 export type {
   WiremockFileSource,
   WiremockMappingSource,
@@ -47,12 +74,29 @@ export class WiremockContainer extends GenericContainer {
   #origins = new Map<string, string>();
   /** Stub id → container path declaring it: WireMock refuses to start with duplicates. */
   #stubIds = new Map<string, string>();
+  /** Class names for `--extensions`, in registration order. */
+  #classNames = new Set<string>();
+  /** Name → configuration of each registered TypeScript extension. */
+  #extensions = new Map<string, string>();
+  /** Extension JARs by container path. */
+  #jars = new Map<string, ExtensionJar>();
+  /** WireMock options TypeScript extensions need. */
+  #extensionArgs: readonly string[] = [];
+  #extensionOptions: Required<WiremockExtensionOptions> = { scanning: true, verifyClassNames: true };
+  /** The command set with `withCommand()`; `start()` appends the extensions' arguments to it. */
+  #command: readonly string[] | undefined;
 
   /** @param image Docker image, default `wiremock/wiremock`. */
   constructor(image: string = "wiremock/wiremock") {
     super(image);
     this.withExposedPorts(8080);
     this.withWaitStrategy(Wait.forListeningPorts());
+  }
+
+  /** WireMock CLI arguments, e.g. `["--verbose"]`; extensions add theirs on `start()`. */
+  public override withCommand(command: string[]): this {
+    this.#command = command;
+    return super.withCommand(command);
   }
 
   /**
@@ -115,13 +159,129 @@ export class WiremockContainer extends GenericContainer {
     return this;
   }
 
-  /** Starts WireMock – in Docker, or locally once `./no-docker` is installed. */
+  /**
+   * Registers an extension: a fully qualified Java class name, or a {@link WireMockExtension} or its
+   * class. Class names share one `--extensions`, in registration order, without repeats.
+   * @example .withExtensionJar("./acme.jar").withExtension("com.acme.UppercaseTransformer")
+   * @throws If a class name, an extension or its JARs are invalid, or an option conflicts.
+   */
+  public withExtension(extension: ExtensionInput): this {
+    return this.#addExtensions("withExtension", [extension]);
+  }
+
+  /** {@link withExtension} for several extensions – all or nothing. */
+  public withExtensions(extensions: readonly ExtensionInput[]): this {
+    return this.#addExtensions("withExtensions", extensions);
+  }
+
+  /**
+   * Puts a JAR – or every `*.jar` of a directory – on WireMock's class path. Extensions listed in
+   * its `META-INF/services` load by themselves; others need {@link withExtension}.
+   * @example .withExtensionJar("./acme.jar").withExtensionJar({ package: "@acme/wiremock", file: "jars" })
+   * @throws If the source is missing, unreadable or not a JAR, or another JAR has the same name.
+   */
+  public withExtensionJar(jar: WiremockExtensionJar): this {
+    return this.#addJars("withExtensionJar", [jar]);
+  }
+
+  /** {@link withExtensionJar} for several JARs or directories – all or nothing. */
+  public withExtensionJars(jars: readonly WiremockExtensionJar[]): this {
+    return this.#addJars("withExtensionJars", jars);
+  }
+
+  /**
+   * Configures how extensions load; options not given keep their value.
+   * @throws For an unknown option or a non-boolean value.
+   */
+  public withExtensionOptions(options: WiremockExtensionOptions): this {
+    within("WiremockContainer.withExtensionOptions", () => {
+      const entries = Object.entries(isRecord(options) ? options : fail(`expected an options object, got ${show(options)}`));
+      for (const [key, value] of entries) {
+        if (!(key in this.#extensionOptions)) fail(`unknown option "${key}"; expected ${Object.keys(this.#extensionOptions).join(" or ")}`);
+        if (value !== undefined && typeof value !== "boolean") fail(`"${key}" must be a boolean, got ${show(value)}`);
+      }
+      this.#extensionOptions = { ...this.#extensionOptions, ...Object.fromEntries(entries.filter(([, value]) => value !== undefined)) };
+    });
+    return this;
+  }
+
+  /**
+   * Starts WireMock – in Docker, or locally once `./no-docker` is installed.
+   * @throws Before starting, for a class in no registered JAR or options conflicting with
+   * `withCommand()`; if WireMock fails, naming the extensions in use.
+   */
   public override async start(): Promise<StartedWiremockContainer> {
+    const extensionArgs = within("WiremockContainer.start", () => this.#extensionCommand());
+    // Derived from the builder's state alone, so repeated and concurrent starts agree.
+    this.createOpts.Cmd = extensionArgs.length > 0 ? [...(this.#command ?? []), ...extensionArgs] : this.#command?.slice();
     const runtime = getRuntime();
-    const startedContainer = runtime ? await runtime.start(this.#startRequest()) : await super.start();
-    return new StartedWiremockContainer(
-      startedContainer,
-      `http://${startedContainer.getHost()}:${startedContainer.getMappedPort(8080)}`,
+    try {
+      const startedContainer = runtime ? await runtime.start(this.#startRequest()) : await super.start();
+      return new StartedWiremockContainer(
+        startedContainer,
+        `http://${startedContainer.getHost()}:${startedContainer.getMappedPort(8080)}`,
+      );
+    } catch (error) {
+      throw this.#startFailure(error);
+    }
+  }
+
+  /** Registers extensions – all or nothing. */
+  #addExtensions(method: string, inputs: readonly unknown[]): this {
+    within(`WiremockContainer.${method}`, () => {
+      const contributions: ExtensionContribution[] = (Array.isArray(inputs) ? inputs : fail(`expected an array, got ${show(inputs)}`)).map(contribution);
+      const extensions = new Map(this.#extensions);
+      let args = this.#extensionArgs;
+      for (const { name, classNames, jars, options } of contributions) {
+        if (name === undefined) continue;
+        const configuration = JSON.stringify([classNames, jars.map(({ origin, target }) => [origin, target]), options]);
+        if ((extensions.get(name) ?? configuration) !== configuration) fail(`another extension named "${name}" is already registered; names must be unique`);
+        extensions.set(name, configuration);
+        args = within(`extension "${name}"`, () => mergeOptions(args, options, "another extension"));
+      }
+      this.#registerJars(contributions.flatMap(({ jars }) => jars));
+      [this.#extensions, this.#extensionArgs] = [extensions, args];
+      for (const name of contributions.flatMap(({ classNames }) => classNames)) this.#classNames.add(name);
+    });
+    return this;
+  }
+
+  #addJars(method: string, jars: readonly unknown[]): this {
+    within(`WiremockContainer.${method}`, () => this.#registerJars((Array.isArray(jars) ? jars : fail(`expected an array, got ${show(jars)}`)).flatMap(resolveJars)));
+    return this;
+  }
+
+  #registerJars(jars: readonly ExtensionJar[]): void {
+    const fresh = this.#claim(jars);
+    for (const jar of fresh) this.#jars.set(jar.target, jar);
+    this.withCopyFilesToContainer(fresh.map(({ origin, target }) => ({ source: origin, target })));
+  }
+
+  /**
+   * The arguments extensions add to the command: their options, `--disable-extensions-scanning`
+   * and one `--extensions` – WireMock crashes when an option is given twice.
+   */
+  #extensionCommand(): string[] {
+    const { scanning, verifyClassNames: verify } = this.#extensionOptions;
+    if (verify) verifyClassNames(this.#classNames, [...this.#jars.values()]);
+    const command = [...(this.#command ?? []), ...(this.environment.WIREMOCK_OPTIONS?.split(/\s+/u).filter(Boolean) ?? [])];
+    const options = mergeOptions(command, [...this.#extensionArgs, ...(scanning ? [] : ["--disable-extensions-scanning"])], "withCommand() or WIREMOCK_OPTIONS");
+    const args = options.slice(command.length);
+    if (this.#classNames.size === 0) return args;
+    const clash = command.find((arg) => optionName(arg) === "--extensions");
+    if (clash) fail(`"${clash}" is already set by withCommand() or WIREMOCK_OPTIONS; WireMock accepts it only once – register those classes with withExtensions() instead`);
+    return [...args, "--extensions", [...this.#classNames].join(",")];
+  }
+
+  /** Adds the extensions in use to a start-up failure: they are its usual cause. */
+  #startFailure(error: unknown): unknown {
+    if (this.#classNames.size + this.#jars.size === 0) return error;
+    const jars = [...this.#jars.keys()].map((target) => basename(target));
+    return new Error(
+      `${(error as Error).message}\nWireMock was started with extensions: ${[...this.#classNames].join(", ") || "none"}; JARs: ${jars.join(", ") || "none"}. ` +
+        "An extension stops WireMock if its class is missing (ClassNotFoundException), lacks a public no-argument constructor or targets a newer Java than the image's; " +
+        "WireMock's output names the cause (Docker: run with DEBUG=testcontainers:containers).",
+      { cause: error },
     );
   }
 

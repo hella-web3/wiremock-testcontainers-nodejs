@@ -7,7 +7,7 @@ Tooling: [Vitest](https://vitest.dev/), [oxlint](https://oxc.rs/docs/guide/usage
 
 | Command                        | What it does                                                        | Needs    |
 |--------------------------------|---------------------------------------------------------------------|----------|
-| `pnpm build`                   | ESM + CJS + declarations into `dist/`, checked by publint and attw  | –        |
+| `pnpm build`                   | One barrel per format (ESM, CJS, declarations) into `dist/`, checked by publint and attw | – |
 | `pnpm typecheck`               | `tsc --noEmit` over `src/` and `test/`                              | –        |
 | `pnpm lint`                    | `oxlint --deny-warnings`                                            | –        |
 | `pnpm test:unit`               | `test/unit/**` – 100 % of `src/`                                    | –        |
@@ -16,7 +16,9 @@ Tooling: [Vitest](https://vitest.dev/), [oxlint](https://oxc.rs/docs/guide/usage
 | `pnpm test`, `pnpm test:coverage` | Both suites; the latter enforces 95 % coverage                   | Docker   |
 | `pnpm check`                   | `build`, `typecheck`, `lint` and `test:coverage` in one go          | Docker   |
 | `pnpm examples:setup`          | Build, `npm link`, and install and link [`examples/`](./examples)   | –        |
+| `pnpm examples:unit`           | `examples:setup`, then typecheck and unit-test `examples/` (100 % coverage per file) | – |
 | `pnpm examples:e2e`            | `examples:setup`, then typecheck and test `examples/` (accepts `--no-docker`) | Docker |
+| `pnpm build:extensions`        | Pack the fixture extension JARs from their compiled classes (`--check`: verify only) | – |
 
 ## Without Docker
 
@@ -35,11 +37,10 @@ CI/CD. Treat a green run as a fast local signal, not E2E sign-off. To get a cont
 ## CI
 
 - `main.yml` – build, typecheck, lint, unit tests with coverage and E2E tests on Node 22 and 24,
-  plus the [`examples/`](./examples) project through `npm link`. Never with `--no-docker`.
+  plus [`examples/`](./examples) through `npm link`: unit tests, then E2E. Never `--no-docker`.
 - `size.yml` – fails a PR whose tarball exceeds `MAX_TARBALL_KB`. Only `dist/`, `README.md`,
-  `LICENSE` and `package.json` are published. npm packs the `.d.cts` files between each `.cjs`
-  and `.js` twin: a few hundred bytes more JSDoc can push the twins out of gzip's 32 KB window
-  and cost ~2 kB at once.
+  `LICENSE` and `package.json` are published. The `.cjs` and `.js` twins sit beyond gzip's 32 KB
+  window of each other, so each compresses in full – a byte saved in `src/` saves two.
 - Supply chain: frozen lockfile; install scripts allow-listed and `minimumReleaseAge: 1440` in
   `pnpm-workspace.yaml`; a non-blocking `pnpm audit --prod`; weekly Dependabot updates with a
   3-day cooldown.
@@ -58,6 +59,9 @@ CI/CD. Treat a green run as a fast local signal, not E2E sign-off. To get a cont
   and `GET /account/balance` → 500 with `X-Mock-Scenario: server-error` (`"priority": 1`).
 - `test/helpers/assertions.ts` – a `Schema<T>` per payload; the compiler requires every field to
   be asserted.
+- `test/__mocks__/extensions/<jar>/classes` – compiled WireMock extensions (Java 11 bytecode; no
+  Java source, no JDK), described in its README. After changing them, run `pnpm build:extensions`.
+  `fixtures.test.ts` fails on an out-of-date JAR or `examples/` copy, newer bytecode, or a `.java` file.
 - `test/helpers/container.ts` – reads the archive Testcontainers would upload, so registration
   tests need no Docker.
 - `test/unit/*.test.ts` stub only what talks to the outside: `fetch`, `spawn` (a fake JVM) or

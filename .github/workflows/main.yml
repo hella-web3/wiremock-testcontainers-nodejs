@@ -102,6 +102,12 @@ jobs:
         working-directory: examples
         run: npm run typecheck
 
+      # The example extensions and the guide's snippet checks, with coverage enforced at 100 %
+      # per file – no container needed.
+      - name: Unit-test the example extensions
+        working-directory: examples
+        run: npm run test:unit
+
       # Never --no-docker: refused in CI.
       - name: Run the end-user E2E flow
         working-directory: examples

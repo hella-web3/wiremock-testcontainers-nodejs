@@ -74,6 +74,48 @@ new WiremockContainer("wiremock/wiremock:3.13.0") // default: wiremock/wiremock
 Registrations are validated before any image is pulled: sources must exist, mappings must be
 WireMock stubs, and nothing may overwrite another registration or reuse a stub `id`.
 
+## Extensions
+
+Load [WireMock extensions](https://wiremock.org/docs/extending-wiremock/) from compiled JARs – no JDK needed:
+
+```typescript
+new WiremockContainer()
+  .withExtensionJar("./wiremock/acme.jar")        // onto WireMock's class path
+  .withExtension("com.acme.UppercaseTransformer") // --extensions com.acme.UppercaseTransformer
+  .withMapping("shout", { json: { request: { url: "/shout" }, response: { body: "hi", transformers: ["uppercase"] } } });
+```
+
+| Method                                                 | Registers                                                                 |
+|--------------------------------------------------------|---------------------------------------------------------------------------|
+| `withExtension(ext)`, `withExtensions([...])`          | A fully qualified class name, or a [TypeScript extension](#typescript-extensions) |
+| `withExtensionJar(jar)`, `withExtensionJars([...])`    | A JAR, or every `*.jar` of a directory – any source above; `{ file, name }` renames |
+| `withExtensionOptions({ scanning, verifyClassNames })` | `scanning: false` ignores JARs' `META-INF/services`; `verifyClassNames: false` skips the class check |
+
+- Class names share one `--extensions` flag, in registration order, without repeats.
+- Validated before start: JARs must be readable `*.jar`s; each class must be in a registered JAR
+  or WireMock itself (else: *did you mean …?*); `withCommand()` must not repeat `--extensions` or
+  an extension's option – WireMock crashes on repeats. Start-up failures name the extensions.
+- WireMock 3 runs on Java 11+, so JARs must target Java 11. Custom images must keep the official
+  `/var/wiremock/extensions` class path.
+
+### TypeScript extensions
+
+Bundle class names, JARs and options; register the class or an instance:
+
+```typescript
+import type { WireMockExtension } from "@hellaweb3/wiremock-testcontainers-nodejs";
+
+class Uppercase implements WireMockExtension {
+  getName() { return "uppercase"; } // identifies it; implement at least one method below
+  getClassNames() { return ["com.acme.UppercaseTransformer"]; }
+  getJars() { return [{ module: import.meta.url, file: "./acme.jar" }]; }
+  getOptions() { return ["--global-response-templating"]; } // "--flag" or "--option=value"
+}
+new WiremockContainer().withExtension(Uppercase);
+```
+
+The [guide for extension authors](./examples/extensions/README.md) has recipes, tests and publishing.
+
 ## Test utilities
 
 `start()` resolves to a `StartedWiremockContainer`:
@@ -102,8 +144,10 @@ const [request] = await wiremock.findRequests({
 expect(JSON.parse(request.body ?? "")).toMatchObject({ cardType: "virtual" });
 ```
 
-Also exported: `WaitUntilReadyOptions`, and the source types `WiremockMappingSource`,
-`WiremockStaticFile`, `WiremockFileSource`, `WiremockPath` and `WiremockStubMapping`.
+Also exported: `WaitUntilReadyOptions`, the source types `WiremockMappingSource`,
+`WiremockStaticFile`, `WiremockFileSource`, `WiremockPath` and `WiremockStubMapping`, and the
+extension types `WireMockExtension`, `ExtensionConstructor`, `ExtensionInput`,
+`WiremockExtensionJar` and `WiremockExtensionOptions`.
 
 **Tips:** start one container per suite and `reset()` between tests, which is far faster than
 restarting; raise the `beforeAll` timeout for the first image pull; assert with
@@ -112,8 +156,8 @@ restarting; raise the `beforeAll` timeout for the first image pull; assert with
 ## Without Docker (local development only)
 
 No container runtime? With Java 11+, `@hellaweb3/wiremock-testcontainers-nodejs/no-docker`
-serves every `WiremockContainer` from a local WireMock JVM. Tests stay unchanged: stubs, files
-and `withCommand()` flags apply as in the container.
+serves every `WiremockContainer` from a local WireMock JVM. Tests stay unchanged: stubs, files,
+extensions and `withCommand()` flags apply as in the container.
 
 > [!WARNING]
 > Never the default, never for CI/CD: it refuses to run when CI is detected (`CI`,
@@ -149,10 +193,10 @@ Set `WIREMOCK_NO_DOCKER=1` from a `--no-docker` script flag – see
 - **Speed:** a C1-only JIT and a class-data archive per JAR and Java in `cacheDir`. The first run
   records it (a slower `stop()`); later runs boot ~2× faster and stop instantly. `JAVA_OPTS`
   override the JVM flags.
-- **Differences:** WireMock listens on `127.0.0.1`; `exec()`, networks and copying after start
-  throw; leftover JVMs are killed on exit.
-- **Also exported:** `detectCI(env?)` – the CI variable set, if any; `isNoDockerRequested(env?)` –
-  whether `NO_DOCKER_ENV` (`WIREMOCK_NO_DOCKER`) is `1` or `true`.
+- **Differences:** WireMock listens on `127.0.0.1`; extension JARs join its class path;
+  `exec()`, networks and copying after start throw; leftover JVMs are killed on exit.
+- **Also exported** (from `…/no-docker` and the package root): `detectCI(env?)` – the CI variable
+  set, if any; `isNoDockerRequested(env?)` – whether `NO_DOCKER_ENV` (`WIREMOCK_NO_DOCKER`) is `1` or `true`.
 
 ## More
 

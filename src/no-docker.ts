@@ -1,28 +1,18 @@
 import { type ChildProcess, spawn } from "node:child_process";
 import { createHash, randomUUID } from "node:crypto";
 import { once } from "node:events";
-import { copyFileSync, cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, renameSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { copyFileSync, cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, renameSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { type AddressInfo, createServer } from "node:net";
 import { tmpdir } from "node:os";
-import { dirname, join, resolve as resolvePath } from "node:path";
+import { delimiter, dirname, join, resolve as resolvePath } from "node:path";
 import { Readable } from "node:stream";
 import { buffer } from "node:stream/consumers";
 import type { StartedTestContainer, StoppedTestContainer } from "testcontainers";
-import { getRuntime, setRuntime, type WiremockRuntime, type WiremockStartRequest } from "./runtime";
+import { mainClass } from "./jar";
+import { EXTENSIONS_DIR, getRuntime, setRuntime, type WiremockRuntime, type WiremockStartRequest } from "./runtime";
 
-/**
- * `--no-docker` harness – **local development only**: serves every `WiremockContainer` from a
- * local WireMock standalone JVM instead of Docker. Refuses to run in CI/CD and warns on every
- * start. Needs Java 11+ and a WireMock JAR (e.g. the `wiremock` npm package).
- * @example
- * ```typescript
- * // Vitest/Jest setup file, registered only when `WIREMOCK_NO_DOCKER=1`
- * import { installNoDockerRuntime } from "@hellaweb3/wiremock-testcontainers-nodejs/no-docker";
- * installNoDockerRuntime();
- * ```
- * @module
- */
+// `--no-docker` harness – local development only: WireMock as a local JVM instead of a container.
 
 /** Set to `1` by the `--no-docker` flag. */
 export const NO_DOCKER_ENV = "WIREMOCK_NO_DOCKER";
@@ -57,6 +47,8 @@ const POLL_INTERVAL = 25;
  * (the class-data ones on old JDKs) are ignored; `JAVA_OPTS` come later and win.
  */
 const FAST_START = ["-XX:+IgnoreUnrecognizedVMOptions", "-XX:TieredStopAtLevel=1"];
+/** WireMock 3's entry point, for a JAR whose manifest names none. */
+const WIREMOCK_MAIN = "wiremock.Run";
 /** HotSpot's exit code after a graceful SIGTERM shutdown (128 + 15). */
 const GRACEFUL_EXIT = 143;
 /** Abandoned class-data recordings (e.g. after Ctrl-C) older than this are removed. */
@@ -96,9 +88,12 @@ export function isNoDockerRequested(env: Environment = process.env): boolean {
 }
 
 /**
- * Serves every `WiremockContainer` started from now on from a local WireMock JVM: its mappings,
- * files and command are materialised into a temp directory, WireMock listens on a free port of
- * `127.0.0.1`. Container-only features (`exec`, networks, …) throw.
+ * **Local development only**: serves every `WiremockContainer` started from now on from a local
+ * WireMock JVM (Java 11+) on `127.0.0.1`, warning on each start. Container-only features throw.
+ * @example
+ * // setup file, registered only when WIREMOCK_NO_DOCKER=1
+ * import { installNoDockerRuntime } from "@hellaweb3/wiremock-testcontainers-nodejs/no-docker";
+ * installNoDockerRuntime();
  * @returns A function that uninstalls it.
  * @throws In CI/CD, or if no WireMock JAR is found.
  */
@@ -185,9 +180,16 @@ function classData(cacheDir: string | false, jar: string, java: string): ClassDa
 
 class NoDockerRuntime implements WiremockRuntime {
   readonly #config: RuntimeConfig;
+  #mainClass: string | undefined;
 
   constructor(config: RuntimeConfig) {
     this.#config = config;
+  }
+
+  /** The WireMock JAR's `Main-Class`, read once: extension JARs need `-cp … <main class>` instead of `-jar`. */
+  get mainClass(): string {
+    this.#mainClass ??= mainClass(readFileSync(this.#config.jar)) ?? WIREMOCK_MAIN;
+    return this.#mainClass;
   }
 
   async start(request: WiremockStartRequest): Promise<StartedTestContainer> {
@@ -196,7 +198,7 @@ class NoDockerRuntime implements WiremockRuntime {
       await materialize(request, root);
       const home = join(root, WIREMOCK_HOME);
       for (const dir of ["mappings", "__files"]) mkdirSync(join(home, dir), { recursive: true });
-      const container = new NoDockerContainer(request, this.#config, root, home, await freePort());
+      const container = new NoDockerContainer(request, this.#config, root, home, await freePort(), () => this.mainClass);
       await container.launch();
       this.#config.log(container.describe());
       return container;
@@ -269,29 +271,44 @@ class NoDockerContainer implements StartedTestContainer {
   readonly #home: string;
   readonly #port: number;
   readonly #id = `no-docker-${randomUUID()}`;
+  readonly #mainClass: () => string;
   #child: ChildProcess | undefined;
   #classData: ClassData | undefined;
   #spawnError: Error | undefined;
   #output = "";
 
-  constructor(request: WiremockStartRequest, config: RuntimeConfig, root: string, home: string, port: number) {
+  constructor(request: WiremockStartRequest, config: RuntimeConfig, root: string, home: string, port: number, main: () => string) {
     this.#request = request;
     this.#config = config;
     this.#root = root;
     this.#home = home;
     this.#port = port;
+    this.#mainClass = main;
+  }
+
+  /**
+   * How to run WireMock: `-jar`, or – with extension JARs – the image's own class path,
+   * `<jar>:/var/wiremock/extensions/*`.
+   */
+  #entryPoint(): string[] {
+    const extensions = join(this.#root, EXTENSIONS_DIR);
+    const jars = existsSync(extensions) && readdirSync(extensions).some((file) => /\.jar$/iu.test(file));
+    return jars ? ["-cp", [this.#config.jar, join(extensions, "*")].join(delimiter), this.#mainClass()] : ["-jar", this.#config.jar];
   }
 
   /** Starts the JVM and resolves once WireMock reports healthy; kills it on failure. */
   async launch(): Promise<void> {
     const { environment, command } = this.#request;
-    const data = (this.#classData = classData(this.#config.cacheDir, this.#config.jar, this.#config.java));
+    const entryPoint = this.#entryPoint();
+    const cached = classData(this.#config.cacheDir, this.#config.jar, this.#config.java);
+    // An archive records the class path: one with extension JARs would not fit plain starts. It is
+    // recorded without them only, and serves both – the JVM accepts an appended class path.
+    const data = (this.#classData = cached?.recording && entryPoint[0] === "-cp" ? undefined : cached);
     const args = [
       ...FAST_START,
       ...(data ? [data.recording ? `-XX:ArchiveClassesAtExit=${data.recording}` : `-XX:SharedArchiveFile=${data.path}`] : []),
       ...split(environment.JAVA_OPTS),
-      "-jar",
-      this.#config.jar,
+      ...entryPoint,
       "--port",
       String(this.#port),
       "--bind-address",

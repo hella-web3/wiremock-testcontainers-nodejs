@@ -1,12 +1,16 @@
-import { existsSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
+import { jarEntries, jarEntry } from "../../src/jar";
+import { listFiles } from "../../src/sources";
 import {
   expectAccountBalanceResponse,
   expectCardsResponse,
   expectErrorResponse,
   expectMapping,
 } from "../helpers/assertions";
+import { CLASSES, EXAMPLE_JAR, EXTENSION_FIXTURE_DIR, POWERED_BY_JAR } from "../helpers/extensions";
 import {
   type AccountBalanceResponse,
   type CardsResponse,
@@ -142,5 +146,61 @@ describe("WireMock fixtures: test/__mocks__/wiremock", () => {
         message: "Internal server error",
       });
     });
+  });
+});
+
+/** The compiled classes and resources a fixture JAR is packed from, as `/`-separated paths. */
+const classFiles = (jar: string): string[] => listFiles(join(EXTENSION_FIXTURE_DIR, jar.replace(/\.jar$/u, ""), "classes")).toSorted();
+
+/** Files below `dir` whose name ends in `suffix` – the project's own: `node_modules` is never entered. */
+const filesEndingIn = (dir: string, suffix: string): string[] =>
+  readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const path = join(dir, entry.name);
+    if (entry.isDirectory()) return entry.name === "node_modules" ? [] : filesEndingIn(path, suffix);
+    return entry.name.endsWith(suffix) ? [path] : [];
+  });
+
+/**
+ * The committed extension JARs against the compiled classes they are packed from
+ * (`pnpm build:extensions` repacks them with Node.js alone): a class missing from its JAR, a JAR
+ * or `examples/` copy out of date, or bytecode newer than WireMock 3's Java 11 fails here.
+ */
+describe("WireMock extension fixtures: test/__mocks__/extensions", () => {
+  const jars = readdirSync(EXTENSION_FIXTURE_DIR).filter((file) => file.endsWith(".jar"));
+
+  it("has one JAR per classes directory", () => {
+    expect(jars).toEqual(["example-extensions.jar", "powered-by-extension.jar"]);
+  });
+
+  it.each(jars)("%s holds a manifest and exactly its classes directory, byte for byte", (jar) => {
+    const bytes = readFileSync(join(EXTENSION_FIXTURE_DIR, jar));
+    const classes = classFiles(jar);
+    expect(jarEntries(bytes).map(({ name }) => name)).toEqual(["META-INF/MANIFEST.MF", ...classes]);
+    const packed = Object.fromEntries(classes.map((file) => [file, jarEntry(bytes, file)]));
+    const compiled = Object.fromEntries(classes.map((file) => [file, readFileSync(join(EXTENSION_FIXTURE_DIR, jar.replace(/\.jar$/u, ""), "classes", file))]));
+    expect(packed).toEqual(compiled);
+  });
+
+  it.each(filesEndingIn(EXTENSION_FIXTURE_DIR, ".class"))("%s is Java 11 bytecode – WireMock 3 runs on Java 11+", (file) => {
+    const bytes = readFileSync(file);
+    expect(bytes.readUInt32BE(0)).toBe(0xca_fe_ba_be);
+    expect(bytes.readUInt16BE(6)).toBe(55); // class file major version of Java 11
+  });
+
+  it("loads PoweredByTransformer by scanning, and the example extensions only by class name", () => {
+    const service = "META-INF/services/com.github.tomakehurst.wiremock.extension.Extension";
+    expect(jarEntry(readFileSync(POWERED_BY_JAR), service)?.toString().trim()).toBe(CLASSES.poweredBy);
+    expect(jarEntry(readFileSync(EXAMPLE_JAR), service)).toBeUndefined();
+  });
+
+  it("`pnpm build:extensions --check`: the JARs and their examples/ copies are up to date", () => {
+    const { status, stdout, stderr } = spawnSync(process.execPath, ["scripts/build-extensions.mjs", "--check"], { encoding: "utf8" });
+    expect(stderr).toBe("");
+    expect(stdout).toContain("extension JARs are up to date");
+    expect(status).toBe(0);
+  });
+
+  it("holds no Java source – extensions ship compiled, so the project needs no JDK", () => {
+    expect(["src", "test", "scripts", "examples"].flatMap((dir) => filesEndingIn(dir, ".java"))).toEqual([]);
   });
 });

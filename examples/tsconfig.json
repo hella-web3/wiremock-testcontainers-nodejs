@@ -17,5 +17,5 @@
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true
   },
-  "include": ["e2e", "vitest.config.ts"]
+  "include": ["e2e", "extensions", "vitest.config.ts"]
 }

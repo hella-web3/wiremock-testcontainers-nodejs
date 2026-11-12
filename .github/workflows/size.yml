@@ -6,8 +6,9 @@ on:
 
 # Fails if the published tarball grows beyond the budget, so bloat
 # (accidentally shipped tests, configs, sourcemaps, bundled deps) is caught in review.
+# 27 kB with WireMock extension support – one minified barrel per format – plus ~3 kB headroom.
 env:
-  MAX_TARBALL_KB: 20
+  MAX_TARBALL_KB: 30
 
 jobs:
   size:

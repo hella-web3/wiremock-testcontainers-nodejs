@@ -1,6 +1,7 @@
 import { readFileSync, rmSync } from "node:fs";
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { type StartedWiremockContainer, WiremockContainer } from "../src";
+import { CLASSES, EXAMPLE_JAR, EXTENSION_FIXTURE_DIR, GlobalResponseTemplating, POWERED_BY_JAR, UppercaseExtension } from "./helpers/extensions";
 import { CARDS_BODY, FILES_DIR, listMappingFiles, STANDALONE as S, SCRATCH, SCRATCH_DIR, writeScratchProject } from "./helpers/fixtures";
 
 /**
@@ -168,4 +169,102 @@ describe("E2E: one container fed by withMappings(dir), withMapping(path | module
     const { meta } = await (await fetch(container.getMappingUrl())).json();
     expect(meta.total).toBe(listMappingFiles().length + 5); // exactly the registered stubs, nothing leaked
   });
+});
+
+/** Stubs using the extensions: each is observable only if WireMock loaded its extension. */
+const EXTENSION_STUBS = {
+  mappings: [
+    {
+      request: { method: "GET", url: "/shout" },
+      response: { status: 200, body: "hello, wiremock", transformers: ["uppercase"], transformerParameters: { suffix: "!" } },
+    },
+    {
+      request: { method: "POST", url: "/upload", customMatcher: { name: "body-too-long", parameters: { maxLength: 16 } } },
+      response: { status: 413, body: "too long" },
+    },
+    { priority: 10, request: { method: "POST", url: "/upload" }, response: { status: 201, body: "stored" } },
+    { request: { method: "GET", urlPath: "/echo" }, response: { status: 200, body: "{{request.query.word}}" } },
+  ],
+};
+
+describe("E2E: WireMock extensions from JARs, class names and TypeScript extensions", () => {
+  let container: StartedWiremockContainer;
+
+  beforeAll(async () => {
+    container = await new WiremockContainer()
+      .withExtensionJars([EXTENSION_FIXTURE_DIR]) // a directory: both JARs, incl. the scanned PoweredByTransformer
+      .withExtension(UppercaseExtension) // a TypeScript extension: class name + its (same) JAR
+      .withExtensions([CLASSES.stubCount, CLASSES.bodyLength, new GlobalResponseTemplating()])
+      .withMapping("extensions", { json: EXTENSION_STUBS })
+      .start();
+    await container.waitUntilReady();
+  }, 120_000);
+
+  afterEach(async () => {
+    await container.reset();
+  });
+
+  afterAll(async () => {
+    await container?.stop();
+  });
+
+  it("response transformer (UppercaseTransformer): upper-cases the body, appends its parameter, adds a header", async () => {
+    const response = await fetch(container.getUrl("/shout"));
+    expect(response.status).toBe(200);
+    expect(response.headers.get("X-Transformed-By")).toBe("uppercase");
+    expect(await response.text()).toBe("HELLO, WIREMOCK!");
+  });
+
+  it("admin API extension (StubCountAdminApi): serves GET /__admin/stub-count", async () => {
+    const response = await fetch(`${container.getAdminUrl()}/stub-count`);
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ count: EXTENSION_STUBS.mappings.length });
+  });
+
+  it("custom request matcher (BodyLengthMatcher): routes bodies longer than maxLength to the 413 stub", async () => {
+    const upload = (body: string) => fetch(container.getUrl("/upload"), { method: "POST", body });
+    expect((await upload("short")).status).toBe(201);
+    expect((await upload("a body that is far longer than sixteen characters")).status).toBe(413);
+    expect(await container.countRequests({ method: "POST", url: "/upload" })).toBe(2);
+  });
+
+  it("extension scanning (PoweredByTransformer): loaded from META-INF/services without --extensions", async () => {
+    const responses = await Promise.all(["/shout", "/echo?word=hi"].map((path) => fetch(container.getUrl(path))));
+    expect(responses.map((response) => response.headers.get("X-Powered-By"))).toEqual(["wiremock-extensions", "wiremock-extensions"]);
+  });
+
+  it("configuration-only TypeScript extension (GlobalResponseTemplating): every response is templated", async () => {
+    expect(await (await fetch(container.getUrl("/echo?word=templated"))).text()).toBe("templated");
+  });
+});
+
+describe("E2E: extension options and start-up failures", () => {
+  const ping = { json: { request: { method: "GET", url: "/ping" }, response: { status: 200, body: "pong" } } };
+
+  it("scanning: false – a JAR's META-INF/services extensions are not loaded", async () => {
+    const container = await new WiremockContainer()
+      .withExtensionJar(POWERED_BY_JAR)
+      .withExtensionOptions({ scanning: false })
+      .withMapping("ping", ping)
+      .start();
+    try {
+      await container.waitUntilReady();
+      const response = await fetch(container.getUrl("/ping"));
+      expect(await response.text()).toBe("pong");
+      expect(response.headers.get("X-Powered-By")).toBeNull();
+    } finally {
+      await container.stop();
+    }
+  }, 120_000);
+
+  it("a class WireMock cannot load fails start() with the extensions in use", async () => {
+    const missing = "com.hellaweb3.wiremock.extensions.Missing";
+    const start = new WiremockContainer()
+      .withExtensionJar(EXAMPLE_JAR)
+      .withExtension(missing)
+      .withExtensionOptions({ verifyClassNames: false }) // skip the check that would catch it before start-up
+      .withStartupTimeout(20_000) // Docker: the crashed container never binds its port
+      .start();
+    await expect(start).rejects.toThrow(`WireMock was started with extensions: ${missing}; JARs: example-extensions.jar.`);
+  }, 120_000);
 });
