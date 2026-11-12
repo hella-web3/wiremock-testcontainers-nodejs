@@ -11,6 +11,7 @@ jobs:
     permissions:
       contents: read
       id-token: write
+      packages: write # Required to publish to GitHub Packages
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -39,3 +40,15 @@ jobs:
 
       - name: Publish to NPM
         run: pnpm publish --no-git-checks --access public --provenance
+
+      # Mirror to GitHub Packages
+      - name: Publish to GitHub Packages
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          npm pkg set name="@${GITHUB_REPOSITORY_OWNER}/${GITHUB_REPOSITORY#*/}"
+          cat > "$RUNNER_TEMP/.npmrc.gpr" <<EOF
+          //npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
+          EOF
+          NPM_CONFIG_USERCONFIG="$RUNNER_TEMP/.npmrc.gpr" \
+            pnpm publish --no-git-checks --registry https://npm.pkg.github.com

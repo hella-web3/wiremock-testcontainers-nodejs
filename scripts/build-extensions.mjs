@@ -3,8 +3,8 @@
  * `pnpm build:extensions [--check]` – packs the compiled WireMock extensions the tests and
  * `examples/` use into JARs, with Node.js alone: no JDK, no Java source.
  *
- *   test/__mocks__/extensions/<name>/classes/**   compiled classes (Java 11) and resources (META-INF/services)
- *   test/__mocks__/extensions/<name>.jar          the JAR, also copied to examples/__mocks__/extensions/
+ *   test/__mocks__/extensions/<name>/classes/** compiled classes (Java 11) and resources (META-INF/services)
+ *   test/__mocks__/extensions/<name>.jar the JAR, also copied to examples/__mocks__/extensions/
  *
  * Reproducible: entries are stored (uncompressed – deflate output varies between zlib builds),
  * sorted, with a fixed timestamp and a fixed manifest, so the same classes always give the same

@@ -157,7 +157,7 @@ interface ClassData {
 /**
  * The AppCDS archive for this JAR and Java. If none exists yet, this JVM records one at its
  * (graceful) exit into a unique temp file that is renamed into place only when complete, so
- * parallel test workers never read a partial archive. Caching is best effort: any failure just
+ * parallel test workers never read a partial archive. Caching is the best effort: any failure just
  * means a slower start.
  */
 function classData(cacheDir: string | false, jar: string, java: string): ClassData | undefined {
@@ -235,7 +235,7 @@ function freePort(): Promise<number> {
   });
 }
 
-/** Health probe: `/__admin/health`, or the mappings endpoint on WireMock < 3.1. Never throws. */
+/** Health probe: `/__admin/health`, or the mapping endpoint on WireMock < 3.1. Never throws. */
 async function isHealthy(url: string): Promise<boolean> {
   try {
     const health = await fetch(`${url}/__admin/health`);
@@ -301,8 +301,8 @@ class NoDockerContainer implements StartedTestContainer {
     const { environment, command } = this.#request;
     const entryPoint = this.#entryPoint();
     const cached = classData(this.#config.cacheDir, this.#config.jar, this.#config.java);
-    // An archive records the class path: one with extension JARs would not fit plain starts. It is
-    // recorded without them only, and serves both – the JVM accepts an appended class path.
+    // Archive records class path: one with extension JARs would not fit plain starts. It is
+    // recorded without them only and serves both – the JVM accepts an appended class path.
     const data = (this.#classData = cached?.recording && entryPoint[0] === "-cp" ? undefined : cached);
     const args = [
       ...FAST_START,
@@ -423,7 +423,7 @@ class NoDockerContainer implements StartedTestContainer {
     };
   }
 
-  /** Restarts the JVM with the same files and port – WireMock's in-memory state is lost, as with a container restart. */
+  /** Restarts the JVM with the same files, and port – WireMock's in-memory state is lost, as with a container restart. */
   async restart(): Promise<void> {
     await this.#terminate();
     await this.launch();

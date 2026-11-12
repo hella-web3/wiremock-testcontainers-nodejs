@@ -144,8 +144,8 @@ export class WiremockContainer extends GenericContainer {
   }
 
   /**
-   * Registers response bodies at `__files/<name>` (default: the base name). All or nothing.
-   * @throws If a source or name is invalid or a file would overwrite an earlier registration.
+   * Registers response bodies at `__files/<name>` (default: base name). All or nothing.
+   * @throws If a source or name is invalid, or a file would overwrite an earlier registration.
    */
   public withFiles(...files: WiremockStaticFile[]): this {
     within("WiremockContainer.withFiles", () => {
@@ -207,7 +207,7 @@ export class WiremockContainer extends GenericContainer {
 
   /**
    * Starts WireMock – in Docker, or locally once `./no-docker` is installed.
-   * @throws Before starting, for a class in no registered JAR or options conflicting with
+   * @throws Before starting, for a class with no registered JAR or options conflicting with
    * `withCommand()`; if WireMock fails, naming the extensions in use.
    */
   public override async start(): Promise<StartedWiremockContainer> {
@@ -258,7 +258,7 @@ export class WiremockContainer extends GenericContainer {
   }
 
   /**
-   * The arguments extensions add to the command: their options, `--disable-extensions-scanning`
+   * The argument extensions add to the command: their options, `--disable-extensions-scanning`
    * and one `--extensions` – WireMock crashes when an option is given twice.
    */
   #extensionCommand(): string[] {
@@ -405,7 +405,7 @@ export class StartedWiremockContainer extends AbstractStartedContainer {
     try {
       const health = await fetch(`${this.getAdminUrl()}/health`);
       if (health.status !== 404) return health.ok;
-      // WireMock < 3.1.0 has no /__admin/health – the mappings endpoint serves as the probe.
+      // WireMock < 3.1.0 has no /__admin/health – the mapping endpoint serves as the probe.
       return (await fetch(this.getMappingUrl())).ok;
     } catch {
       return false;

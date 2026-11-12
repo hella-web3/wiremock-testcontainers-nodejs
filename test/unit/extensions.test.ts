@@ -131,7 +131,7 @@ describe("WiremockContainer.withExtension(className) / withExtensions([...]) →
     "null": [(c) => c.withExtension(null as never), "unsupported extension null"],
     "an object without getName()": [(c) => c.withExtension({ name: "x" } as never), 'unsupported extension {"name":"x"}'],
     "a non-array for withExtensions()": [(c) => c.withExtensions(CLASSES.uppercase as never), `WiremockContainer.withExtensions: expected an array, got "${CLASSES.uppercase}"`],
-    "a batch with one invalid class name – all or nothing": [(c) => c.withExtensions([CLASSES.stubCount, "nope"]), '"nope" is not a fully qualified Java class name'],
+    "a batch with one invalid class name - all or nothing": [(c) => c.withExtensions([CLASSES.stubCount, "nope"]), '"nope" is not a fully qualified Java class name'],
   });
 });
 
@@ -201,7 +201,7 @@ describe("WiremockContainer.withExtensionJar(source) / withExtensionJars([...]) 
     "an https: URL": [(c) => c.withExtensionJar(new URL("https://example.com/a.jar")), '"source" must be a path or a file: URL'],
     "a package that is not installed": [(c) => c.withExtensionJar({ package: "@acme/missing", file: "a.jar" }), 'package "@acme/missing" is not installed'],
     "another JAR with the same name": [(c) => c.withExtensionJar(JARS.impostor), `"${extensionsPath("example-extensions.jar")}" is already registered from ${ABSOLUTE_JARS.example}; registering ${JARS.impostor} would overwrite it`],
-    "a batch with one missing JAR – all or nothing": [(c) => c.withExtensionJars([POWERED_BY_JAR, "./nope.jar"]), "does not exist"],
+    "a batch with one missing JAR - all or nothing": [(c) => c.withExtensionJars([POWERED_BY_JAR, "./nope.jar"]), "does not exist"],
     "a non-array for withExtensionJars()": [(c) => c.withExtensionJars(EXAMPLE_JAR as never), "WiremockContainer.withExtensionJars: expected an array"],
   });
 });
