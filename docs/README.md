@@ -139,7 +139,7 @@ npm version premajor --preid next --no-git-tag-version  # 0.4.1 → 1.0.0-next.0
 them – inlining every snippet and pinning source links to the release tag, `v0.4.1`, since `main`
 moves on – and adds the version to the version menu. Releasing the major (`pnpm version major`)
 then makes its docs the default. A test fails when only one of the two steps was done, naming the
-missing command. The whole procedure: [release.md → Major releases](/release.md#major-releases).
+missing command. The whole procedure: [release.md → Major releases](../release.md#major-releases).
 
 `pnpm docs:version:cut 0.x --ref v0.4.1` names label and tag explicitly – required while
 `package.json` is a pre-release. `docusaurus.config.ts` derives the version settings from
