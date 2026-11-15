@@ -1,6 +1,12 @@
+/**
+ * A JAR-only extension, loaded by WireMock's extension scanning.
+ *
+ * @see https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/extensions/authoring-extensions
+ */
 import type { WireMockExtension, WiremockExtensionJar } from "@hellaweb3/wiremock-testcontainers-nodejs";
 import { JARS } from "./jars";
 
+// #region class
 /**
  * A JAR-only extension: `PoweredByTransformer` is declared in its JAR's `META-INF/services`, so
  * WireMock loads it by scanning – no class name needed. It adds `X-Powered-By:
@@ -21,3 +27,4 @@ export class PoweredByTransformer implements WireMockExtension {
     return [JARS.poweredBy];
   }
 }
+// #endregion class

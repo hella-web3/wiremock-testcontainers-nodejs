@@ -1,0 +1,16 @@
+{
+  // TypeDoc reads the library's source – ../src – with the TypeScript version of this project.
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2023", "DOM"],
+    "strict": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "types": ["node"]
+  },
+  "files": [
+    "../src/index.ts"
+  ]
+}

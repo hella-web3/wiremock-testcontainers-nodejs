@@ -1,0 +1,56 @@
+---
+title: Configuring the container
+description: Pin the WireMock image, pass WireMock options and use any Testcontainers builder method.
+---
+
+# Configuring the container
+
+## Pin the image {/* #the-image */}
+
+`new WiremockContainer(image?)` defaults to `wiremock/wiremock:latest`. Pin a tag:
+
+```ts file=container/container.ts#image
+```
+
+Custom images must keep the official layout: `/home/wiremock/mappings`, `/home/wiremock/__files`,
+`/var/wiremock/extensions`, port 8080.
+
+## Pass WireMock options {/* #wiremock-options */}
+
+`withCommand(args)` takes WireMock's
+[command-line options](https://wiremock.org/docs/standalone/java-jar/#command-line-options), one
+per entry. Any `GenericContainer` method works too:
+
+```ts file=container/container.ts#with-command
+```
+
+```ts file=container/container.e2e.test.ts#templating
+```
+
+## Pass options through the environment {/* #through-wiremock-options */}
+
+The image also reads `WIREMOCK_OPTIONS`:
+
+```ts file=container/container.ts#wiremock-options
+```
+
+## Use Testcontainers builder methods
+
+| Method | Use |
+|--------|-----|
+| `withEnvironment({ JAVA_OPTS })` | JVM options, e.g. a heap limit |
+| `withStartupTimeout(ms)` | Wait longer for the port |
+| `withLabels()` | Find the container in `docker ps` – prefer it to `withName()`, which clashes between parallel test files |
+| `withNetwork()`, `withNetworkAliases()` | Reach WireMock from other containers |
+| `withCopyFilesToContainer()` | Copy files the library does not manage, e.g. [an extension JAR](../extensions/java-extensions.mdx#extension-options) |
+
+All of them: [Testcontainers' docs](https://node.testcontainers.org/features/containers/).
+
+## Avoid conflicting options {/* #conflicting-options */}
+
+WireMock refuses options given twice, so `start()` rejects – before starting anything – an
+option that extensions set with a different value, and `--extensions` (use
+[`withExtension()`](../extensions/java-extensions.mdx)):
+
+```ts file=container/container.test.ts#conflicts
+```

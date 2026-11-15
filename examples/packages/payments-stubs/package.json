@@ -1,0 +1,8 @@
+{
+  "name": "@examples/payments-stubs",
+  "version": "1.0.0",
+  "private": true,
+  "description": "WireMock stubs shared as an npm package – registered with { package, file } sources.",
+  "license": "MIT",
+  "files": ["mappings", "__files"]
+}

@@ -14,7 +14,10 @@ import { EXTENSIONS_DIR, getRuntime, setRuntime, type WiremockRuntime, type Wire
 
 // `--no-docker` harness – local development only: WireMock as a local JVM instead of a container.
 
-/** Set to `1` by the `--no-docker` flag. */
+/**
+ * The environment variable that asks for the no-Docker runtime: `WIREMOCK_NO_DOCKER`, set to `1` by the `--no-docker` flag.
+ * @see {@link https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/guides/running-without-docker#detecting-ci-and-the-request | Running without Docker}
+ */
 export const NO_DOCKER_ENV = "WIREMOCK_NO_DOCKER";
 
 /** Set by CI/CD systems; any of them forbids `--no-docker`. */
@@ -32,6 +35,10 @@ const CI_VARIABLES = [
   "CODEBUILD_BUILD_ID",
 ] as const;
 
+/**
+ * Environment variables, like `process.env`.
+ * @inline
+ */
 type Environment = Readonly<Record<string, string | undefined>>;
 
 /** Where WireMock's Docker image keeps `mappings/` and `__files/`; mirrored below a temp dir. */
@@ -54,7 +61,10 @@ const GRACEFUL_EXIT = 143;
 /** Abandoned class-data recordings (e.g. after Ctrl-C) older than this are removed. */
 const STALE_RECORDING = 60 * 60 * 1000;
 
-/** Options for {@link installNoDockerRuntime}. */
+/**
+ * Options for {@link installNoDockerRuntime}.
+ * @see {@link https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/guides/running-without-docker#options | Running without Docker}
+ */
 export interface NoDockerOptions {
   /** WireMock standalone JAR. Default: `$WIREMOCK_JAR`, else the `wiremock` npm package's. */
   readonly jar?: string;
@@ -73,7 +83,10 @@ export interface NoDockerOptions {
   readonly env?: Environment;
 }
 
-/** The CI/CD variable set in `env`, if any. */
+/**
+ * The CI/CD variable set in `env`, if any – `CI`, `GITHUB_ACTIONS`, `GITLAB_CI`, `JENKINS_URL`, …;
+ * values `""`, `"0"` and `"false"` do not count.
+ */
 export function detectCI(env: Environment = process.env): string | undefined {
   return CI_VARIABLES.find((name) => {
     const value = env[name]?.trim().toLowerCase();
@@ -81,7 +94,12 @@ export function detectCI(env: Environment = process.env): string | undefined {
   });
 }
 
-/** Whether {@link NO_DOCKER_ENV} is `1` or `true`. */
+/**
+ * Whether {@link NO_DOCKER_ENV} is `1` or `true`.
+ * @example
+ * const noDocker = isNoDockerRequested(); // WIREMOCK_NO_DOCKER is "1" or "true"
+ * @see {@link https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/guides/running-without-docker#detecting-ci-and-the-request | Running without Docker}
+ */
 export function isNoDockerRequested(env: Environment = process.env): boolean {
   const value = env[NO_DOCKER_ENV]?.trim().toLowerCase();
   return value === "1" || value === "true";
@@ -91,11 +109,10 @@ export function isNoDockerRequested(env: Environment = process.env): boolean {
  * **Local development only**: serves every `WiremockContainer` started from now on from a local
  * WireMock JVM (Java 11+) on `127.0.0.1`, warning on each start. Container-only features throw.
  * @example
- * // setup file, registered only when WIREMOCK_NO_DOCKER=1
- * import { installNoDockerRuntime } from "@hellaweb3/wiremock-testcontainers-nodejs/no-docker";
- * installNoDockerRuntime();
+ * installNoDockerRuntime(NO_DOCKER_OPTIONS);
  * @returns A function that uninstalls it.
  * @throws In CI/CD, or if no WireMock JAR is found.
+ * @see {@link https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/guides/running-without-docker#set-up | Running without Docker}
  */
 export function installNoDockerRuntime(options: NoDockerOptions = {}): () => void {
   const env = options.env ?? process.env;

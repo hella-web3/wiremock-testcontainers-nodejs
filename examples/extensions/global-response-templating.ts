@@ -1,3 +1,8 @@
+/**
+ * A configuration-only, configurable extension: WireMock options, no Java.
+ *
+ * @see https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/extensions/authoring-extensions
+ */
 import type { WireMockExtension } from "@hellaweb3/wiremock-testcontainers-nodejs";
 
 /** Options of {@link GlobalResponseTemplating}. */
@@ -6,6 +11,7 @@ export interface GlobalResponseTemplatingOptions {
   readonly maxCacheEntries?: number;
 }
 
+// #region class
 /**
  * A configuration-only extension: no Java, just the WireMock options that switch its built-in
  * Handlebars templating on for every response. Register the class for the defaults, or an
@@ -37,3 +43,4 @@ export class GlobalResponseTemplating implements WireMockExtension {
     ];
   }
 }
+// #endregion class

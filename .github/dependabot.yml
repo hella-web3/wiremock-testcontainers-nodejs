@@ -11,6 +11,35 @@ updates:
         dependency-type: development
     # testcontainers is the only runtime dependency; review its bumps individually.
 
+  # The examples and the docs are separate npm projects with their own lockfiles.
+  - package-ecosystem: npm
+    directory: /examples
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 3
+    groups:
+      examples:
+        patterns: ['*']
+
+  - package-ecosystem: npm
+    directory: /docs
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 3
+    groups:
+      docusaurus:
+        patterns: ['@docusaurus/*']
+      typedoc:
+        patterns: ['typedoc*']
+      docs-tooling:
+        patterns: ['*']
+    ignore:
+      # TypeDoc 0.28 supports TypeScript up to 6.0; the library itself is on TypeScript 7.
+      - dependency-name: typescript
+        update-types: ['version-update:semver-major']
+
   - package-ecosystem: github-actions
     directory: /
     schedule:

@@ -1,0 +1,66 @@
+---
+title: TypeScript extensions
+description: Bundle a WireMock extension's class names, JARs and options in one object, and register it as a class, an instance or an object literal.
+---
+
+# TypeScript extensions
+
+Register one object instead of JAR paths, class names and options – with typed helpers for the
+stubs that use it. It only configures the container; nothing runs in Node.js.
+
+## Implement the contract {/* #the-contract */}
+
+`WireMockExtension`: `getName()` plus at least one other member.
+
+| Member | Required | WireMock gets |
+|--------|----------|---------------|
+| `getName()` | Yes | Nothing – it identifies the extension; the same name twice must be configured alike |
+| `getClassNames()` | One of these | Class names, merged into one `--extensions` |
+| `getJars()` | ″ | JARs or directories – any [file source](../guides/file-sources.mdx) |
+| `getOptions()` | ″ | Options, one per entry: `"--flag"` or `"--option=value"` |
+
+The smallest extension:
+
+```ts file=extensions/java-extensions.e2e.test.ts#object-literal
+```
+
+Classes: [authoring extensions](./authoring-extensions.mdx).
+
+## Register extensions {/* #registering-extensions */}
+
+`withExtension()` takes an `ExtensionInput`: a class name, an extension object, or an
+`ExtensionConstructor` – a class with a no-argument constructor, instantiated for you.
+`withExtensions()` takes several, all or nothing.
+
+```ts file=extensions/registry.ts#constructors
+```
+
+```ts file=extensions/registry.ts#inputs
+```
+
+```ts file=extensions/extensions.e2e.test.ts#register
+```
+
+JARs are validated on registration, class names on `start()`.
+
+## Use typed stub helpers {/* #typed-stub-helpers */}
+
+A response transformer:
+
+```ts file=extensions/extensions.e2e.test.ts#stub-helper
+```
+
+A request matcher:
+
+```ts file=extensions/extensions.e2e.test.ts#matcher-helper
+```
+
+Assert with the extension's constants:
+
+```ts file=extensions/extensions.e2e.test.ts#assert
+```
+
+Call an admin route through its client:
+
+```ts file=extensions/extensions.e2e.test.ts#admin-client
+```

@@ -3,30 +3,74 @@ import { createRequire } from "node:module";
 import { dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
-/** A path (relative to the working directory) or a `file:` URL. */
+/**
+ * A path (relative to the working directory) or a `file:` URL.
+ * @see {@link https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/guides/file-sources | File sources}
+ */
 export type WiremockPath = string | URL;
 
-/** A path or `file:` URL, `{ file }`, a file of an installed package `{ package, file }`, or one next to a module `{ module, file }`. */
+/**
+ * A path or `file:` URL, `{ file }`, a file of an installed package `{ package, file }`, or one next to a module `{ module, file }`.
+ * @see {@link https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/guides/file-sources | File sources}
+ */
 export type WiremockFileSource =
   | WiremockPath
-  | { readonly file: WiremockPath }
-  | { readonly package: string; readonly file: string }
-  | { readonly module: WiremockPath; readonly file: string };
+  | {
+      /** A path or `file:` URL. */
+      readonly file: WiremockPath;
+    }
+  | {
+      /** An installed npm package, found the way `require()` would from the working directory. */
+      readonly package: string;
+      /** A path inside the package, e.g. `"mappings/ping.json"`. */
+      readonly file: string;
+    }
+  | {
+      /** `import.meta.url` (ES modules) or `__dirname` (CommonJS) – or any file or directory. */
+      readonly module: WiremockPath;
+      /** A path relative to the module's directory. */
+      readonly file: string;
+    };
 
-/** A WireMock stub; fields besides `request` and `response` are passed through. */
+/**
+ * A WireMock stub; fields besides `request` and `response` are passed through.
+ * @see {@link https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/guides/registering-stubs#inline-stubs | Inline stubs}
+ */
 export interface WiremockStubMapping {
+  /** What the stub matches, e.g. `{ method: "GET", url: "/ping" }`. */
   readonly request: object;
+  /** What it answers, e.g. `{ status: 200, body: "pong" }`. */
   readonly response: object;
   readonly [field: string]: unknown;
 }
 
-/** A file source, or inline JSON: a string, a stub or `{ mappings: [...] }`. */
+/**
+ * A file source, or inline JSON: a string, a stub or `{ mappings: [...] }`.
+ * @see {@link https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/guides/registering-stubs#mapping-files | Registering stubs}
+ */
 export type WiremockMappingSource =
   | WiremockFileSource
-  | { readonly json: string | WiremockStubMapping | { readonly mappings: readonly WiremockStubMapping[] } };
+  | {
+      /** A JSON string – copied verbatim – or an object, serialised. */
+      readonly json:
+        | string
+        | WiremockStubMapping
+        | {
+            /** Several stubs in one mapping file. */
+            readonly mappings: readonly WiremockStubMapping[];
+          };
+    };
 
-/** A file source; object forms may set `name`, the path below `__files/`. */
-export type WiremockStaticFile = WiremockPath | (Exclude<WiremockFileSource, WiremockPath> & { readonly name?: string });
+/**
+ * A file source; object forms may set `name`, the path below `__files/`.
+ * @see {@link https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/guides/file-sources#naming-static-files | File sources}
+ */
+export type WiremockStaticFile =
+  | WiremockPath
+  | (Exclude<WiremockFileSource, WiremockPath> & {
+      /** The path below `__files/` – may contain `/`; default: the file's base name. */
+      readonly name?: string;
+    });
 
 const PACKAGE_NAME = /^(?:@[a-z0-9-~][a-z0-9-._~]*\/)?[a-z0-9-~][a-z0-9-._~]*$/u;
 

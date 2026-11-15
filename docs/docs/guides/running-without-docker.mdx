@@ -1,0 +1,93 @@
+---
+title: Running without Docker
+description: Serve every WiremockContainer from a local WireMock JVM during local development – never in CI/CD.
+---
+
+# Running without Docker
+
+With Java 11+, serve every `WiremockContainer` from a local WireMock JVM. Tests stay unchanged.
+
+:::warning Local development only
+
+`installNoDockerRuntime()` throws in CI/CD and warns on every start. Results can differ from the
+Docker image – run with Docker before merging.
+
+:::
+
+## Set up {/* #set-up */}
+
+1. Install WireMock's standalone JAR:
+
+   ```bash
+   npm install --save-dev wiremock
+   ```
+
+2. Add a setup file:
+
+   ```ts file=no-docker/no-docker.setup.ts#setup
+   ```
+
+3. Load it only when `WIREMOCK_NO_DOCKER` is set:
+
+   ```ts file=vitest.config.ts#no-docker
+   ```
+
+   ```ts file=vitest.config.ts#setup-files
+   ```
+
+4. Set the variable from a `--no-docker` flag – refused in CI/CD:
+
+   ```js file=scripts/test-e2e.mjs#main
+   ```
+
+Run:
+
+```bash
+npm test --no-docker        # or: npm test -- --no-docker
+```
+
+## Configure {/* #options */}
+
+`installNoDockerRuntime(options?)` takes `NoDockerOptions` and returns an uninstaller:
+
+```ts file=no-docker/no-docker.ts#options
+```
+
+| Option | Environment | Default |
+|--------|-------------|---------|
+| `jar` | `WIREMOCK_JAR` | The `wiremock` package's JAR |
+| `java` | `WIREMOCK_JAVA`, `JAVA_HOME` | `java` |
+| `startupTimeout` | – | `60_000` ms |
+| `cacheDir` – `false` disables | – | `<os tmpdir>/wiremock-testcontainers` |
+| `log` | – | `process.emitWarning` |
+| `env` | – | `process.env` |
+
+Install only when requested – for runners without conditional setup files:
+
+```ts file=no-docker/no-docker.ts#install-if-requested
+```
+
+## Detect CI and the request {/* #detecting-ci-and-the-request */}
+
+- `isNoDockerRequested(env?)` – whether `NO_DOCKER_ENV` (`"WIREMOCK_NO_DOCKER"`) is `1` or `true`.
+- `detectCI(env?)` – the CI/CD variable set, if any: `CI`, `GITHUB_ACTIONS`, `GITLAB_CI`,
+  `CIRCLECI`, `BUILDKITE`, `JENKINS_URL`, `TF_BUILD`, `TEAMCITY_VERSION`,
+  `BITBUCKET_BUILD_NUMBER`, `CODEBUILD_BUILD_ID`, `CONTINUOUS_INTEGRATION`.
+
+```ts file=no-docker/no-docker.test.ts#detect
+```
+
+```ts file=no-docker/no-docker.test.ts#refusals
+```
+
+## What differs {/* #what-differs */}
+
+```ts file=no-docker/no-docker.e2e.test.ts#differences
+```
+
+- WireMock listens on `127.0.0.1`; extension JARs join its class path.
+- `logs()` returns the JVM's output.
+- `exec()`, networks and copying files after start throw.
+- Leftover JVMs are killed when the test process exits.
+- The first run records a class-data archive in `cacheDir` (slower `stop()`); later starts are
+  about twice as fast. `JAVA_OPTS` from `withEnvironment()` override the JVM flags.

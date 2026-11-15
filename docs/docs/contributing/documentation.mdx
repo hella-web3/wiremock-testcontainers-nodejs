@@ -1,0 +1,96 @@
+---
+title: Documentation and examples
+description: Run, write and release the docs – and what every library change must update.
+---
+
+# Documentation and examples
+
+| Project | Directory | Role |
+|---------|-----------|------|
+| Library | `/` (pnpm) | Its JSDoc generates the API reference |
+| Examples | `examples/` (npm) | The only source of code on this site – tested like library code |
+| Docs | `docs/` (npm) | This site |
+
+## Run the docs
+
+Run `pnpm install` in the repository root once. Then every docs script runs as
+`pnpm docs:<script>` from the root, or `npm run <script>` from `docs/` (after `npm ci`):
+
+| Task | From the repository root | From `docs/` |
+|------|--------------------------|--------------|
+| Preview with live reload | `pnpm docs:start` | `npm run start` |
+| Build into `build/` | `pnpm docs:build` | `npm run build` |
+| Serve the build | `pnpm docs:serve` | `npm run serve` |
+| Generate the API reference (`--force`: even if unchanged) | `pnpm docs:api` | `npm run api` |
+| Type-check | `pnpm docs:typecheck` | `npm run typecheck` |
+| Lint | `pnpm docs:lint` | `npm run lint` |
+| Unit tests and sync checks | `pnpm docs:test:unit` | `npm run test:unit` |
+| Build, then check every page and link | `pnpm docs:test:e2e` | `npm run test:e2e` |
+| **Everything CI checks** | **`pnpm docs:check`** | **`npm run check`** |
+| Refresh the README's snippets | `pnpm docs:sync:markdown` | `npm run sync:markdown` |
+| Freeze the current docs as a version | `pnpm docs:version:cut` | `npm run version:cut` |
+
+After editing JSDoc in `src/`, run `pnpm docs:api`; the running preview picks it up.
+
+## Embed code
+
+Never write code in a page. Mark a region in an example:
+
+```ts file=getting-started/payments-api.test.ts#validate
+```
+
+Embed it with an empty block – the build fills it and links its source:
+
+````md
+```ts file=getting-started/quick-start.e2e.test.ts#quick-start
+```
+````
+
+- The example names its page in a header comment: `@see https://…/docs/<page>`.
+- Shell commands (`bash`) may be written inline.
+- The root README holds copies, marked `<!-- snippet: path#region -->` – refresh them with
+  `pnpm docs:sync:markdown`.
+
+## Update the docs with the library
+
+| Change | Update |
+|--------|--------|
+| Internal | Nothing – label the pull request `no-docs-needed` |
+| Behaviour or an error message | The guide, the examples asserting it, [troubleshooting](../reference/troubleshooting.mdx) |
+| New export, method or option | JSDoc with `@see`; an example with tests; a guide section embedding it; an [API overview](../reference/api-overview.mdx) row |
+| Deprecation | `@deprecated` naming the replacement; a note in its guide |
+| Removal | Its examples, guide sections and API overview row |
+| Breaking change | As above, plus a migration guide entry – the first one opens the next major ([Versions](#versions)) |
+
+Same pull request as the code. [CONTRIBUTING.md](https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/CONTRIBUTING.md#keeping-the-docs-in-step-with-the-library)
+lists what catches each omission.
+
+## What the checks enforce
+
+- Every snippet reference, region, link and anchor resolves; every region is shown; pages hold no
+  hand-written TypeScript, JavaScript or JSON.
+- Every example links to a page showing its folder.
+- Every export and public member is used in an example, named in a guide and listed in the API
+  overview – checked with the TypeScript compiler.
+- JSDoc `@example`s are excerpts of examples; JSDoc `@see` links name existing pages.
+- TypeDoc fails on undocumented APIs; Docusaurus on broken links or anchors.
+
+## Versions
+
+One docs version per major, published from `main`. `package.json`'s version decides what the
+site shows:
+
+| `package.json` | `/docs` | Also |
+|----------------|---------|------|
+| `0.4.1` | `0.x` | – |
+| `1.0.0-next.2` | `0.x` (frozen) | `/docs/next`: `1.x (next)`, unreleased |
+| `1.0.0` | `1.x` | `/docs/0.x` (frozen) |
+
+The first breaking change of a major opens it:
+
+```bash
+pnpm docs:version:cut                                   # freeze the 0.x docs
+npm version premajor --preid next --no-git-tag-version  # 0.4.1 → 1.0.0-next.0
+```
+
+`pnpm version major` releases it. Full procedure: [release.md](https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/release.md#major-releases).

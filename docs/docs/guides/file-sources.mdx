@@ -1,0 +1,56 @@
+---
+title: File sources
+description: Point withMapping(), withFiles() and withExtensionJar() at files by path, file URL, module or npm package.
+---
+
+# File sources
+
+`withMapping()`, `withFiles()` and `withExtensionJar()` accept any `WiremockFileSource`:
+
+| Source | Resolved against |
+|--------|------------------|
+| `"./path/file.json"` or `{ file: "./path/file.json" }` | The working directory |
+| `new URL("./file.json", import.meta.url)` | The URL |
+| `{ module: import.meta.url, file: "./file.json" }` | The module's directory |
+| `{ package: "@acme/stubs", file: "mappings/x.json" }` | The installed package |
+
+Prefer `{ module }` or a `file:` URL: they work from any working directory – IDE, monorepo root
+or CI. A missing file throws at registration.
+
+## Use a path or file URL {/* #paths-and-file-urls */}
+
+A `WiremockPath` – relative to the working directory:
+
+```ts file=stubs/sources.ts#path
+```
+
+Relative to the declaring module:
+
+```ts file=stubs/sources.ts#file-url
+```
+
+## Use a file next to a module {/* #files-next-to-a-module */}
+
+`module` is `import.meta.url` (ESM), `__dirname` (CommonJS), or any file or directory:
+
+```ts file=stubs/sources.ts#module
+```
+
+## Use a file from an npm package {/* #files-of-an-installed-package */}
+
+Share stubs between repositories as a package. It is found like `require()` would, from the
+working directory; `file` must stay inside it.
+
+```ts file=stubs/sources.ts#package
+```
+
+```json file=packages/payments-stubs/package.json
+```
+
+## Name response bodies {/* #naming-static-files */}
+
+Object sources take a `name` – the path below `__files/` (a `WiremockStaticFile`). For JARs – a
+`WiremockExtensionJar` – `name` renames the JAR and must end in `.jar`.
+
+```ts file=stubs/sources.ts#static-files
+```

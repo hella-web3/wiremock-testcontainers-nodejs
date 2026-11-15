@@ -2,7 +2,7 @@
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "plugins": ["typescript", "unicorn", "oxc", "import", "promise", "node", "vitest"],
   "env": { "node": true, "es2024": true },
-  "ignorePatterns": ["dist/**", "coverage/**", "node_modules/**", "examples/**"],
+  "ignorePatterns": ["dist/**", "coverage/**", "node_modules/**", "examples/**", "docs/**"],
   "categories": {
     "correctness": "error",
     "suspicious": "error",

@@ -1,0 +1,61 @@
+---
+title: Installation
+description: Install the library and meet its requirements.
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# Installation
+
+## Requirements
+
+- Node.js ≥ 22.22
+- A Docker-compatible [container runtime](https://node.testcontainers.org/supported-container-runtimes/) –
+  or Java 11+ to [run without Docker](../guides/running-without-docker.mdx) locally
+- Any test runner – the examples use [Vitest](https://vitest.dev/)
+
+## Install
+
+<Tabs groupId="package-manager">
+  <TabItem value="npm" label="npm" default>
+
+```bash
+npm install --save-dev @hellaweb3/wiremock-testcontainers-nodejs
+```
+
+  </TabItem>
+  <TabItem value="pnpm" label="pnpm">
+
+```bash
+pnpm add --save-dev @hellaweb3/wiremock-testcontainers-nodejs
+```
+
+  </TabItem>
+  <TabItem value="yarn" label="yarn">
+
+```bash
+yarn add --dev @hellaweb3/wiremock-testcontainers-nodejs
+```
+
+  </TabItem>
+</Tabs>
+
+pnpm ≥ 10 may report `Ignored build scripts: ssh2, …` – optional Testcontainers bindings, safe
+to ignore.
+
+## Import it
+
+ES modules:
+
+```ts file=getting-started/esm.test.ts#esm
+```
+
+CommonJS – the same API:
+
+```ts file=getting-started/commonjs.test.ts#cjs
+```
+
+The no-Docker helpers are also exported from `@hellaweb3/wiremock-testcontainers-nodejs/no-docker`.
+
+Next: the [quick start](./quick-start.mdx).

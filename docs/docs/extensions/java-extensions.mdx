@@ -1,0 +1,75 @@
+---
+title: Java extensions
+description: Load compiled WireMock extensions from JARs – by class name or extension scanning – and control how they load.
+---
+
+# Java extensions
+
+Load compiled [WireMock extensions](https://wiremock.org/docs/extending-wiremock/) – transformers,
+matchers, admin routes – from JARs. No JDK needed.
+
+| Method | Registers |
+|--------|-----------|
+| `withExtensionJar(jar)`, `withExtensionJars([...])` | A JAR, or every `*.jar` of a directory – any [file source](../guides/file-sources.mdx) |
+| `withExtension(ext)`, `withExtensions([...])` | A fully qualified class name – or a [TypeScript extension](./typescript-extensions.mdx) |
+| `withExtensionOptions({ scanning, verifyClassNames })` | How extensions load |
+
+## Load a JAR and name its classes
+
+```ts file=extensions/java-extensions.e2e.test.ts#jar-and-class
+```
+
+Class names share one `--extensions` option, in registration order. Stubs opt in by the
+extension's name:
+
+```ts file=extensions/java-extensions.e2e.test.ts#stub
+```
+
+An extension that only sets WireMock options – no Java – is an object:
+
+```ts file=extensions/java-extensions.e2e.test.ts#object-literal
+```
+
+## Load every JAR of a directory {/* #every-jar-of-a-directory */}
+
+```ts file=extensions/java-extensions.e2e.test.ts#jar-directory
+```
+
+## Rely on extension scanning {/* #extension-scanning */}
+
+Classes a JAR lists in `META-INF/services/com.github.tomakehurst.wiremock.extension.Extension`
+load without a class name:
+
+```ts file=extensions/java-extensions.e2e.test.ts#scanning-on
+```
+
+## Control how extensions load {/* #extension-options */}
+
+`withExtensionOptions()` takes `WiremockExtensionOptions`:
+
+| Option | Default | `false` |
+|--------|---------|---------|
+| `scanning` | `true` | Ignore `META-INF/services`: only named classes load |
+| `verifyClassNames` | `true` | Skip the start-up check that each class is in a registered JAR – for classes a custom image provides |
+
+```ts file=extensions/java-extensions.e2e.test.ts#options
+```
+
+```ts file=extensions/java-extensions.e2e.test.ts#options-container
+```
+
+## Validation rules {/* #rules */}
+
+Checked before anything starts:
+
+- JARs exist and end in `.jar`; names are unique – rename with `{ file, name: "other.jar" }`.
+- Class names are fully qualified: `com.acme.MyTransformer`.
+- On `start()`, each class is in a registered JAR or WireMock itself:
+
+```ts file=extensions/extensions.test.ts#start-check
+```
+
+- `withCommand()` does not set `--extensions` or repeat an extension's option.
+- JARs target Java 11 (WireMock 3's runtime). Custom images keep `/var/wiremock/extensions`.
+
+Start-up failures: [troubleshooting](../reference/troubleshooting.mdx#errors-when-starting).

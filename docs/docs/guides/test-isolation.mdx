@@ -1,0 +1,47 @@
+---
+title: Test isolation
+description: Share one WireMock container between tests and reset stubs, scenarios and the request journal.
+---
+
+# Test isolation
+
+Start one container per test file; reset it between tests – no restarts.
+
+| Method | Stubs | Scenarios | Journal |
+|--------|-------|-----------|---------|
+| `reset()` | Registered ones only – runtime stubs dropped | Restarted | Emptied |
+| `resetRequests()` | Kept | Kept | Emptied |
+
+## Reset between tests {/* #resetting-between-tests */}
+
+```ts file=isolation/isolation.e2e.test.ts#reset
+```
+
+## Reset stateful scenarios {/* #scenarios */}
+
+A [scenario](https://wiremock.org/docs/stateful-behaviour/) – `PENDING`, then `SETTLED`:
+
+```ts file=isolation/isolation.ts#scenario
+```
+
+`reset()` starts it over:
+
+```ts file=isolation/isolation.e2e.test.ts#scenario
+```
+
+## Clear only the journal {/* #clearing-only-the-journal */}
+
+```ts file=isolation/isolation.e2e.test.ts#reset-requests
+```
+
+## Add a stub for one test {/* #stubs-added-at-runtime */}
+
+POST it to `getMappingUrl()`; it lasts until the next `reset()`:
+
+```ts file=isolation/isolation.ts#add-stub
+```
+
+```ts file=isolation/isolation.e2e.test.ts#runtime-stub
+```
+
+Prefer [registering stubs](./registering-stubs.mdx) before `start()` – they are validated up front.

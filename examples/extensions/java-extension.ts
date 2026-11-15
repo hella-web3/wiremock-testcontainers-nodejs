@@ -1,3 +1,8 @@
+/**
+ * A base class for TypeScript extensions wrapping one Java class.
+ *
+ * @see https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/extensions/authoring-extensions
+ */
 import type { WireMockExtension, WiremockExtensionJar } from "@hellaweb3/wiremock-testcontainers-nodejs";
 
 /** Everything WireMock needs to load a Java extension. */
@@ -10,6 +15,7 @@ export interface JavaExtensionDefinition {
   readonly jar: WiremockExtensionJar;
 }
 
+// #region java-extension
 /**
  * Base class for TypeScript extensions that wrap one Java class: a subclass passes its
  * {@link JavaExtensionDefinition} to `super()` and adds typed helpers for its stubs.
@@ -41,3 +47,4 @@ export abstract class JavaExtension implements WireMockExtension {
     return [this.#definition.jar];
   }
 }
+// #endregion java-extension

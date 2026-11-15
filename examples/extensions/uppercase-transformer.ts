@@ -1,3 +1,8 @@
+/**
+ * A response transformer, wrapped with a typed stub helper.
+ *
+ * @see https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/extensions/authoring-extensions
+ */
 import { JavaExtension } from "./java-extension";
 import { JARS, JAVA_PACKAGE } from "./jars";
 import type { TransformerFields } from "./stubs";
@@ -8,6 +13,7 @@ export interface UppercaseParameters {
   readonly suffix?: string;
 }
 
+// #region class
 /**
  * Response transformer (https://wiremock.org/docs/extensibility/transforming-responses/): a stub
  * that opts in gets an upper-cased body, an optional suffix and `X-Transformed-By: uppercase`.
@@ -21,7 +27,9 @@ export class UppercaseTransformer extends JavaExtension {
   constructor() {
     super({ name: UppercaseTransformer.NAME, className: `${JAVA_PACKAGE}.UppercaseTransformer`, jar: JARS.examples });
   }
+  // #endregion class
 
+  // #region transform
   /**
    * `response` fields applying the transformer.
    * @example response: { status: 200, body: "ok", ...UppercaseTransformer.transform({ suffix: "!" }) }
@@ -32,4 +40,5 @@ export class UppercaseTransformer extends JavaExtension {
       ...(parameters.suffix === undefined ? {} : { transformerParameters: { suffix: parameters.suffix } }),
     };
   }
+  // #endregion transform
 }

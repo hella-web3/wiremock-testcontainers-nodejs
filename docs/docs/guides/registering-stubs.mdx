@@ -1,0 +1,79 @@
+---
+title: Registering stubs
+description: Serve WireMock stubs from recorded directories, mapping files, inline objects and JSON strings, with response bodies.
+---
+
+# Registering stubs
+
+| Method | Registers | In the container |
+|--------|-----------|------------------|
+| `withMappings(directory)` | A directory's `mappings/` and optional `__files/` | `mappings/…`, `__files/…` |
+| `withMapping(name, source)` | One mapping file, or stubs inline | `mappings/<name>.json` |
+| `withFiles(...sources)` | Response bodies | `__files/<name>` |
+
+Combine them freely, before `start()`. Each call is validated immediately –
+see [registration rules](#registration-rules).
+
+```ts file=stubs/stubs.ts#registrations
+```
+
+## Load a recorded directory {/* #a-recorded-directory */}
+
+```ts file=getting-started/payments-api.ts#definition
+```
+
+- `mappings/` is required, `__files/` optional; subdirectories are included.
+- The path is relative to the working directory.
+- Fits the output of WireMock's [record and playback](https://wiremock.org/docs/record-playback/).
+
+## Register a mapping file {/* #mapping-files */}
+
+`withMapping(name, source)` copies one file to `mappings/<name>.json`. `name` may contain `/`.
+The source is any [file source](./file-sources.mdx). A file holds one stub or several:
+
+```json file=stubs/fixtures/statements.json
+```
+
+## Register stubs inline {/* #inline-stubs */}
+
+Pass `{ json }`. An object – checked against `WiremockStubMapping` with `satisfies`:
+
+```ts file=stubs/stubs.ts#inline-stub
+```
+
+Several stubs – `WiremockMappingSource` types any `withMapping()` source:
+
+```ts file=stubs/stubs.ts#inline-mappings
+```
+
+A JSON string, copied verbatim:
+
+```ts file=stubs/stubs.ts#inline-string
+```
+
+## Add response bodies {/* #response-bodies */}
+
+`withFiles(...sources)` puts files in `__files/`, where a stub's `response.bodyFileName` finds
+them: at their base name, or at `name`. All or nothing; binary files are fine.
+
+```ts file=stubs/sources.ts#static-files
+```
+
+```ts file=stubs/stubs.e2e.test.ts#assert-bodies
+```
+
+## Registration rules
+
+- A container path registered from another source throws; the same file again is a no-op.
+- Stub ids must be unique – WireMock refuses to start otherwise.
+- Invalid input throws at once, naming the method: see [troubleshooting](../reference/troubleshooting.mdx#registration-errors).
+
+```ts file=stubs/stubs.test.ts#rules
+```
+
+## List the loaded stubs
+
+```ts file=stubs/stubs.e2e.test.ts#list-stubs
+```
+
+To add a stub for one test only, see [stubs added at runtime](./test-isolation.mdx#stubs-added-at-runtime).

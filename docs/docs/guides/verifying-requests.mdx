@@ -1,0 +1,102 @@
+---
+title: Verifying requests
+description: Assert on the HTTP requests your code sent with countRequests() and findRequests().
+---
+
+# Verifying requests
+
+| Method | Returns |
+|--------|---------|
+| `countRequests(criteria)` | How many requests matched since the last reset |
+| `findRequests(criteria)` | The matching requests, oldest first – `RecordedRequest[]` |
+
+Both query WireMock's request journal – [why that matters](#background). `client` in the examples
+is a [`fetch`-based payments client](#the-code-under-test).
+
+## Count requests {/* #counting-requests */}
+
+```ts file=verification/verification.e2e.test.ts#count
+```
+
+`url` matches path and query exactly; `urlPath` the path with any query. Unmatched requests are
+recorded too.
+
+## Inspect requests {/* #finding-requests */}
+
+```ts file=verification/verification.e2e.test.ts#find
+```
+
+## Match on query, headers and body {/* #request-criteria */}
+
+`WiremockRequestCriteria` is a stub's `request` pattern. Name the ones you reuse:
+
+```ts file=verification/verification.ts#criteria
+```
+
+```ts file=verification/verification.e2e.test.ts#matchers
+```
+
+| Field | Matches |
+|-------|---------|
+| `method` | `"GET"`, `"POST"`, … – `"ANY"` for all |
+| `url` / `urlPath` | Path and query / path only – exactly |
+| `urlPattern` / `urlPathPattern` | The same, by regular expression |
+| `headers`, `queryParameters` | Name → matcher: `{ equalTo }`, `{ matches }`, `{ absent: true }`, … |
+| `bodyPatterns` | `equalToJson`, `matchesJsonPath`, `contains`, … |
+
+Other WireMock fields pass through. Matcher values are strings: `{ equalTo: 2 }` is
+[rejected](../reference/troubleshooting.mdx#errors-at-runtime).
+
+## Read a recorded request {/* #recorded-requests */}
+
+```ts file=verification/verification.e2e.test.ts#recorded-request
+```
+
+| `RecordedRequest` field | Content |
+|-------------------------|---------|
+| `url`, `absoluteUrl` | Path and query; with scheme, host and port |
+| `method` | The HTTP method |
+| `headers` | Name → value |
+| `queryParams` | Name → `{ key, values }` |
+| `body` | Text – `""` without a body |
+| `loggedDate` | Epoch milliseconds |
+
+JSON bodies:
+
+```ts file=verification/verification.ts#json-body
+```
+
+## Write a reusable assertion {/* #a-reusable-assertion */}
+
+Fails with the journal in the message:
+
+```ts file=verification/verification.ts#expect-requested
+```
+
+```ts file=verification/verification.e2e.test.ts#helper
+```
+
+Unit-test it with a fake journal:
+
+```ts file=verification/verification.test.ts#fake-journal
+```
+
+## Background
+
+### The code under test
+
+The examples test this client, given the container's URL:
+
+```ts file=app/payments-client.ts#client
+```
+
+### Unit tests and WireMock tests
+
+A unit test with a stubbed `fetch` checks what your code passes to `fetch`:
+
+```ts file=app/payments-client.test.ts
+```
+
+The journal records what reached a real server – URL encoding, headers, serialised bodies – and
+your code's real HTTP stack runs, including its handling of real status codes. Use unit tests for
+logic, WireMock for the HTTP boundary.

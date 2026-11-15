@@ -1,3 +1,8 @@
+/**
+ * A custom request matcher, wrapped with a validated stub helper.
+ *
+ * @see https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/extensions/authoring-extensions
+ */
 import { JavaExtension } from "./java-extension";
 import { JARS, JAVA_PACKAGE } from "./jars";
 import type { CustomMatcherFields } from "./stubs";
@@ -20,6 +25,7 @@ export class BodyLengthMatcher extends JavaExtension {
     super({ name: BodyLengthMatcher.NAME, className: `${JAVA_PACKAGE}.BodyLengthMatcher`, jar: JARS.examples });
   }
 
+  // #region longer-than
   /**
    * `request` fields matching bodies longer than `maxLength` bytes.
    * @example request: { method: "POST", url: "/notes", ...BodyLengthMatcher.longerThan(20) }
@@ -31,4 +37,5 @@ export class BodyLengthMatcher extends JavaExtension {
     }
     return { customMatcher: { name: BodyLengthMatcher.NAME, parameters: { maxLength } } };
   }
+  // #endregion longer-than
 }

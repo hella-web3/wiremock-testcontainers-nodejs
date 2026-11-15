@@ -1,0 +1,71 @@
+---
+title: Container lifecycle
+description: Start WireMock, wait until it is ready, build URLs, check health and stop it – explicitly or with await using.
+---
+
+# Container lifecycle
+
+`start()` resolves to a `StartedWiremockContainer`: URLs, health, [reset](./test-isolation.mdx)
+and [verification](./verifying-requests.mdx) – plus every Testcontainers method, e.g. `stop()`
+and `logs()`.
+
+## Start and wait until ready {/* #starting-and-readiness */}
+
+One container per test file:
+
+```ts file=lifecycle/lifecycle.e2e.test.ts#start
+```
+
+- `start()` resolves once the port listens. It first validates extensions and options; a failed
+  start [names the extensions in use](../reference/troubleshooting.mdx#errors-when-starting).
+- `waitUntilReady(options?)` polls WireMock's health until it answers, and throws on timeout.
+- Give `beforeAll` a timeout that covers the first image pull.
+
+Tune polling with `WaitUntilReadyOptions` – defaults: `timeout` 30 s, `interval` 250 ms:
+
+```ts file=lifecycle/lifecycle.ts#readiness
+```
+
+## Build URLs {/* #urls */}
+
+WireMock listens on a random port – never hard-code it:
+
+```ts file=lifecycle/lifecycle.e2e.test.ts#urls
+```
+
+| Member | Returns |
+|--------|---------|
+| `rpcUrl` | Base URL, e.g. `http://localhost:32768` |
+| `getUrl(path?)` | `rpcUrl` + `path` – a missing leading `/` is added |
+| `getAdminUrl()` | `<rpcUrl>/__admin` – the [admin API](https://wiremock.org/docs/standalone/admin-api-reference/) |
+| `getMappingUrl()` | `<rpcUrl>/__admin/mappings` – [add stubs at runtime](./test-isolation.mdx#stubs-added-at-runtime) |
+
+## Point your app at WireMock
+
+Pass the URL the way production configures it. Helpers that only need URLs take
+`Pick<StartedWiremockContainer, "getUrl">`:
+
+```ts file=lifecycle/lifecycle.ts#environment
+```
+
+So unit tests can pass a fake:
+
+```ts file=lifecycle/lifecycle.test.ts#fake
+```
+
+## Check health {/* #health-checks */}
+
+`isRunning()` resolves `true` while WireMock is healthy, `false` otherwise. It never throws.
+
+## Stop {/* #stopping */}
+
+`stop()` in `afterAll`, with `?.` in case start-up failed. Testcontainers removes leftovers when
+the test process ends.
+
+## Stop automatically with `await using` {/* #automatic-disposal-with-await-using */}
+
+Stops the container when the block ends, even if an assertion throws. Needs TypeScript ≥ 5.2
+and a runtime or transpiler with explicit resource management (Vitest, Node.js 24).
+
+```ts file=lifecycle/lifecycle.e2e.test.ts#await-using
+```

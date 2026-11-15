@@ -2,19 +2,23 @@
   "name": "wiremock-testcontainers-nodejs-examples",
   "version": "0.0.0",
   "private": true,
-  "description": "Standalone consumer project: imports @hellaweb3/wiremock-testcontainers-nodejs via npm link and runs end-to-end user-flow and WireMock-extension tests against a real WireMock container.",
+  "description": "Runnable, tested examples for @hellaweb3/wiremock-testcontainers-nodejs – the single source of every code snippet in the docs. Consumes the library via npm link, exactly like an end user.",
+  "homepage": "https://hella-web3.github.io/wiremock-testcontainers-nodejs/",
   "license": "MIT",
   "type": "module",
   "scripts": {
     "link:library": "npm link @hellaweb3/wiremock-testcontainers-nodejs",
     "typecheck": "tsc --noEmit",
+    "lint": "oxlint --deny-warnings",
     "test": "node scripts/test-e2e.mjs",
-    "test:e2e": "node scripts/test-e2e.mjs e2e",
-    "test:unit": "vitest run extensions/ --coverage"
+    "test:e2e": "node scripts/test-e2e.mjs --project e2e",
+    "test:unit": "vitest run --project unit --coverage"
   },
   "devDependencies": {
+    "@examples/payments-stubs": "file:./packages/payments-stubs",
     "@types/node": "^26.6.6",
     "@vitest/coverage-v8": "^5.1.0",
+    "oxlint": "^1.92.0",
     "typescript": "^7.0.2",
     "vitest": "^5.1.0",
     "wiremock": "^3.13.2"

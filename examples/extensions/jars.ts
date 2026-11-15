@@ -1,8 +1,14 @@
+/**
+ * Where the example extensions' JARs are – resolved next to this module.
+ *
+ * @see https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/extensions/authoring-extensions
+ */
 import type { WiremockExtensionJar } from "@hellaweb3/wiremock-testcontainers-nodejs";
 
 /** The Java package of the example extensions' classes. */
 export const JAVA_PACKAGE = "com.hellaweb3.wiremock.extensions";
 
+// #region jars
 /**
  * The JARs the example extensions ship in. `{ module: import.meta.url }` resolves them next to
  * this file, so tests work from any working directory – and from an npm package.
@@ -13,3 +19,4 @@ export const JARS = {
   /** `PoweredByTransformer`, declared in `META-INF/services` – loaded by scanning. */
   poweredBy: { module: import.meta.url, file: "../__mocks__/extensions/powered-by-extension.jar" },
 } as const satisfies Record<string, WiremockExtensionJar>;
+// #endregion jars

@@ -1,0 +1,76 @@
+---
+title: API overview
+description: Every export of the library – what it does, the guide explaining it and a tested example using it.
+---
+
+# API overview
+
+Every export, with its guide and a tested example. Full signatures: [API reference](../api/index.md).
+
+## WiremockContainer
+
+[`WiremockContainer`](../api/classes/WiremockContainer.md) – the builder. Also has every
+[`GenericContainer`](https://node.testcontainers.org/features/containers/) method.
+
+| API | Purpose | Guide | Example |
+|-----|---------|-------|---------|
+| [`new WiremockContainer(image?)`](../api/classes/WiremockContainer.md#constructor) | Create the builder; pin the image | [Guide](../guides/configuring-the-container.mdx#the-image) | [`container.ts`](https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/examples/container/container.ts) |
+| [`withCommand(args)`](../api/classes/WiremockContainer.md#withcommand) | WireMock command-line options | [Guide](../guides/configuring-the-container.mdx#wiremock-options) | [`container.ts`](https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/examples/container/container.ts) |
+| [`withMappings(directory)`](../api/classes/WiremockContainer.md#withmappings) | Copy `mappings/` and `__files/` of a directory | [Guide](../guides/registering-stubs.mdx#a-recorded-directory) | [`payments-api.ts`](https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/examples/getting-started/payments-api.ts) |
+| [`withMapping(name, source)`](../api/classes/WiremockContainer.md#withmapping) | One mapping file or inline stub(s) | [Guide](../guides/registering-stubs.mdx#mapping-files) | [`stubs.ts`](https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/examples/stubs/stubs.ts) |
+| [`withFiles(...sources)`](../api/classes/WiremockContainer.md#withfiles) | Response bodies in `__files/` | [Guide](../guides/registering-stubs.mdx#response-bodies) | [`stubs.ts`](https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/examples/stubs/stubs.ts) |
+| [`withExtension(extension)`](../api/classes/WiremockContainer.md#withextension) | A class name or TypeScript extension | [Guide](../extensions/typescript-extensions.mdx#registering-extensions) | [`java-extensions.e2e.test.ts`](https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/examples/extensions/java-extensions.e2e.test.ts) |
+| [`withExtensions(extensions)`](../api/classes/WiremockContainer.md#withextensions) | Several extensions, all or nothing | [Guide](../extensions/typescript-extensions.mdx#registering-extensions) | [`extensions.e2e.test.ts`](https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/examples/extensions/extensions.e2e.test.ts) |
+| [`withExtensionJar(jar)`](../api/classes/WiremockContainer.md#withextensionjar) | A JAR or directory of JARs on the class path | [Guide](../extensions/java-extensions.mdx#load-a-jar-and-name-its-classes) | [`java-extensions.e2e.test.ts`](https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/examples/extensions/java-extensions.e2e.test.ts) |
+| [`withExtensionJars(jars)`](../api/classes/WiremockContainer.md#withextensionjars) | Several JARs or directories, all or nothing | [Guide](../extensions/java-extensions.mdx#every-jar-of-a-directory) | [`java-extensions.e2e.test.ts`](https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/examples/extensions/java-extensions.e2e.test.ts) |
+| [`withExtensionOptions(options)`](../api/classes/WiremockContainer.md#withextensionoptions) | Extension scanning and class-name verification | [Guide](../extensions/java-extensions.mdx#extension-options) | [`java-extensions.e2e.test.ts`](https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/examples/extensions/java-extensions.e2e.test.ts) |
+| [`start()`](../api/classes/WiremockContainer.md#start) | Validate and start WireMock | [Guide](../guides/container-lifecycle.mdx#starting-and-readiness) | [`lifecycle.e2e.test.ts`](https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/examples/lifecycle/lifecycle.e2e.test.ts) |
+
+## StartedWiremockContainer
+
+[`StartedWiremockContainer`](../api/classes/StartedWiremockContainer.md) – what `start()` resolves
+to. Also has every Testcontainers started-container method: `stop()`, `logs()`, `await using`, ….
+
+| API | Purpose | Guide | Example |
+|-----|---------|-------|---------|
+| [`rpcUrl`](../api/classes/StartedWiremockContainer.md#rpcurl) | Base URL, e.g. `http://localhost:32768` | [Guide](../guides/container-lifecycle.mdx#urls) | [`lifecycle.e2e.test.ts`](https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/examples/lifecycle/lifecycle.e2e.test.ts) |
+| [`getUrl(path?)`](../api/classes/StartedWiremockContainer.md#geturl) | Absolute URL of a path | [Guide](../guides/container-lifecycle.mdx#urls) | [`lifecycle.e2e.test.ts`](https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/examples/lifecycle/lifecycle.e2e.test.ts) |
+| [`getAdminUrl()`](../api/classes/StartedWiremockContainer.md#getadminurl) | `<rpcUrl>/__admin` | [Guide](../guides/container-lifecycle.mdx#urls) | [`lifecycle.e2e.test.ts`](https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/examples/lifecycle/lifecycle.e2e.test.ts) |
+| [`getMappingUrl()`](../api/classes/StartedWiremockContainer.md#getmappingurl) | `<rpcUrl>/__admin/mappings` | [Guide](../guides/test-isolation.mdx#stubs-added-at-runtime) | [`isolation.ts`](https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/examples/isolation/isolation.ts) |
+| [`isRunning()`](../api/classes/StartedWiremockContainer.md#isrunning) | Whether WireMock is healthy; never throws | [Guide](../guides/container-lifecycle.mdx#health-checks) | [`lifecycle.e2e.test.ts`](https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/examples/lifecycle/lifecycle.e2e.test.ts) |
+| [`waitUntilReady(options?)`](../api/classes/StartedWiremockContainer.md#waituntilready) | Poll until healthy | [Guide](../guides/container-lifecycle.mdx#starting-and-readiness) | [`lifecycle.e2e.test.ts`](https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/examples/lifecycle/lifecycle.e2e.test.ts) |
+| [`reset()`](../api/classes/StartedWiremockContainer.md#reset) | Registered stubs, restarted scenarios, empty journal | [Guide](../guides/test-isolation.mdx#resetting-between-tests) | [`isolation.e2e.test.ts`](https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/examples/isolation/isolation.e2e.test.ts) |
+| [`resetRequests()`](../api/classes/StartedWiremockContainer.md#resetrequests) | Empty the journal only | [Guide](../guides/test-isolation.mdx#clearing-only-the-journal) | [`isolation.e2e.test.ts`](https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/examples/isolation/isolation.e2e.test.ts) |
+| [`countRequests(criteria)`](../api/classes/StartedWiremockContainer.md#countrequests) | Number of matching requests | [Guide](../guides/verifying-requests.mdx#counting-requests) | [`verification.e2e.test.ts`](https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/examples/verification/verification.e2e.test.ts) |
+| [`findRequests(criteria)`](../api/classes/StartedWiremockContainer.md#findrequests) | The matching requests | [Guide](../guides/verifying-requests.mdx#finding-requests) | [`verification.e2e.test.ts`](https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/examples/verification/verification.e2e.test.ts) |
+| [`new StartedWiremockContainer(container, url)`](../api/classes/StartedWiremockContainer.md#constructor) | Created by `start()` – you do not call it | [Guide](../guides/container-lifecycle.mdx) | [`lifecycle.e2e.test.ts`](https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/examples/lifecycle/lifecycle.e2e.test.ts) |
+
+## Running without Docker
+
+Also exported from `@hellaweb3/wiremock-testcontainers-nodejs/no-docker`.
+
+| API | Purpose | Guide | Example |
+|-----|---------|-------|---------|
+| [`installNoDockerRuntime(options?)`](../api/functions/installNoDockerRuntime.md) | Serve WireMock from a local JVM – local development only | [Guide](../guides/running-without-docker.mdx#set-up) | [`no-docker.setup.ts`](https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/examples/no-docker/no-docker.setup.ts) |
+| [`isNoDockerRequested(env?)`](../api/functions/isNoDockerRequested.md) | Whether `WIREMOCK_NO_DOCKER` is `1` or `true` | [Guide](../guides/running-without-docker.mdx#detecting-ci-and-the-request) | [`vitest.config.ts`](https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/examples/vitest.config.ts) |
+| [`detectCI(env?)`](../api/functions/detectCI.md) | The CI/CD variable that is set, if any | [Guide](../guides/running-without-docker.mdx#detecting-ci-and-the-request) | [`no-docker.test.ts`](https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/examples/no-docker/no-docker.test.ts) |
+| [`NO_DOCKER_ENV`](../api/variables/NO_DOCKER_ENV.md) | `"WIREMOCK_NO_DOCKER"` | [Guide](../guides/running-without-docker.mdx#detecting-ci-and-the-request) | [`test-e2e.mjs`](https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/examples/scripts/test-e2e.mjs) |
+
+## Types
+
+| API | Purpose | Guide | Example |
+|-----|---------|-------|---------|
+| [`WiremockRequestCriteria`](../api/interfaces/WiremockRequestCriteria.md) | Request-matching criteria for the journal | [Guide](../guides/verifying-requests.mdx#request-criteria) | [`verification.ts`](https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/examples/verification/verification.ts) |
+| [`RecordedRequest`](../api/interfaces/RecordedRequest.md) | A request from the journal | [Guide](../guides/verifying-requests.mdx#recorded-requests) | [`verification.ts`](https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/examples/verification/verification.ts) |
+| [`WaitUntilReadyOptions`](../api/interfaces/WaitUntilReadyOptions.md) | `timeout` and `interval` of `waitUntilReady()` | [Guide](../guides/container-lifecycle.mdx#starting-and-readiness) | [`lifecycle.ts`](https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/examples/lifecycle/lifecycle.ts) |
+| [`WiremockStubMapping`](../api/interfaces/WiremockStubMapping.md) | A stub: `request`, `response` and more | [Guide](../guides/registering-stubs.mdx#inline-stubs) | [`stubs.ts`](https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/examples/stubs/stubs.ts) |
+| [`WiremockMappingSource`](../api/type-aliases/WiremockMappingSource.md) | What `withMapping()` accepts | [Guide](../guides/registering-stubs.mdx#mapping-files) | [`stubs.ts`](https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/examples/stubs/stubs.ts) |
+| [`WiremockFileSource`](../api/type-aliases/WiremockFileSource.md) | A path, URL, `{ file }`, `{ module, file }` or `{ package, file }` | [Guide](../guides/file-sources.mdx) | [`sources.ts`](https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/examples/stubs/sources.ts) |
+| [`WiremockStaticFile`](../api/type-aliases/WiremockStaticFile.md) | A file source with an optional `name` | [Guide](../guides/file-sources.mdx#naming-static-files) | [`sources.ts`](https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/examples/stubs/sources.ts) |
+| [`WiremockPath`](../api/type-aliases/WiremockPath.md) | A path or `file:` URL | [Guide](../guides/file-sources.mdx#paths-and-file-urls) | [`sources.ts`](https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/examples/stubs/sources.ts) |
+| [`WireMockExtension`](../api/interfaces/WireMockExtension.md) | The contract of TypeScript extensions | [Guide](../extensions/typescript-extensions.mdx#the-contract) | [`java-extension.ts`](https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/examples/extensions/java-extension.ts) |
+| [`ExtensionInput`](../api/type-aliases/ExtensionInput.md) | What `withExtension()` accepts | [Guide](../extensions/typescript-extensions.mdx#registering-extensions) | [`registry.ts`](https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/examples/extensions/registry.ts) |
+| [`ExtensionConstructor`](../api/type-aliases/ExtensionConstructor.md) | An extension class with a no-argument constructor | [Guide](../extensions/typescript-extensions.mdx#registering-extensions) | [`registry.ts`](https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/examples/extensions/registry.ts) |
+| [`WiremockExtensionJar`](../api/type-aliases/WiremockExtensionJar.md) | What `withExtensionJar()` accepts | [Guide](../extensions/java-extensions.mdx) | [`jars.ts`](https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/examples/extensions/jars.ts) |
+| [`WiremockExtensionOptions`](../api/interfaces/WiremockExtensionOptions.md) | `scanning` and `verifyClassNames` | [Guide](../extensions/java-extensions.mdx#extension-options) | [`java-extensions.e2e.test.ts`](https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/examples/extensions/java-extensions.e2e.test.ts) |
+| [`NoDockerOptions`](../api/interfaces/NoDockerOptions.md) | Options of `installNoDockerRuntime()` | [Guide](../guides/running-without-docker.mdx#options) | [`no-docker.ts`](https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/examples/no-docker/no-docker.ts) |

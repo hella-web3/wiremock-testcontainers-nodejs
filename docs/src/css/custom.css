@@ -1,0 +1,42 @@
+/* Brand colours: WireMock teal. */
+:root {
+  --ifm-color-primary: #0e7c86;
+  --ifm-color-primary-dark: #0d7079;
+  --ifm-color-primary-darker: #0c6a72;
+  --ifm-color-primary-darkest: #0a575e;
+  --ifm-color-primary-light: #108893;
+  --ifm-color-primary-lighter: #118e9a;
+  --ifm-color-primary-lightest: #14a1ae;
+  --ifm-code-font-size: 92%;
+  --docusaurus-highlighted-code-line-bg: rgb(0 0 0 / 10%);
+}
+
+[data-theme="dark"] {
+  --ifm-color-primary: #3cc4cf;
+  --ifm-color-primary-dark: #30b8c3;
+  --ifm-color-primary-darker: #2daeb8;
+  --ifm-color-primary-darkest: #258f98;
+  --ifm-color-primary-light: #52cbd5;
+  --ifm-color-primary-lighter: #5dcfd8;
+  --ifm-color-primary-lightest: #7ed9e0;
+  --docusaurus-highlighted-code-line-bg: rgb(0 0 0 / 30%);
+}
+
+/* The link under each embedded example snippet, to its tested source. */
+.example-source {
+  font-size: 0.8rem;
+  margin-top: calc(-1 * var(--ifm-leading) - 0.25rem);
+  text-align: right;
+}
+
+.example-source code {
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+/* Wide API tables scroll instead of squeezing. */
+.markdown table {
+  display: block;
+  overflow-x: auto;
+}

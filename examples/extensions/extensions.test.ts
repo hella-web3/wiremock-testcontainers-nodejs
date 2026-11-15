@@ -1,3 +1,8 @@
+/**
+ * Unit tests of the example extensions – no container.
+ *
+ * @see https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/extensions/authoring-extensions
+ */
 import { existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -8,10 +13,12 @@ import {
 } from "@hellaweb3/wiremock-testcontainers-nodejs";
 import {
   BodyLengthMatcher,
+  EXTENSION_CLASSES,
   GlobalResponseTemplating,
   JARS,
   JAVA_PACKAGE,
   JavaExtension,
+  PAYMENTS_EXTENSIONS,
   PoweredByTransformer,
   StubCountAdminApi,
   UppercaseTransformer,
@@ -20,7 +27,7 @@ import {
 /**
  * Unit tests of the example extensions – no container needed: what each one asks WireMock to
  * load, its stub helpers, and how `WiremockContainer` validates it. Their behaviour inside
- * WireMock is tested by `e2e/extensions.e2e.test.ts`.
+ * WireMock is tested by `extensions.e2e.test.ts`.
  */
 
 afterEach(() => {
@@ -47,6 +54,7 @@ describe("JARS", () => {
 });
 
 describe("what each extension asks WireMock to load", () => {
+  // #region unit-test
   it.each([
     [UppercaseTransformer, "uppercase", [`${JAVA_PACKAGE}.UppercaseTransformer`], [JARS.examples]],
     [BodyLengthMatcher, "body-too-long", [`${JAVA_PACKAGE}.BodyLengthMatcher`], [JARS.examples]],
@@ -57,6 +65,7 @@ describe("what each extension asks WireMock to load", () => {
     expect(extension.getClassNames()).toEqual(classNames);
     expect(extension.getJars()).toEqual(jars);
   });
+  // #endregion unit-test
 
   it("PoweredByTransformer: only its JAR – WireMock finds the class by scanning", () => {
     const extension: WireMockExtension = new PoweredByTransformer();
@@ -138,17 +147,18 @@ describe("StubCountAdminApi.count() – the typed admin client", () => {
 });
 
 describe("registering the example extensions", () => {
-  it("accepts classes, instances and object literals together", () => {
+  it("accepts classes, instances, object literals and class names together", () => {
     const shortJournal: WireMockExtension = { getName: () => "short-journal", getOptions: () => ["--max-request-journal=2"] };
-    const container = new WiremockContainer().withExtensions([
-      UppercaseTransformer,
-      new BodyLengthMatcher(),
-      StubCountAdminApi,
-      PoweredByTransformer,
-      new GlobalResponseTemplating({ maxCacheEntries: 100 }),
-      shortJournal,
-    ]);
+    const container = new WiremockContainer().withExtensions([...PAYMENTS_EXTENSIONS, shortJournal, `${JAVA_PACKAGE}.UppercaseTransformer`]);
     expect(container).toBeInstanceOf(WiremockContainer);
+  });
+
+  it("lists every extension class with a no-argument constructor – and instantiates them", () => {
+    expect(EXTENSION_CLASSES).toEqual([UppercaseTransformer, BodyLengthMatcher, StubCountAdminApi, PoweredByTransformer]);
+    expect(EXTENSION_CLASSES.map((Extension) => new Extension().getName())).toEqual(["uppercase", "body-too-long", "stub-count", "powered-by"]);
+    const templating = PAYMENTS_EXTENSIONS.at(-1);
+    expect(templating).toBeInstanceOf(GlobalResponseTemplating);
+    expect((templating as GlobalResponseTemplating).getOptions()).toContain("--max-template-cache-entries=100");
   });
 
   it("treats registering an extension again – as class or instance – as a no-op", () => {
@@ -170,6 +180,7 @@ describe("registering the example extensions", () => {
 });
 
 describe("troubleshooting: the errors the guide lists, all raised before anything starts", () => {
+  // #region errors
   it.each<[string, () => unknown, string]>([
     ["an extension's short name instead of its class", () => new WiremockContainer().withExtension("uppercase"), "is not a fully qualified Java class name"],
     ["an extension with nothing to load", () => new WiremockContainer().withExtension({ getName: () => "empty" }), "it contributes nothing"],
@@ -183,9 +194,12 @@ describe("troubleshooting: the errors the guide lists, all raised before anythin
   ])("%s", (_, register, message) => {
     expect(register).toThrow(message);
   });
+  // #endregion errors
 
+  // #region start-check
   it("a class in none of the registered JARs fails start() with a suggestion", async () => {
     const typo = new WiremockContainer().withExtensionJar(JARS.examples).withExtension("com.acme.UppercaseTransformer");
     await expect(typo.start()).rejects.toThrow(`did you mean "${JAVA_PACKAGE}.UppercaseTransformer"?`);
   });
+  // #endregion start-check
 });

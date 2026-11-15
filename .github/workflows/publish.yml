@@ -16,6 +16,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v7
 
+      # This workflow publishes to the `latest` dist-tag: a pre-release of the next major
+      # (1.0.0-next.N, see release.md) must never become what `npm install` resolves to.
+      - name: Refuse pre-release versions
+        run: |
+          version=$(node -p "require('./package.json').version")
+          case "$version" in
+            *-*) echo "::error::$version is a pre-release – release the major first (release.md → Major releases)"; exit 1 ;;
+          esac
+
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
         with:

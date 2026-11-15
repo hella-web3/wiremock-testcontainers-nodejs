@@ -1,0 +1,70 @@
+---
+title: Quick start
+description: Test an HTTP client against WireMock serving recorded stubs – one Vitest suite.
+---
+
+import QuickStart from "../_partials/quick-start.mdx";
+
+# Quick start
+
+Test an HTTP client against WireMock serving recorded stubs.
+
+## 1. Add stubs
+
+A stub pairs a request pattern with a response. Put stubs in `mappings/`, response bodies in
+`__files/`:
+
+```text
+__mocks__/wiremock/
+├── mappings/
+│   ├── create-payment.json   POST /payments → 201
+│   └── get-payments.json     GET  /payments → 200, body from __files/
+└── __files/
+    └── body-payments.json
+```
+
+```json file=__mocks__/wiremock/mappings/get-payments.json
+```
+
+## 2. Write the suite
+
+<QuickStart />
+
+- `start()` once per file; `waitUntilReady()` waits for WireMock's health check. The long hook
+  timeout covers the first image pull.
+- Pass `wiremock.getUrl()` to the code under test – here a
+  [`fetch`-based client](../guides/verifying-requests.mdx#the-code-under-test).
+- `reset()` after each test restores the registered stubs and empties the journal.
+
+## 3. Run it
+
+```bash
+npx vitest run
+```
+
+No container runtime? See [running without Docker](../guides/running-without-docker.mdx).
+
+## Share the mock between suites
+
+Define the container once:
+
+```ts file=getting-started/payments-api.ts#definition
+```
+
+Start it in each suite:
+
+```ts file=getting-started/shared-definition.e2e.test.ts#shared
+```
+
+## Validate it without Docker
+
+Registrations throw as they are made, so a unit test catches a broken path or stub:
+
+```ts file=getting-started/payments-api.test.ts#validate
+```
+
+## Next
+
+- [Register stubs](../guides/registering-stubs.mdx) from files, packages or inline JSON
+- [Verify requests](../guides/verifying-requests.mdx)
+- [Isolate tests](../guides/test-isolation.mdx), including stateful scenarios

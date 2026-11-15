@@ -1,0 +1,27 @@
+{
+  // Type-checks the site, its Node.js tooling and tests: `pnpm docs:typecheck`. Docusaurus itself
+  // compiles with its own loaders; this file is for tsc and editors.
+  "extends": "@docusaurus/tsconfig",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "ignoreDeprecations": "6.0",
+    "strict": true,
+    "lib": ["ES2023", "DOM"],
+    "noEmit": true,
+    // Re-checks only what changed since the last run.
+    "incremental": true,
+    "tsBuildInfoFile": "node_modules/.cache/tsconfig.tsbuildinfo",
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    // Node.js runs scripts/*.ts as they are (type stripping): only erasable syntax, explicit .ts imports.
+    "allowImportingTsExtensions": true,
+    "erasableSyntaxOnly": true,
+    "verbatimModuleSyntax": true,
+    "types": ["node", "@docusaurus/module-type-aliases"]
+  },
+  "include": [
+    "src", "scripts", "test", "*.ts", "*.mts"],
+  "exclude": [".docusaurus", "build", "node_modules", "docs/api"]
+}

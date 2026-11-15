@@ -5,6 +5,8 @@
  * `--no-docker` serves every WiremockContainer from a local WireMock JVM (needs Java 11+ and the
  * `wiremock` dev dependency): opt-in per run, announced with a banner, refused in CI/CD. npm
  * swallows the flag in `npm test --no-docker` and sets `npm_config_docker=""`; both forms work.
+ *
+ * @see https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/guides/running-without-docker
  */
 import { spawn } from "node:child_process";
 import { createRequire } from "node:module";
@@ -27,6 +29,7 @@ const BANNER = `
 
 const paint = (code, text) => (process.stderr.isTTY && !process.env.NO_COLOR ? `\u001B[${code}m${text}\u001B[0m` : text);
 
+// #region main
 function main() {
   const args = process.argv.slice(2);
   const noDocker = args.includes(FLAG) || ["", "false"].includes(process.env.npm_config_docker);
@@ -50,5 +53,6 @@ function main() {
     process.exitCode = code ?? (signal ? 1 : 0);
   });
 }
+// #endregion main
 
 main();

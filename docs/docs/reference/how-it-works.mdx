@@ -1,0 +1,42 @@
+---
+title: How it works
+description: The model behind the API – builder, container, journal – and how these docs stay correct.
+---
+
+# How it works
+
+Background for the guides. Nothing here is needed to get a task done.
+
+## Define, start, test
+
+1. **Define** a `WiremockContainer`: stubs, response bodies, extensions. It is a builder – nothing
+   runs yet.
+2. **Start** it, once per test file. Testcontainers pulls the image, starts WireMock on a random
+   free port, and removes the container when the test process ends – even if it crashes.
+3. **Test**: your code calls `wiremock.getUrl()`; assertions query WireMock's request journal;
+   `reset()` restores the registered state between tests.
+
+## Validation happens early
+
+Registrations are checked when they are made – files exist, mappings are stubs, nothing is
+overwritten, stub ids are unique. `start()` checks extension classes and command-line options
+before starting anything. Mistakes fail in a unit test, not minutes later in Docker.
+
+## WireMock's request journal
+
+WireMock records every request it receives – matched or not – until `reset()` or
+`resetRequests()`. `countRequests()` and `findRequests()` query it with WireMock's
+[request matching](https://wiremock.org/docs/request-matching/), so assertions cover what went
+over the wire: URL encoding, headers, serialised bodies.
+
+## Every snippet is tested
+
+Code on this site is embedded from the
+[examples project](https://github.com/hella-web3/wiremock-testcontainers-nodejs/tree/main/examples)
+at build time – the link under each snippet opens its source. The examples consume the built
+package, and are type-checked, linted, unit-tested and run against WireMock on every change.
+
+## Versions
+
+One docs version per major version of the library, from the version menu. The docs of an
+unreleased major appear under `/docs/next`, marked unreleased.

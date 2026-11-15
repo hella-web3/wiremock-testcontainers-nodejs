@@ -1,0 +1,8 @@
+{
+  "request": { "method": "GET", "url": "/accounts/acc-1" },
+  "response": {
+    "status": 200,
+    "headers": { "Content-Type": "application/json" },
+    "jsonBody": { "id": "acc-1", "owner": "Ada Lovelace", "currency": "GBP" }
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "name": "wiremock-testcontainers-nodejs-docs",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Documentation site for @hellaweb3/wiremock-testcontainers-nodejs \u2013 Docusaurus + TypeDoc, every code snippet embedded from the tested examples/ project.",
+  "homepage": "https://hella-web3.github.io/wiremock-testcontainers-nodejs/",
+  "license": "MIT",
+  "scripts": {
+    "start": "npm run api && docusaurus start",
+    "build": "npm run api && docusaurus build",
+    "serve": "docusaurus serve",
+    "api": "node scripts/api.mts",
+    "typecheck": "tsc --noEmit",
+    "lint": "oxlint --deny-warnings",
+    "test:unit": "vitest run --project unit --coverage",
+    "test:e2e": "npm run build && vitest run --project e2e",
+    "check": "npm run typecheck && npm run lint && npm run test:unit && npm run test:e2e",
+    "sync:markdown": "node scripts/sync-markdown.mts",
+    "version:cut": "node scripts/cut-version.mts"
+  },
+  "dependencies": {
+    "@docusaurus/core": "3.10.2",
+    "@docusaurus/faster": "3.10.2",
+    "@docusaurus/preset-classic": "3.10.2",
+    "@mdx-js/react": "^3.1.1",
+    "clsx": "^2.1.1",
+    "prism-react-renderer": "^2.4.1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@docusaurus/module-type-aliases": "3.10.2",
+    "@docusaurus/tsconfig": "3.10.2",
+    "@docusaurus/types": "3.10.2",
+    "@types/mdast": "^4.0.4",
+    "@types/node": "^22.18.0",
+    "@types/react": "^19.2.0",
+    "@vitest/coverage-v8": "^5.1.0",
+    "mdast-util-mdx-jsx": "^3.2.0",
+    "oxlint": "^1.92.0",
+    "remark-mdx": "^3.1.1",
+    "remark-parse": "^11.0.0",
+    "remark-stringify": "^11.0.0",
+    "typedoc": "^0.28.20",
+    "typedoc-docusaurus-theme": "^1.4.3",
+    "typedoc-plugin-markdown": "^4.14.1",
+    "typescript": "~6.0.2",
+    "unified": "^11.0.5",
+    "unist-util-visit": "^5.0.0",
+    "vitest": "^5.1.0"
+  },
+  "browserslist": {
+    "production": [
+      ">0.5%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 3 chrome version",
+      "last 3 firefox version",
+      "last 5 safari version"
+    ]
+  },
+  "engines": {
+    "node": ">=22.18"
+  },
+  "overrides": {
+    "@docsearch/react": "4.7.0",
+    "@swc/core": "1.16.18",
+    "@swc/html": "1.16.2",
+    "rolldown": "1.2.16",
+    "vite": "8.3.6"
+  }
+}

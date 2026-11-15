@@ -1,6 +1,7 @@
 # WireMock Testcontainers for Node.js
 
 [![Build](https://github.com/hella-web3/wiremock-testcontainers-nodejs/actions/workflows/main.yml/badge.svg)](https://github.com/hella-web3/wiremock-testcontainers-nodejs/actions/workflows/main.yml)
+[![Docs](https://github.com/hella-web3/wiremock-testcontainers-nodejs/actions/workflows/docs.yml/badge.svg)](https://hella-web3.github.io/wiremock-testcontainers-nodejs/)
 [![npm](https://img.shields.io/npm/v/%40hellaweb3%2Fwiremock-testcontainers-nodejs)](https://www.npmjs.com/package/@hellaweb3/wiremock-testcontainers-nodejs)
 [![downloads](https://img.shields.io/npm/dm/%40hellaweb3%2Fwiremock-testcontainers-nodejs)](https://www.npmjs.com/package/@hellaweb3/wiremock-testcontainers-nodejs)
 
@@ -10,10 +11,16 @@ fluent TypeScript API modelled on the official
 directories, files, npm packages or inline JSON; reset state between tests without restarting;
 verify calls through WireMock's request journal.
 
+**[Documentation](https://hella-web3.github.io/wiremock-testcontainers-nodejs/)** ·
+[Quick start](https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/getting-started/quick-start) ·
+[Guides](https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/guides/registering-stubs) ·
+[API reference](https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/api) ·
+[Examples](./examples)
+
 ## Install
 
 ```bash
-npm i -D @hellaweb3/wiremock-testcontainers-nodejs testcontainers
+npm i -D @hellaweb3/wiremock-testcontainers-nodejs
 ```
 
 Node.js >= 22.22 and a [container runtime](https://node.testcontainers.org/supported-container-runtimes/).
@@ -22,185 +29,79 @@ ESM and CJS, fully typed, `testcontainers` is the only dependency. pnpm >= 10 ma
 
 ## Quick start
 
+<!-- snippet: getting-started/quick-start.e2e.test.ts#quick-start -->
 ```typescript
 import { afterAll, afterEach, beforeAll, expect, it } from "vitest"; // or Jest
 import { type StartedWiremockContainer, WiremockContainer } from "@hellaweb3/wiremock-testcontainers-nodejs";
+import { PaymentsClient } from "../app/payments-client"; // the code under test
 
 let wiremock: StartedWiremockContainer;
 
 beforeAll(async () => {
   wiremock = await new WiremockContainer()
-    .withMappings("./test/__mocks__/wiremock") // mappings/ + __files/
+    .withMappings("./__mocks__/wiremock") // mappings/ + __files/
     .start();
   await wiremock.waitUntilReady();
-}, 60_000); // the first image pull can be slow
+}, 120_000); // the first image pull can be slow
 
 afterEach(() => wiremock.reset()); // pristine stubs, empty journal – no restart
-afterAll(() => wiremock.stop());
+afterAll(() => wiremock?.stop());
 
-it("serves GET /cards", async () => {
-  const response = await fetch(wiremock.getUrl("/cards"));
+it("lists the recorded payments", async () => {
+  const page = await new PaymentsClient(wiremock.getUrl()).list();
 
-  expect(response.status).toBe(200);
-  expect(await wiremock.countRequests({ method: "GET", url: "/cards" })).toBe(1);
+  expect(page.meta.totalItems).toBe(2);
+  expect(await wiremock.countRequests({ method: "GET", url: "/payments" })).toBe(1);
 });
 ```
 
-## Registering stubs
+`PaymentsClient` stands for your code under test – any HTTP client pointed at `wiremock.getUrl()`.
+The [quick start](https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/getting-started/quick-start)
+walks through it.
 
-```typescript
-new WiremockContainer("wiremock/wiremock:3.13.0") // default: wiremock/wiremock
-  .withMappings("./test/__mocks__/wiremock")     // a recorded directory
-  .withMapping("health", "./fixtures/health.json")
-  .withMapping("ping", { json: { request: { url: "/ping" }, response: { status: 200, body: "pong" } } })
-  .withFiles("./fixtures/body.json", { file: "./logo.png", name: "img/logo.png" })
-  .withCommand(["--global-response-templating"]); // any Testcontainers builder method
-```
+## What you can do
 
-- **`withMappings(dir)`** copies `dir/mappings/` (required) and `dir/__files/` (optional).
-- **`withMapping(name, source)`** registers one stub at `mappings/<name>.json`; `name` may
-  contain `/`. The file may hold one stub or `{ "mappings": [...] }`.
-- **`withFiles(...sources)`** registers response bodies at `__files/<name>`, the base name unless
-  `name` is given. All or nothing.
-
-| Source                             | Example                                                        |
-|------------------------------------|----------------------------------------------------------------|
-| Path (relative to cwd) or `file:` URL | `"./fixtures/a.json"`, `new URL("./a.json", import.meta.url)` |
-| `{ file }`                         | `{ file: "./fixtures/a.json" }`                                 |
-| `{ package, file }` – any file of an installed package | `{ package: "@acme/fixtures", file: "wiremock/a.json" }` |
-| `{ module, file }` – next to a module | `{ module: import.meta.url, file: "./a.json" }` (CJS: `__dirname`) |
-| `{ json }` – mappings only         | an object (serialised) or a string (copied verbatim)            |
+| Task | API | Guide |
+|------|-----|-------|
+| Serve stubs from directories, files, packages or inline JSON | `withMappings()`, `withMapping()`, `withFiles()` | [Registering stubs](https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/guides/registering-stubs), [file sources](https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/guides/file-sources) |
+| Pin the image, pass WireMock options | `new WiremockContainer(image)`, `withCommand()` | [Configuring the container](https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/guides/configuring-the-container) |
+| Start, wait, build URLs, stop | `start()`, `waitUntilReady()`, `getUrl()`, `await using` | [Container lifecycle](https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/guides/container-lifecycle) |
+| Isolate tests without restarts | `reset()`, `resetRequests()` | [Test isolation](https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/guides/test-isolation) |
+| Verify what your code sent | `countRequests()`, `findRequests()` | [Verifying requests](https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/guides/verifying-requests) |
+| Load WireMock extensions from JARs – no JDK | `withExtensionJar()`, `withExtension()` | [Java extensions](https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/extensions/java-extensions), [TypeScript extensions](https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/extensions/typescript-extensions) |
+| Develop without Docker | `installNoDockerRuntime()` | [Running without Docker](https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/guides/running-without-docker) |
 
 Registrations are validated before any image is pulled: sources must exist, mappings must be
-WireMock stubs, and nothing may overwrite another registration or reuse a stub `id`.
-
-## Extensions
-
-Load [WireMock extensions](https://wiremock.org/docs/extending-wiremock/) from compiled JARs – no JDK needed:
-
-```typescript
-new WiremockContainer()
-  .withExtensionJar("./wiremock/acme.jar")        // onto WireMock's class path
-  .withExtension("com.acme.UppercaseTransformer") // --extensions com.acme.UppercaseTransformer
-  .withMapping("shout", { json: { request: { url: "/shout" }, response: { body: "hi", transformers: ["uppercase"] } } });
-```
-
-| Method                                                 | Registers                                                                 |
-|--------------------------------------------------------|---------------------------------------------------------------------------|
-| `withExtension(ext)`, `withExtensions([...])`          | A fully qualified class name, or a [TypeScript extension](#typescript-extensions) |
-| `withExtensionJar(jar)`, `withExtensionJars([...])`    | A JAR, or every `*.jar` of a directory – any source above; `{ file, name }` renames |
-| `withExtensionOptions({ scanning, verifyClassNames })` | `scanning: false` ignores JARs' `META-INF/services`; `verifyClassNames: false` skips the class check |
-
-- Class names share one `--extensions` flag, in registration order, without repeats.
-- Validated before start: JARs must be readable `*.jar`s; each class must be in a registered JAR
-  or WireMock itself (else: *did you mean …?*); `withCommand()` must not repeat `--extensions` or
-  an extension's option – WireMock crashes on repeats. Start-up failures name the extensions.
-- WireMock 3 runs on Java 11+, so JARs must target Java 11. Custom images must keep the official
-  `/var/wiremock/extensions` class path.
-
-### TypeScript extensions
-
-Bundle class names, JARs and options; register the class or an instance:
-
-```typescript
-import type { WireMockExtension } from "@hellaweb3/wiremock-testcontainers-nodejs";
-
-class Uppercase implements WireMockExtension {
-  getName() { return "uppercase"; } // identifies it; implement at least one method below
-  getClassNames() { return ["com.acme.UppercaseTransformer"]; }
-  getJars() { return [{ module: import.meta.url, file: "./acme.jar" }]; }
-  getOptions() { return ["--global-response-templating"]; } // "--flag" or "--option=value"
-}
-new WiremockContainer().withExtension(Uppercase);
-```
-
-The [guide for extension authors](./examples/extensions/README.md) has recipes, tests and publishing.
-
-## Test utilities
-
-`start()` resolves to a `StartedWiremockContainer`:
-
-| Member                                    | Purpose                                                                 |
-|-------------------------------------------|-------------------------------------------------------------------------|
-| `rpcUrl`                                  | Base URL, e.g. `http://localhost:32768`                                 |
-| `getUrl(path?)`                           | `getUrl("cards?page=1")` → `<rpcUrl>/cards?page=1`                       |
-| `getAdminUrl()` / `getMappingUrl()`       | `<rpcUrl>/__admin` / `<rpcUrl>/__admin/mappings` (runtime stubs)        |
-| `isRunning()`                             | `true` if WireMock is healthy; never throws                             |
-| `waitUntilReady({ timeout?, interval? })` | Polls until healthy (defaults: 30 s, every 250 ms)                      |
-| `reset()`                                 | Restore registered stubs and scenarios, clear the journal – no restart  |
-| `resetRequests()`                         | Clear the journal only                                                  |
-| `countRequests(criteria)`                 | Number of matching requests since the last reset                        |
-| `findRequests(criteria)`                  | The matching `RecordedRequest`s (url, method, headers, body, …)          |
-| `stop()`, `await using`                   | Stop the container                                                      |
-
-`criteria` (`WiremockRequestCriteria`) uses WireMock's [request matching](https://wiremock.org/docs/request-matching/):
-
-```typescript
-const [request] = await wiremock.findRequests({
-  method: "POST",
-  urlPath: "/cards",
-  headers: { "Content-Type": { equalTo: "application/json" } },
-});
-expect(JSON.parse(request.body ?? "")).toMatchObject({ cardType: "virtual" });
-```
-
-Also exported: `WaitUntilReadyOptions`, the source types `WiremockMappingSource`,
-`WiremockStaticFile`, `WiremockFileSource`, `WiremockPath` and `WiremockStubMapping`, and the
-extension types `WireMockExtension`, `ExtensionConstructor`, `ExtensionInput`,
-`WiremockExtensionJar` and `WiremockExtensionOptions`.
-
-**Tips:** start one container per suite and `reset()` between tests, which is far faster than
-restarting; raise the `beforeAll` timeout for the first image pull; assert with
-`countRequests()`/`findRequests()` – they verify what actually went over the wire.
+WireMock stubs, and nothing may overwrite another registration or reuse a stub `id`. Every export
+is listed in the [API overview](https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/reference/api-overview);
+errors are explained in [troubleshooting](https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/reference/troubleshooting).
 
 ## Without Docker (local development only)
 
-No container runtime? With Java 11+, `@hellaweb3/wiremock-testcontainers-nodejs/no-docker`
-serves every `WiremockContainer` from a local WireMock JVM. Tests stay unchanged: stubs, files,
-extensions and `withCommand()` flags apply as in the container.
+No container runtime? With Java 11+ and the optional `wiremock` peer dependency,
+`@hellaweb3/wiremock-testcontainers-nodejs/no-docker` serves every `WiremockContainer` from a
+local WireMock JVM – tests unchanged. It is never the default, warns on every start and refuses to
+run in CI/CD. See [running without Docker](https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/guides/running-without-docker).
 
-> [!WARNING]
-> Never the default, never for CI/CD: it refuses to run when CI is detected (`CI`,
-> `GITHUB_ACTIONS`, …) and warns on every start. Results can differ from the Docker image; run
-> with Docker before merging.
+## Running the docs locally
+
+The site lives in [`docs/`](./docs), an npm project of its own. From the repository root,
+`pnpm docs:<script>` runs its script of that name – installing `docs/` when needed; from `docs/`,
+`npm run <script>` does the same:
 
 ```bash
-npm i -D wiremock # bundles the WireMock JAR (optional peer dependency)
+pnpm install        # once
+pnpm docs:start     # live preview – in docs/: npm run start
+pnpm docs:check     # typecheck, lint, test, build – in docs/: npm run check
 ```
 
-```typescript
-// test/no-docker.setup.ts
-import { installNoDockerRuntime } from "@hellaweb3/wiremock-testcontainers-nodejs/no-docker";
-installNoDockerRuntime();
-
-// vitest.config.ts – opt-in only
-setupFiles: process.env.WIREMOCK_NO_DOCKER === "1" ? ["./test/no-docker.setup.ts"] : [],
-```
-
-Set `WIREMOCK_NO_DOCKER=1` from a `--no-docker` script flag – see
-[`examples/scripts/test-e2e.mjs`](./examples/scripts/test-e2e.mjs), which supports
-`npm test --no-docker`.
-
-| Option (`installNoDockerRuntime`) | Environment                  | Default                            |
-|-----------------------------------|------------------------------|------------------------------------|
-| `jar`                             | `WIREMOCK_JAR`               | the `wiremock` package's JAR       |
-| `java`                            | `WIREMOCK_JAVA`, `JAVA_HOME` | `java`                             |
-| `startupTimeout`                  | –                            | `60_000` ms                        |
-| `cacheDir` (`false` disables)     | –                            | `<tmpdir>/wiremock-testcontainers` |
-| `log`                             | –                            | `process.emitWarning`              |
-| `env` – for the CI check and defaults | –                        | `process.env`                      |
-
-- **Speed:** a C1-only JIT and a class-data archive per JAR and Java in `cacheDir`. The first run
-  records it (a slower `stop()`); later runs boot ~2× faster and stop instantly. `JAVA_OPTS`
-  override the JVM flags.
-- **Differences:** WireMock listens on `127.0.0.1`; extension JARs join its class path;
-  `exec()`, networks and copying after start throw; leftover JVMs are killed on exit.
-- **Also exported** (from `…/no-docker` and the package root): `detectCI(env?)` – the CI variable
-  set, if any; `isNoDockerRequested(env?)` – whether `NO_DOCKER_ENV` (`WIREMOCK_NO_DOCKER`) is `1` or `true`.
+Every task: [`docs/README.md`](./docs/README.md#running-the-docs).
 
 ## More
 
-- [`examples/`](./examples) – a standalone project using the package via `npm link`.
-- [CONTRIBUTING.md](./CONTRIBUTING.md) – scripts, CI and tests.
+- [`examples/`](./examples) – runnable, tested examples for every API, consuming the package via
+  `npm link`. Every code snippet in the documentation is embedded from them.
+- [CONTRIBUTING.md](./CONTRIBUTING.md) – scripts, CI, tests and the definition of done.
+- [release.md](./release.md) – releasing, and how the docs follow major versions.
 
 Maintained by [Hella Labs](https://hellaweb3.com/). [MIT](./LICENSE) licensed.

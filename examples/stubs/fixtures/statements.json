@@ -1,0 +1,20 @@
+{
+  "mappings": [
+    {
+      "request": { "method": "GET", "url": "/statements/2026-10" },
+      "response": {
+        "status": 200,
+        "headers": { "Content-Type": "text/csv" },
+        "bodyFileName": "statement.csv"
+      }
+    },
+    {
+      "request": { "method": "GET", "url": "/invoices/inv-001" },
+      "response": {
+        "status": 200,
+        "headers": { "Content-Type": "application/json" },
+        "bodyFileName": "invoices/inv-001.json"
+      }
+    }
+  ]
+}

@@ -1,0 +1,95 @@
+---
+title: Troubleshooting
+description: Every error the library raises, what it means and how to fix it – plus container runtime and timing issues.
+---
+
+# Troubleshooting
+
+Find your error message below. Messages start with the method that failed, e.g.
+`WiremockContainer.withMapping("health"): …`.
+
+## Registration errors
+
+Thrown by `withMappings()`, `withMapping()` and `withFiles()`:
+
+| Error contains | Fix |
+|----------------|-----|
+| `does not exist` | Paths are relative to the working directory – use `{ module: import.meta.url, file }` ([file sources](../guides/file-sources.mdx)) |
+| `is not a WireMock stub mapping` | A mapping needs `request` and `response` – is it a body for `withFiles()`? |
+| `invalid JSON` | Fix the file or string |
+| `"mappings" must be a non-empty array` | Add at least one stub |
+| `must be a relative path using "/" separators` | No empty, absolute, `.` or `..` name segments |
+| `is not installed` | Install the package – looked up from the working directory |
+| `must point to a file inside package` | Remove `..` from `file` |
+| `is already registered from …` | Two sources for one path: rename one |
+| `stub id … is already used by …` | Two stubs share an `id` |
+
+```ts file=troubleshooting/errors.test.ts#registration-errors
+```
+
+## Extension errors
+
+See [authoring extensions → troubleshooting](../extensions/authoring-extensions.mdx#troubleshooting).
+
+## Errors when starting
+
+`start()` rejects before starting anything on conflicting options or an unknown extension class:
+
+```ts file=container/container.test.ts#conflicts
+```
+
+```ts file=extensions/extensions.test.ts#start-check
+```
+
+If WireMock itself fails, the error lists the extensions in use:
+
+```ts file=troubleshooting/errors.e2e.test.ts#start-failure
+```
+
+| In WireMock's output | Cause |
+|----------------------|-------|
+| `ClassNotFoundException` | The class is in no JAR on the class path |
+| `UnsupportedClassVersionError` | The JAR targets Java newer than 11 |
+| `NoSuchMethodException`, `InstantiationException` | The class lacks a public no-argument constructor |
+
+See WireMock's output with `DEBUG=testcontainers:containers`, or `await wiremock.logs()`.
+
+### No container runtime
+
+`Could not find a working container runtime strategy` – Testcontainers found no Docker:
+
+| Environment | Fix |
+|-------------|-----|
+| Remote or rootless daemon | `DOCKER_HOST=tcp://host:2375` or `unix:///path/to/docker.sock` |
+| Podman | `DOCKER_HOST=unix://$XDG_RUNTIME_DIR/podman/podman.sock`, `TESTCONTAINERS_RYUK_DISABLED=true` |
+| Docker socket in a dev container | `TESTCONTAINERS_HOST_OVERRIDE=host.docker.internal` |
+| No runtime | [Run without Docker](../guides/running-without-docker.mdx), or [Testcontainers Cloud](https://testcontainers.com/cloud/) |
+
+### Timeout on the first run
+
+The first `start()` pulls the image. Raise the `beforeAll` timeout (the examples use `120_000`), or
+`docker pull wiremock/wiremock` beforehand.
+
+## Errors at runtime
+
+`countRequests()`, `findRequests()`, `reset()` and `resetRequests()` throw WireMock's explanation
+when it rejects a call – usually a malformed matcher:
+
+```ts file=troubleshooting/errors.e2e.test.ts#admin-error
+```
+
+`waitUntilReady()` throws when WireMock is not healthy in time:
+
+```ts file=troubleshooting/errors.e2e.test.ts#not-ready
+```
+
+### A request is not matched
+
+WireMock answers `404` with a *Request was not matched* report of the closest stubs – print the
+response body. List what WireMock loaded:
+
+```ts file=stubs/stubs.e2e.test.ts#list-stubs
+```
+
+Usual causes: `url` (exact path and query) where `urlPath` was meant, a method mismatch, or a
+header your client does not send.

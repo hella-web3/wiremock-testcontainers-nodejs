@@ -1,0 +1,8 @@
+{
+  "request": { "method": "GET", "urlPath": "/exchange-rates", "queryParameters": { "base": { "equalTo": "USD" } } },
+  "response": {
+    "status": 200,
+    "headers": { "Content-Type": "application/json" },
+    "bodyFileName": "rates.json"
+  }
+}

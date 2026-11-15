@@ -1,0 +1,48 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": [
+    "../src/index.ts"
+  ],
+  "tsconfig": "./tsconfig.typedoc.json",
+  "out": "./docs/api",
+  "plugin": [
+    "typedoc-plugin-markdown",
+    "typedoc-docusaurus-theme",
+    "./src/lib/typedoc-descriptions.mts"
+  ],
+  "docsPath": "./docs",
+  "readme": "none",
+  "name": "API reference",
+  "entryFileName": "index",
+  "excludePrivate": true,
+  "excludeInternal": true,
+  "excludeExternals": true,
+  "disableGit": true,
+  "displayBasePath": "..",
+  "sourceLinkTemplate": "https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/{path}#L{line}",
+  "externalSymbolLinkMappings": {
+    "testcontainers": {
+      "GenericContainer": "https://node.testcontainers.org/features/containers/",
+      "AbstractStartedContainer": "https://node.testcontainers.org/features/containers/",
+      "StartedTestContainer": "https://node.testcontainers.org/features/containers/"
+    }
+  },
+  "validation": {
+    "notExported": true,
+    "invalidLink": true,
+    "invalidPath": true,
+    "notDocumented": true
+  },
+  "treatWarningsAsErrors": true,
+  "treatValidationWarningsAsErrors": true,
+  "hidePageHeader": true,
+  "hideBreadcrumbs": true,
+  "useCodeBlocks": true,
+  "parametersFormat": "table",
+  "interfacePropertiesFormat": "table",
+  "classPropertiesFormat": "table",
+  "typeDeclarationFormat": "table",
+  "sidebar": {
+    "pretty": true
+  }
+}

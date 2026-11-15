@@ -1,0 +1,111 @@
+---
+title: Authoring extensions
+description: Write, test and publish TypeScript extensions for WireMock's Java extensions.
+---
+
+# Authoring extensions
+
+Recipes from the examples' [`extensions/`](https://github.com/hella-web3/wiremock-testcontainers-nodejs/tree/main/examples/extensions),
+one per kind of extension:
+
+```ts file=extensions/index.ts
+```
+
+## Wrap a Java class
+
+A base class turns name, class and JAR into one `super()` call:
+
+```ts file=extensions/java-extension.ts#java-extension
+```
+
+```ts file=extensions/uppercase-transformer.ts#class
+```
+
+Keep WireMock's name in `static readonly NAME`, and expose what tests assert on, like `HEADER`.
+
+## Add typed stub helpers
+
+Type the fields stubs apply extensions with:
+
+```ts file=extensions/stubs.ts#fields
+```
+
+Return them from static helpers – validating parameters, so mistakes fail where they are written:
+
+```ts file=extensions/uppercase-transformer.ts#transform
+```
+
+```ts file=extensions/body-length-matcher.ts#longer-than
+```
+
+## Add an admin API client
+
+Take `Pick<StartedWiremockContainer, "getAdminUrl">` so unit tests can pass a fake:
+
+```ts file=extensions/stub-count-admin-api.ts#count
+```
+
+## Ship a JAR-only extension
+
+Classes listed in the JAR's `META-INF/services` load by scanning – provide only the JAR. With
+`withExtensionOptions({ scanning: false })` they need `getClassNames()`.
+
+```ts file=extensions/powered-by-transformer.ts#class
+```
+
+## Make it configurable
+
+Take options in an optional constructor parameter, copy them, and validate them there – WireMock
+crashes at start-up on a bad value.
+
+```ts file=extensions/global-response-templating.ts#class
+```
+
+## Locate JARs {/* #locating-jars */}
+
+Resolve JARs next to the module – `{ module: import.meta.url, file }`, or `__dirname` in CommonJS –
+never against the working directory:
+
+```ts file=extensions/jars.ts#jars
+```
+
+From an npm package: `{ package: "@acme/wiremock-extensions", file: "jars/acme.jar" }`.
+
+## Test it {/* #testing */}
+
+Unit tests need no container:
+
+```ts file=extensions/extensions.test.ts#unit-test
+```
+
+`start()` checks class names before starting anything:
+
+```ts file=extensions/extensions.test.ts#start-check
+```
+
+E2E: observe each extension through a real request –
+[examples](./typescript-extensions.mdx#typed-stub-helpers).
+
+## Troubleshooting
+
+```ts file=extensions/extensions.test.ts#errors
+```
+
+| Error contains | Fix |
+|----------------|-----|
+| `is not a fully qualified Java class name` | Include the package – not a short name, path or `.class` |
+| `it contributes nothing` | Implement `getClassNames()`, `getJars()` or `getOptions()` |
+| `must be "--flag" or "--option=value"` | One entry per option |
+| `does not exist` | Locate the JAR with `{ module: import.meta.url, file }` |
+| `must end in ".jar"` | Rename it: `{ file, name: "x.jar" }` |
+| `did you mean …?` (on `start()`) | Fix the class name or register its JAR |
+| `another extension named … is already registered` | One configuration per name |
+
+WireMock's own errors: `ClassNotFoundException` – a missing class; `UnsupportedClassVersionError` –
+a JAR built for Java newer than 11.
+
+## Publish it
+
+Ship extensions and JARs as an npm package: list the JARs in `"files"`, locate them with
+`{ module: import.meta.url, file: "../jars/acme.jar" }`, and make
+`@hellaweb3/wiremock-testcontainers-nodejs` a peer dependency.

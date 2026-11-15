@@ -1,27 +1,54 @@
+import { isNoDockerRequested } from "@hellaweb3/wiremock-testcontainers-nodejs";
 import { defineConfig } from "vitest/config";
 
 /**
- * `e2e/` – end-to-end flows against WireMock, with generous timeouts for a cold image pull – and
- * `extensions/` – unit tests of the example extensions, no container needed. With `--no-docker`,
- * `scripts/test-e2e.mjs` sets `WIREMOCK_NO_DOCKER=1` and the setup file below serves WireMock
- * from a local JVM.
+ * Two projects, one per kind of test:
  *
- * Coverage (`npm run test:unit`) covers the example extensions and is enforced at 100 %: they are
- * what authors copy, so every line is exercised without a container.
+ * - `unit` – `**\/*.test.ts`: no container. Coverage (`npm run test:unit`) covers every example
+ *   module and is enforced at 100 % per file: the modules are what readers copy from the docs.
+ * - `e2e` – `**\/*.e2e.test.ts`: against a real WireMock, with timeouts generous enough for a cold
+ *   image pull. With `--no-docker`, `scripts/test-e2e.mjs` sets `WIREMOCK_NO_DOCKER=1`, so the
+ *   setup file serves WireMock from a local JVM and the `no-docker/` suite joins in.
+ *
+ * @see https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/guides/running-without-docker
  */
-const noDocker = process.env.WIREMOCK_NO_DOCKER === "1";
+// #region no-docker
+const noDocker = isNoDockerRequested(); // WIREMOCK_NO_DOCKER is "1" or "true"
+// #endregion no-docker
+
+const SHARED = ["node_modules/**", "packages/**"];
 
 export default defineConfig({
   test: {
     environment: "node",
-    include: ["e2e/**/*.test.ts", "extensions/**/*.test.ts"],
-    setupFiles: noDocker ? ["./e2e/no-docker.setup.ts"] : [],
-    testTimeout: 60_000,
-    hookTimeout: 120_000,
+    projects: [
+      {
+        extends: true,
+        test: {
+          name: "unit",
+          include: ["**/*.test.ts"],
+          exclude: [...SHARED, "**/*.e2e.test.ts"],
+        },
+      },
+      {
+        extends: true,
+        test: {
+          name: "e2e",
+          include: ["**/*.e2e.test.ts"],
+          // The JVM-specific checks only make sense – and only run – without Docker.
+          exclude: [...SHARED, ...(noDocker ? [] : ["no-docker/**"])],
+          // #region setup-files
+          setupFiles: noDocker ? ["./no-docker/no-docker.setup.ts"] : [],
+          // #endregion setup-files
+          testTimeout: 60_000,
+          hookTimeout: 120_000,
+        },
+      },
+    ],
     coverage: {
       provider: "v8",
-      include: ["extensions/**/*.ts"],
-      exclude: ["extensions/**/*.test.ts"],
+      include: ["**/*.ts"],
+      exclude: [...SHARED, "**/*.test.ts", "**/*.setup.ts", "*.config.ts", "coverage/**"],
       reporter: ["text", "json-summary"],
       thresholds: { perFile: true, statements: 100, branches: 100, functions: 100, lines: 100 },
     },

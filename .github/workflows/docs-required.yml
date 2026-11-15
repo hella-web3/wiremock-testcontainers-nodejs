@@ -1,0 +1,33 @@
+name: Docs required
+
+# The definition of done (CONTRIBUTING.md): a pull request changing the library's source also
+# updates its docs or examples – or carries the `no-docs-needed` label for changes users cannot
+# observe. Re-runs when labels change.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+permissions:
+  contents: read
+
+jobs:
+  docs-required:
+    name: Library changes come with docs or examples
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Check the changed files
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
+        run: git diff --name-only "$BASE_SHA"...HEAD | node scripts/check-docs-updated.mjs --labels "$LABELS"

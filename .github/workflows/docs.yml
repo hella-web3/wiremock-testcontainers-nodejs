@@ -1,0 +1,87 @@
+name: Docs
+
+# Builds the documentation site (docs/) and publishes it to GitHub Pages:
+# https://hella-web3.github.io/wiremock-testcontainers-nodejs/
+#
+# It runs when anything the site is made of changes on main: its content, the examples every
+# snippet is embedded from, or the library whose JSDoc generates the API reference.
+# Repository settings: Pages → Source: GitHub Actions.
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/**'
+      - 'examples/**'
+      - 'src/**'
+      - 'README.md'
+      - 'package.json'
+      - '.github/workflows/docs.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# One deployment at a time; a newer push waits instead of cancelling a running deployment.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build and verify the site
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v7
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: 'npm'
+          cache-dependency-path: docs/package-lock.json
+
+      # TypeDoc reads ../src, which imports testcontainers' types.
+      - name: Install library dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install the docs project
+        working-directory: docs
+        run: npm ci
+
+      # The docs' quality gate – `pnpm docs:check` locally – which also builds the site into
+      # docs/build: nothing unverified is published.
+      - name: Check and build the site
+        working-directory: docs
+        run: npm run check
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload the site
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: docs/build
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

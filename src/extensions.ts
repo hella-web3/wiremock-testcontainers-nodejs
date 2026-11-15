@@ -4,18 +4,21 @@ import { jarEntries } from "./jar";
 import { EXTENSIONS_DIR } from "./runtime";
 import { fail, isRecord, resolvePath, show, text, within, type WiremockStaticFile } from "./sources";
 
-/** An extension JAR, or a directory of them – any {@link WiremockStaticFile}; `name` renames a JAR. */
+/**
+ * An extension JAR, or a directory of them – any {@link WiremockStaticFile}; `name` renames a JAR.
+ * @see {@link https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/extensions/java-extensions | Java extensions}
+ */
 export type WiremockExtensionJar = WiremockStaticFile;
 
 /**
  * Base interface all WireMock extensions must implement: what WireMock loads for it. Implement at
  * least one optional member.
  * @example
- * class Uppercase implements WireMockExtension {
- *   getName() { return "uppercase"; }
- *   getClassNames() { return ["com.acme.UppercaseTransformer"]; }
- *   getJars() { return ["./acme.jar"]; }
- * }
+ * const shortJournal: WireMockExtension = {
+ *   getName: () => "short-journal",
+ *   getOptions: () => ["--max-request-journal=2"],
+ * };
+ * @see {@link https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/extensions/typescript-extensions#the-contract | TypeScript extensions}
  */
 export interface WireMockExtension {
   /** Its name, e.g. WireMock's `"uppercase"`. Re-registering a name: no-op if configured alike, else an error. */
@@ -28,13 +31,22 @@ export interface WireMockExtension {
   getOptions?(): readonly string[];
 }
 
-/** Represents a class constructor for an extension */
+/**
+ * A {@link WireMockExtension} class with a no-argument constructor: registering the class
+ * instantiates it.
+ */
 export type ExtensionConstructor<T extends WireMockExtension = WireMockExtension> = new () => T;
 
-/** Union type of all supported ways to register an extension: a Java class name, a {@link WireMockExtension} or its class. */
+/**
+ * Union type of all supported ways to register an extension: a Java class name, a {@link WireMockExtension} or its class.
+ * @see {@link https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/extensions/typescript-extensions#registering-extensions | Registering extensions}
+ */
 export type ExtensionInput = string | ExtensionConstructor | WireMockExtension;
 
-/** Options for `WiremockContainer.withExtensionOptions()`. */
+/**
+ * Options for `WiremockContainer.withExtensionOptions()`.
+ * @see {@link https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/extensions/java-extensions#extension-options | Extension options}
+ */
 export interface WiremockExtensionOptions {
   /** Load extensions JARs declare in `META-INF/services`; `false`: `--disable-extensions-scanning`. Default `true`. */
   readonly scanning?: boolean;

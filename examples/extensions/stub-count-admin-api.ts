@@ -1,3 +1,8 @@
+/**
+ * An admin API extension, wrapped with a typed client for its route.
+ *
+ * @see https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/extensions/authoring-extensions
+ */
 import type { StartedWiremockContainer } from "@hellaweb3/wiremock-testcontainers-nodejs";
 import { JavaExtension } from "./java-extension";
 import { JARS, JAVA_PACKAGE } from "./jars";
@@ -19,6 +24,7 @@ export class StubCountAdminApi extends JavaExtension {
     super({ name: StubCountAdminApi.NAME, className: `${JAVA_PACKAGE}.StubCountAdminApi`, jar: JARS.examples });
   }
 
+  // #region count
   /**
    * Calls the route: the number of stubs WireMock serves.
    * @throws If the route fails – e.g. because the extension is not registered.
@@ -30,4 +36,5 @@ export class StubCountAdminApi extends JavaExtension {
     const { count } = (await response.json()) as { count: number };
     return count;
   }
+  // #endregion count
 }

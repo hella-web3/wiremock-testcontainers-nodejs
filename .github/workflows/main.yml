@@ -102,13 +102,68 @@ jobs:
         working-directory: examples
         run: npm run typecheck
 
-      # The example extensions and the guide's snippet checks, with coverage enforced at 100 %
-      # per file – no container needed.
-      - name: Unit-test the example extensions
+      # Examples are what readers copy from the docs: linted like library code.
+      - name: Lint the examples project
+        working-directory: examples
+        run: npm run lint
+
+      # Every example module, with coverage enforced at 100 % per file – no container needed.
+      - name: Unit-test the examples
         working-directory: examples
         run: npm run test:unit
 
       # Never --no-docker: refused in CI.
-      - name: Run the end-user E2E flow
+      - name: Run the examples end-to-end
         working-directory: examples
+        run: npm run test:e2e
+
+  # The docs site – its own npm project in docs/. Deployed by docs.yml from main; here it is
+  # checked on every pull request: snippets in sync with examples/, every API documented and
+  # used in an example, the site builds without a broken link and its pages serve.
+  docs:
+    name: Docs – build and verify the documentation site
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v7
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: 'npm'
+          cache-dependency-path: docs/package-lock.json
+
+      # TypeDoc and the API coverage checks read ../src, which imports testcontainers' types.
+      - name: Install library dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install the docs project
+        working-directory: docs
+        run: npm ci
+
+      # The steps of `npm run check` – `pnpm docs:check` locally – one by one, for readable logs.
+      - name: Typecheck the docs project
+        working-directory: docs
+        run: npm run typecheck
+
+      - name: Lint the docs project
+        working-directory: docs
+        run: npm run lint
+
+      # The docs tooling (100 % coverage) and the sync checks between docs, examples and library.
+      - name: Unit-test the docs (with coverage)
+        working-directory: docs
+        run: npm run test:unit
+
+      # Builds the site – TypeDoc and Docusaurus fail on undocumented APIs, broken links and
+      # broken anchors – then serves it and checks every page, snippet and docs link.
+      - name: Build the site and check every page and link
+        working-directory: docs
         run: npm run test:e2e
