@@ -104,4 +104,4 @@ Every task: [`docs/README.md`](./docs/README.md#running-the-docs).
 - [CONTRIBUTING.md](./CONTRIBUTING.md) – scripts, CI, tests and the definition of done.
 - [release.md](./release.md) – releasing, and how the docs follow major versions.
 
-Maintained by [Hella Labs](https://hellaweb3.com/). [MIT](./LICENSE) licensed.
+Maintained by [Hella Labs](https://hellalabs.dev/). [MIT](./LICENSE) licensed.
