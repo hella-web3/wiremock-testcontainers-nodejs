@@ -129,7 +129,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `${PACKAGE_NAME} – MIT licensed. Maintained by <a href="https://hellaweb3.com/">Hella Labs</a>.`,
+      copyright: `${PACKAGE_NAME} – MIT licensed. Maintained by <a href="https://hellalabs.com/">Hella Labs</a>.`,
     },
     prism: {
       theme: prismThemes.github,
