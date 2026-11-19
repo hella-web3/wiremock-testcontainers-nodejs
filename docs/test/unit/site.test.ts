@@ -4,12 +4,12 @@ import { tempDir } from "../helpers.ts";
 
 describe("site", () => {
   it("publishes the docs on GitHub Pages", () => {
-    expect(DOCS_URL).toBe("https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/");
+    expect(DOCS_URL).toBe("https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/");
   });
 
   it("links sources on GitHub, on main by default, optionally with lines", () => {
-    expect(sourceUrl("src/index.ts")).toBe("https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/src/index.ts");
-    expect(sourceUrl("a.ts", "v1.0.0", [2, 4])).toBe("https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/v1.0.0/a.ts#L2-L4");
+    expect(sourceUrl("src/index.ts")).toBe("https://github.com/hella-labs/wiremock-testcontainers-nodejs/blob/main/src/index.ts");
+    expect(sourceUrl("a.ts", "v1.0.0", [2, 4])).toBe("https://github.com/hella-labs/wiremock-testcontainers-nodejs/blob/v1.0.0/a.ts#L2-L4");
   });
 
   it("reads the library's version", () => {

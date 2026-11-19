@@ -2,7 +2,7 @@
  * The package from CommonJS – Jest with ts-jest, ts-node, `.cjs` files: `require()` resolves the
  * CommonJS build, which exports the same API as the ES module build.
  *
- * @see https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/getting-started/installation
+ * @see https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/getting-started/installation
  */
 import { createRequire } from "node:module";
 import { describe, expect, it } from "vitest";

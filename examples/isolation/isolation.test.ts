@@ -1,7 +1,7 @@
 /**
  * Unit tests of the isolation helpers: `addStub()` against a stubbed `fetch` and a fake container.
  *
- * @see https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/guides/test-isolation
+ * @see https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/guides/test-isolation
  */
 import { WiremockContainer } from "@hellaweb3/wiremock-testcontainers-nodejs";
 import { afterEach, describe, expect, it, vi } from "vitest";

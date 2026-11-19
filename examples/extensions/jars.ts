@@ -1,7 +1,7 @@
 /**
  * Where the example extensions' JARs are – resolved next to this module.
  *
- * @see https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/extensions/authoring-extensions
+ * @see https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/extensions/authoring-extensions
  */
 import type { WiremockExtensionJar } from "@hellaweb3/wiremock-testcontainers-nodejs";
 

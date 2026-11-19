@@ -37,7 +37,7 @@ describe("remarkExampleSnippets", () => {
     expect(link.data).toEqual({ hProperties: { className: ["example-source"] } });
     expect(link.children[1]).toMatchObject({
       type: "link",
-      url: "https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/examples/greet/greet.ts#L3-L3",
+      url: "https://github.com/hella-labs/wiremock-testcontainers-nodejs/blob/main/examples/greet/greet.ts#L3-L3",
       children: [{ type: "inlineCode", value: "examples/greet/greet.ts (lines 3–3)" }],
     });
     expect(outro.children[0]).toMatchObject({ value: "Outro" });
@@ -56,7 +56,7 @@ describe("remarkExampleSnippets", () => {
 
   it("links a whole file without line numbers in its label", () => {
     expect(sourceLink({ file: "a.ts", code: "x", lines: [1, 4] }, "v1.0.0").children[1]).toMatchObject({
-      url: "https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/v1.0.0/examples/a.ts#L1-L4",
+      url: "https://github.com/hella-labs/wiremock-testcontainers-nodejs/blob/v1.0.0/examples/a.ts#L1-L4",
       children: [{ value: "examples/a.ts" }],
     });
   });

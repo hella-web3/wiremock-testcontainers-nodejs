@@ -6,7 +6,7 @@ import { fail, isRecord, resolvePath, show, text, within, type WiremockStaticFil
 
 /**
  * An extension JAR, or a directory of them – any {@link WiremockStaticFile}; `name` renames a JAR.
- * @see {@link https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/extensions/java-extensions | Java extensions}
+ * @see {@link https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/extensions/java-extensions | Java extensions}
  */
 export type WiremockExtensionJar = WiremockStaticFile;
 
@@ -18,7 +18,7 @@ export type WiremockExtensionJar = WiremockStaticFile;
  *   getName: () => "short-journal",
  *   getOptions: () => ["--max-request-journal=2"],
  * };
- * @see {@link https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/extensions/typescript-extensions#the-contract | TypeScript extensions}
+ * @see {@link https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/extensions/typescript-extensions#the-contract | TypeScript extensions}
  */
 export interface WireMockExtension {
   /** Its name, e.g. WireMock's `"uppercase"`. Re-registering a name: no-op if configured alike, else an error. */
@@ -39,13 +39,13 @@ export type ExtensionConstructor<T extends WireMockExtension = WireMockExtension
 
 /**
  * Union type of all supported ways to register an extension: a Java class name, a {@link WireMockExtension} or its class.
- * @see {@link https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/extensions/typescript-extensions#registering-extensions | Registering extensions}
+ * @see {@link https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/extensions/typescript-extensions#registering-extensions | Registering extensions}
  */
 export type ExtensionInput = string | ExtensionConstructor | WireMockExtension;
 
 /**
  * Options for `WiremockContainer.withExtensionOptions()`.
- * @see {@link https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/extensions/java-extensions#extension-options | Extension options}
+ * @see {@link https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/extensions/java-extensions#extension-options | Extension options}
  */
 export interface WiremockExtensionOptions {
   /** Load extensions JARs declare in `META-INF/services`; `false`: `--disable-extensions-scanning`. Default `true`. */

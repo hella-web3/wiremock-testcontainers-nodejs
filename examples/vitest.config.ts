@@ -10,7 +10,7 @@ import { defineConfig } from "vitest/config";
  *   image pull. With `--no-docker`, `scripts/test-e2e.mjs` sets `WIREMOCK_NO_DOCKER=1`, so the
  *   setup file serves WireMock from a local JVM and the `no-docker/` suite joins in.
  *
- * @see https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/guides/running-without-docker
+ * @see https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/guides/running-without-docker
  */
 // #region no-docker
 const noDocker = isNoDockerRequested(); // WIREMOCK_NO_DOCKER is "1" or "true"

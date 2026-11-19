@@ -1,7 +1,7 @@
 /**
  * A response transformer, wrapped with a typed stub helper.
  *
- * @see https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/extensions/authoring-extensions
+ * @see https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/extensions/authoring-extensions
  */
 import { JavaExtension } from "./java-extension";
 import { JARS, JAVA_PACKAGE } from "./jars";

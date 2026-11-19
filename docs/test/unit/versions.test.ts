@@ -14,7 +14,7 @@ import {
 } from "../../src/lib/versions.mts";
 import { tempDir } from "../helpers.ts";
 
-const REPO = "https://github.com/hella-web3/wiremock-testcontainers-nodejs";
+const REPO = "https://github.com/hella-labs/wiremock-testcontainers-nodejs";
 const read = (ref: string): Snippet => {
   const [file = "", region] = ref.split("#");
   return { file, ...(region ? { region } : {}), code: "const a = 1;\n\nconst b = 2;", lines: [3, 5] };

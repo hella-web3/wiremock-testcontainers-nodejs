@@ -1,7 +1,7 @@
 /**
  * A started container's URLs and health, and both ways to stop it.
  *
- * @see https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/guides/container-lifecycle
+ * @see https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/guides/container-lifecycle
  */
 import type { StartedWiremockContainer } from "@hellaweb3/wiremock-testcontainers-nodejs";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";

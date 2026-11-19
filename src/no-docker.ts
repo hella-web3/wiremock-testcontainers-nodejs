@@ -16,7 +16,7 @@ import { EXTENSIONS_DIR, getRuntime, setRuntime, type WiremockRuntime, type Wire
 
 /**
  * The environment variable that asks for the no-Docker runtime: `WIREMOCK_NO_DOCKER`, set to `1` by the `--no-docker` flag.
- * @see {@link https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/guides/running-without-docker#detecting-ci-and-the-request | Running without Docker}
+ * @see {@link https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/guides/running-without-docker#detecting-ci-and-the-request | Running without Docker}
  */
 export const NO_DOCKER_ENV = "WIREMOCK_NO_DOCKER";
 
@@ -63,7 +63,7 @@ const STALE_RECORDING = 60 * 60 * 1000;
 
 /**
  * Options for {@link installNoDockerRuntime}.
- * @see {@link https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/guides/running-without-docker#options | Running without Docker}
+ * @see {@link https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/guides/running-without-docker#options | Running without Docker}
  */
 export interface NoDockerOptions {
   /** WireMock standalone JAR. Default: `$WIREMOCK_JAR`, else the `wiremock` npm package's. */
@@ -98,7 +98,7 @@ export function detectCI(env: Environment = process.env): string | undefined {
  * Whether {@link NO_DOCKER_ENV} is `1` or `true`.
  * @example
  * const noDocker = isNoDockerRequested(); // WIREMOCK_NO_DOCKER is "1" or "true"
- * @see {@link https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/guides/running-without-docker#detecting-ci-and-the-request | Running without Docker}
+ * @see {@link https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/guides/running-without-docker#detecting-ci-and-the-request | Running without Docker}
  */
 export function isNoDockerRequested(env: Environment = process.env): boolean {
   const value = env[NO_DOCKER_ENV]?.trim().toLowerCase();
@@ -112,7 +112,7 @@ export function isNoDockerRequested(env: Environment = process.env): boolean {
  * installNoDockerRuntime(NO_DOCKER_OPTIONS);
  * @returns A function that uninstalls it.
  * @throws In CI/CD, or if no WireMock JAR is found.
- * @see {@link https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/guides/running-without-docker#set-up | Running without Docker}
+ * @see {@link https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/guides/running-without-docker#set-up | Running without Docker}
  */
 export function installNoDockerRuntime(options: NoDockerOptions = {}): () => void {
   const env = options.env ?? process.env;

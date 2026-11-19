@@ -2,7 +2,7 @@
  * One container, many tests: `reset()` after each test restores the registered stubs, restarts
  * scenarios and empties the journal; `resetRequests()` empties the journal only.
  *
- * @see https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/guides/test-isolation
+ * @see https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/guides/test-isolation
  */
 import type { StartedWiremockContainer } from "@hellaweb3/wiremock-testcontainers-nodejs";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";

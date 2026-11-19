@@ -2,7 +2,7 @@
  * What differs without Docker – runs only with `--no-docker`, which serves this suite's WireMock
  * from a local JVM. Every other E2E suite runs unchanged in both modes.
  *
- * @see https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/guides/running-without-docker
+ * @see https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/guides/running-without-docker
  */
 import { text } from "node:stream/consumers";
 import type { StartedWiremockContainer } from "@hellaweb3/wiremock-testcontainers-nodejs";

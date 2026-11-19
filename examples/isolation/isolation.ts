@@ -2,7 +2,7 @@
  * Test isolation without restarts: stateful scenarios and stubs added at runtime are what
  * `reset()` rolls back – `resetRequests()` only empties the request journal.
  *
- * @see https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/guides/test-isolation
+ * @see https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/guides/test-isolation
  */
 import type {
   StartedWiremockContainer,

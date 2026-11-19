@@ -2,7 +2,7 @@
  * Configuring the container: the image, WireMock's command-line options, and any Testcontainers
  * builder method – `WiremockContainer` extends `GenericContainer`.
  *
- * @see https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/guides/configuring-the-container
+ * @see https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/guides/configuring-the-container
  */
 import { WiremockContainer, type WiremockStubMapping } from "@hellaweb3/wiremock-testcontainers-nodejs";
 

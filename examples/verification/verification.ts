@@ -2,7 +2,7 @@
  * Verifying what your code sent: named request criteria, a JSON-body reader and an assertion
  * helper that prints the journal when a count is off.
  *
- * @see https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/guides/verifying-requests
+ * @see https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/guides/verifying-requests
  */
 import type {
   RecordedRequest,

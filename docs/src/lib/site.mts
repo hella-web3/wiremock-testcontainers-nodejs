@@ -6,7 +6,7 @@ import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-export const ORGANIZATION = "hella-web3";
+export const ORGANIZATION = "hella-labs";
 export const PROJECT = "wiremock-testcontainers-nodejs";
 export const PACKAGE_NAME = "@hellaweb3/wiremock-testcontainers-nodejs";
 

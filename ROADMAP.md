@@ -6,11 +6,11 @@ This roadmap reflects the current open issues tracked for this repository and th
 
 ### 1. Add GitHub Pages hosted documentation for the npm integration test tool
 - Issue: #2
-- Status: Implemented – [documentation site](https://hella-web3.github.io/wiremock-testcontainers-nodejs/) in `docs/` (Docusaurus + TypeDoc), deployed by `.github/workflows/docs.yml`; every snippet is embedded from the tested `examples/` project
+- Status: Implemented – [documentation site](https://hella-labs.github.io/wiremock-testcontainers-nodejs/) in `docs/` (Docusaurus + TypeDoc), deployed by `.github/workflows/docs.yml`; every snippet is embedded from the tested `examples/` project
 - Type: Feature
 - Summary: Publish a GitHub Pages documentation site covering installation, quick start, configuration, examples, troubleshooting, and API usage for the package.
 - Goal: Improve onboarding and make the project easier to adopt for Node.js developers.
-- Link: https://github.com/hella-web3/wiremock-testcontainers-nodejs/issues/2
+- Link: https://github.com/hella-labs/wiremock-testcontainers-nodejs/issues/2
 - Follow-ups: enable GitHub Pages (Settings → Pages → Source: GitHub Actions); add site search (e.g. Algolia DocSearch or a local search plugin).
 
 ### 2. Replace the stale Testcontainers WireMock Node.js example with a maintained project
@@ -19,7 +19,7 @@ This roadmap reflects the current open issues tracked for this repository and th
 - Type: Documentation / Enhancement
 - Summary: Open a PR against the upstream Testcontainers documentation to replace the outdated Node.js example with the maintained project in this repository.
 - Goal: Ensure official docs point users to a current, supported implementation.
-- Link: https://github.com/hella-web3/wiremock-testcontainers-nodejs/issues/3
+- Link: https://github.com/hella-labs/wiremock-testcontainers-nodejs/issues/3
 
 ### 3. Dynamically record a configured API endpoint with Testcontainers and reuse the mocks in integration tests
 - Issue: #4
@@ -27,7 +27,7 @@ This roadmap reflects the current open issues tracked for this repository and th
 - Type: Enhancement
 - Summary: Add support for dynamically recording a configured API endpoint with WireMock running in Testcontainers and reusing those recorded mocks in integration tests.
 - Goal: Make integration tests more realistic and less dependent on manually maintained static fixtures.
-- Link: https://github.com/hella-web3/wiremock-testcontainers-nodejs/issues/4
+- Link: https://github.com/hella-labs/wiremock-testcontainers-nodejs/issues/4
 
 ## Roadmap summary
 

@@ -6,7 +6,7 @@
  * `wiremock` dev dependency): opt-in per run, announced with a banner, refused in CI/CD. npm
  * swallows the flag in `npm test --no-docker` and sets `npm_config_docker=""`; both forms work.
  *
- * @see https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/guides/running-without-docker
+ * @see https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/guides/running-without-docker
  */
 import { spawn } from "node:child_process";
 import { createRequire } from "node:module";

@@ -9,7 +9,7 @@
  * | `PoweredByTransformer`     | Global transformer, found by scanning | JAR only                     |
  * | `GlobalResponseTemplating` | WireMock's built-in templating        | options only, configurable   |
  *
- * @see https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/extensions/authoring-extensions
+ * @see https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/extensions/authoring-extensions
  */
 export { BodyLengthMatcher, type BodyLengthParameters } from "./body-length-matcher";
 export { GlobalResponseTemplating, type GlobalResponseTemplatingOptions } from "./global-response-templating";

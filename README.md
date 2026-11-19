@@ -1,7 +1,7 @@
 # WireMock Testcontainers for Node.js
 
-[![Build](https://github.com/hella-web3/wiremock-testcontainers-nodejs/actions/workflows/main.yml/badge.svg)](https://github.com/hella-web3/wiremock-testcontainers-nodejs/actions/workflows/main.yml)
-[![Docs](https://github.com/hella-web3/wiremock-testcontainers-nodejs/actions/workflows/docs.yml/badge.svg)](https://hella-web3.github.io/wiremock-testcontainers-nodejs/)
+[![Build](https://github.com/hella-labs/wiremock-testcontainers-nodejs/actions/workflows/main.yml/badge.svg)](https://github.com/hella-labs/wiremock-testcontainers-nodejs/actions/workflows/main.yml)
+[![Docs](https://github.com/hella-labs/wiremock-testcontainers-nodejs/actions/workflows/docs.yml/badge.svg)](https://hella-labs.github.io/wiremock-testcontainers-nodejs/)
 [![npm](https://img.shields.io/npm/v/%40hellaweb3%2Fwiremock-testcontainers-nodejs)](https://www.npmjs.com/package/@hellaweb3/wiremock-testcontainers-nodejs)
 [![downloads](https://img.shields.io/npm/dm/%40hellaweb3%2Fwiremock-testcontainers-nodejs)](https://www.npmjs.com/package/@hellaweb3/wiremock-testcontainers-nodejs)
 
@@ -11,10 +11,10 @@ fluent TypeScript API modelled on the official
 directories, files, npm packages or inline JSON; reset state between tests without restarting;
 verify calls through WireMock's request journal.
 
-**[Documentation](https://hella-web3.github.io/wiremock-testcontainers-nodejs/)** ·
-[Quick start](https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/getting-started/quick-start) ·
-[Guides](https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/guides/registering-stubs) ·
-[API reference](https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/api) ·
+**[Documentation](https://hella-labs.github.io/wiremock-testcontainers-nodejs/)** ·
+[Quick start](https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/getting-started/quick-start) ·
+[Guides](https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/guides/registering-stubs) ·
+[API reference](https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/api) ·
 [Examples](./examples)
 
 ## Install
@@ -56,32 +56,32 @@ it("lists the recorded payments", async () => {
 ```
 
 `PaymentsClient` stands for your code under test – any HTTP client pointed at `wiremock.getUrl()`.
-The [quick start](https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/getting-started/quick-start)
+The [quick start](https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/getting-started/quick-start)
 walks through it.
 
 ## What you can do
 
 | Task | API | Guide |
 |------|-----|-------|
-| Serve stubs from directories, files, packages or inline JSON | `withMappings()`, `withMapping()`, `withFiles()` | [Registering stubs](https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/guides/registering-stubs), [file sources](https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/guides/file-sources) |
-| Pin the image, pass WireMock options | `new WiremockContainer(image)`, `withCommand()` | [Configuring the container](https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/guides/configuring-the-container) |
-| Start, wait, build URLs, stop | `start()`, `waitUntilReady()`, `getUrl()`, `await using` | [Container lifecycle](https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/guides/container-lifecycle) |
-| Isolate tests without restarts | `reset()`, `resetRequests()` | [Test isolation](https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/guides/test-isolation) |
-| Verify what your code sent | `countRequests()`, `findRequests()` | [Verifying requests](https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/guides/verifying-requests) |
-| Load WireMock extensions from JARs – no JDK | `withExtensionJar()`, `withExtension()` | [Java extensions](https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/extensions/java-extensions), [TypeScript extensions](https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/extensions/typescript-extensions) |
-| Develop without Docker | `installNoDockerRuntime()` | [Running without Docker](https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/guides/running-without-docker) |
+| Serve stubs from directories, files, packages or inline JSON | `withMappings()`, `withMapping()`, `withFiles()` | [Registering stubs](https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/guides/registering-stubs), [file sources](https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/guides/file-sources) |
+| Pin the image, pass WireMock options | `new WiremockContainer(image)`, `withCommand()` | [Configuring the container](https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/guides/configuring-the-container) |
+| Start, wait, build URLs, stop | `start()`, `waitUntilReady()`, `getUrl()`, `await using` | [Container lifecycle](https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/guides/container-lifecycle) |
+| Isolate tests without restarts | `reset()`, `resetRequests()` | [Test isolation](https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/guides/test-isolation) |
+| Verify what your code sent | `countRequests()`, `findRequests()` | [Verifying requests](https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/guides/verifying-requests) |
+| Load WireMock extensions from JARs – no JDK | `withExtensionJar()`, `withExtension()` | [Java extensions](https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/extensions/java-extensions), [TypeScript extensions](https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/extensions/typescript-extensions) |
+| Develop without Docker | `installNoDockerRuntime()` | [Running without Docker](https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/guides/running-without-docker) |
 
 Registrations are validated before any image is pulled: sources must exist, mappings must be
 WireMock stubs, and nothing may overwrite another registration or reuse a stub `id`. Every export
-is listed in the [API overview](https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/reference/api-overview);
-errors are explained in [troubleshooting](https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/reference/troubleshooting).
+is listed in the [API overview](https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/reference/api-overview);
+errors are explained in [troubleshooting](https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/reference/troubleshooting).
 
 ## Without Docker (local development only)
 
 No container runtime? With Java 11+ and the optional `wiremock` peer dependency,
 `@hellaweb3/wiremock-testcontainers-nodejs/no-docker` serves every `WiremockContainer` from a
 local WireMock JVM – tests unchanged. It is never the default, warns on every start and refuses to
-run in CI/CD. See [running without Docker](https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/guides/running-without-docker).
+run in CI/CD. See [running without Docker](https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/guides/running-without-docker).
 
 ## Running the docs locally
 

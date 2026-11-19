@@ -2,7 +2,7 @@
  * Verifying the requests the payments client sends – through WireMock's request journal, so the
  * assertions cover what actually went over the wire.
  *
- * @see https://hella-web3.github.io/wiremock-testcontainers-nodejs/docs/guides/verifying-requests
+ * @see https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/guides/verifying-requests
  */
 import { randomUUID } from "node:crypto";
 import type { StartedWiremockContainer } from "@hellaweb3/wiremock-testcontainers-nodejs";

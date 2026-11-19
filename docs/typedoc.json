@@ -19,7 +19,7 @@
   "excludeExternals": true,
   "disableGit": true,
   "displayBasePath": "..",
-  "sourceLinkTemplate": "https://github.com/hella-web3/wiremock-testcontainers-nodejs/blob/main/{path}#L{line}",
+  "sourceLinkTemplate": "https://github.com/hella-labs/wiremock-testcontainers-nodejs/blob/main/{path}#L{line}",
   "externalSymbolLinkMappings": {
     "testcontainers": {
       "GenericContainer": "https://node.testcontainers.org/features/containers/",
