@@ -9,10 +9,18 @@ import { fileURLToPath } from "node:url";
 export const ORGANIZATION = "hella-labs";
 export const PROJECT = "wiremock-testcontainers-nodejs";
 export const PACKAGE_NAME = "@hellaweb3/wiremock-testcontainers-nodejs";
-
 /** GitHub Pages: `https://<organization>.github.io/<project>/`. */
-export const SITE_URL = `https://${ORGANIZATION}.github.io`;
-export const BASE_URL = `/${PROJECT}/`;
+// Github pages URL
+//export const SITE_URL = `https://${ORGANIZATION}.github.io`;
+
+// Cloudflare docs reverse proxy path served docs
+export const SITE_URL = `https://hellalabs.dev`;
+
+// Github pages URL
+//export const BASE_URL = `/${PROJECT}/`;
+
+// Cloudflare docs reverse proxy path served docs
+export const BASE_URL = `/docs/${PROJECT}/`;
 /** The absolute URL of the docs, as source code and READMEs link to them. */
 export const DOCS_URL = `${SITE_URL}${BASE_URL}docs/`;
 
