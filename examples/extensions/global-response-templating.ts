@@ -1,7 +1,7 @@
 /**
  * A configuration-only, configurable extension: WireMock options, no Java.
  *
- * @see https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/extensions/authoring-extensions
+ * @see https://hellalabs.dev/wiremock-testcontainers-nodejs/docs/extensions/authoring-extensions
  */
 import type { WireMockExtension } from "@hellaweb3/wiremock-testcontainers-nodejs";
 

@@ -2,7 +2,7 @@
  * Unit test of the container definition – no Docker: registrations throw as soon as they are made,
  * so a broken fixture path or a malformed stub fails in milliseconds.
  *
- * @see https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/getting-started/quick-start
+ * @see https://hellalabs.dev/wiremock-testcontainers-nodejs/docs/getting-started/quick-start
  */
 import { WiremockContainer } from "@hellaweb3/wiremock-testcontainers-nodejs";
 import { describe, expect, it } from "vitest";

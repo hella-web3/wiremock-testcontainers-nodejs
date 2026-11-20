@@ -3,7 +3,7 @@
  * code you point at WireMock instead of the real service. It knows nothing about WireMock: tests
  * only hand it the container's base URL.
  *
- * @see https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/guides/verifying-requests
+ * @see https://hellalabs.dev/wiremock-testcontainers-nodejs/docs/guides/verifying-requests
  */
 
 /** A payment as the API returns it. */

@@ -2,7 +2,7 @@
  * The registration rules, checked without Docker: registrations are validated as they are made and
  * may never overwrite one another.
  *
- * @see https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/guides/registering-stubs
+ * @see https://hellalabs.dev/wiremock-testcontainers-nodejs/docs/guides/registering-stubs
  */
 import { WiremockContainer } from "@hellaweb3/wiremock-testcontainers-nodejs";
 import { describe, expect, it } from "vitest";

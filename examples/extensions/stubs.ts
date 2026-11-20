@@ -2,7 +2,7 @@
  * The stub-mapping fields extensions are applied with – spread them into a stub's `request` or
  * `response`, so tests never hand-write an extension's name or parameters.
  *
- * @see https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/extensions/authoring-extensions
+ * @see https://hellalabs.dev/wiremock-testcontainers-nodejs/docs/extensions/authoring-extensions
  */
 
 // #region fields

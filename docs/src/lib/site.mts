@@ -20,7 +20,7 @@ export const SITE_URL = `https://hellalabs.dev`;
 //export const BASE_URL = `/${PROJECT}/`;
 
 // Cloudflare docs reverse proxy path served docs
-export const BASE_URL = `/docs/${PROJECT}/`;
+export const BASE_URL = `/${PROJECT}/`;
 /** The absolute URL of the docs, as source code and READMEs link to them. */
 export const DOCS_URL = `${SITE_URL}${BASE_URL}docs/`;
 

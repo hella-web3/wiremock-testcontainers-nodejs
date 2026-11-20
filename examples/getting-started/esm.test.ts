@@ -1,7 +1,7 @@
 /**
  * The package as an ES module – the build `import` resolves to.
  *
- * @see https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/getting-started/installation
+ * @see https://hellalabs.dev/wiremock-testcontainers-nodejs/docs/getting-started/installation
  */
 import { describe, expect, it } from "vitest";
 // #region esm

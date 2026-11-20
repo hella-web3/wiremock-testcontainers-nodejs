@@ -2,7 +2,7 @@
  * Every registration of `stubbedPaymentsApi()`, served by a real WireMock: directories, mapping
  * files from paths, URLs, modules and packages, inline stubs, and response bodies.
  *
- * @see https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/guides/registering-stubs
+ * @see https://hellalabs.dev/wiremock-testcontainers-nodejs/docs/guides/registering-stubs
  */
 import { readFileSync } from "node:fs";
 import type { StartedWiremockContainer } from "@hellaweb3/wiremock-testcontainers-nodejs";

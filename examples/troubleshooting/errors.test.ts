@@ -2,7 +2,7 @@
  * The registration errors you may meet, each triggered – all thrown synchronously, before any
  * container starts. Extension errors: `extensions/extensions.test.ts`.
  *
- * @see https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/reference/troubleshooting
+ * @see https://hellalabs.dev/wiremock-testcontainers-nodejs/docs/reference/troubleshooting
  */
 import { WiremockContainer } from "@hellaweb3/wiremock-testcontainers-nodejs";
 import { describe, expect, it } from "vitest";

@@ -2,7 +2,7 @@
  * Every way to point the library at a file: `withMapping()`, `withFiles()` and
  * `withExtensionJar()` all accept these sources.
  *
- * @see https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/guides/file-sources
+ * @see https://hellalabs.dev/wiremock-testcontainers-nodejs/docs/guides/file-sources
  */
 import type { WiremockFileSource, WiremockPath, WiremockStaticFile } from "@hellaweb3/wiremock-testcontainers-nodejs";
 

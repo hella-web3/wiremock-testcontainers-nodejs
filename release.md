@@ -1,6 +1,6 @@
 # Releasing
 
-How the library is released, and how its [documentation](https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/)
+How the library is released, and how its [documentation](https://hellalabs.dev/wiremock-testcontainers-nodejs/)
 follows – especially through major versions. For how every change keeps the docs up to date, see
 [CONTRIBUTING.md → Keeping the docs in step](./CONTRIBUTING.md#keeping-the-docs-in-step-with-the-library).
 

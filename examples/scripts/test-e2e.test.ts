@@ -2,7 +2,7 @@
  * The `--no-docker` wrapper, black-box: its CI/CD refusal exits before Vitest starts, so no
  * container runtime or JVM is needed. Running with and without the flag is what `npm test` does.
  *
- * @see https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/guides/running-without-docker
+ * @see https://hellalabs.dev/wiremock-testcontainers-nodejs/docs/guides/running-without-docker
  */
 import { spawnSync } from "node:child_process";
 import { describe, expect, it } from "vitest";

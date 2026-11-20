@@ -2,7 +2,7 @@
  * Unit tests of the system under test, with `fetch` stubbed – fast, but they only prove what the
  * client *sends*. `verification/verification.e2e.test.ts` proves it against a real HTTP server.
  *
- * @see https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/guides/verifying-requests
+ * @see https://hellalabs.dev/wiremock-testcontainers-nodejs/docs/guides/verifying-requests
  */
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { PaymentsApiError, PaymentsClient } from "./payments-client";

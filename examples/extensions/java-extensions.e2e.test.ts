@@ -3,7 +3,7 @@
  * object-literal extension, and the options that control how extensions load. Each suite has its
  * own container, started in parallel with the others.
  *
- * @see https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/extensions/java-extensions
+ * @see https://hellalabs.dev/wiremock-testcontainers-nodejs/docs/extensions/java-extensions
  */
 import {
   type StartedWiremockContainer,

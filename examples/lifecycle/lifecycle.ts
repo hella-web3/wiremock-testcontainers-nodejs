@@ -1,7 +1,7 @@
 /**
  * The started container: its URLs, readiness, and stopping it – explicitly or with `await using`.
  *
- * @see https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/guides/container-lifecycle
+ * @see https://hellalabs.dev/wiremock-testcontainers-nodejs/docs/guides/container-lifecycle
  */
 import type { StartedWiremockContainer, WaitUntilReadyOptions } from "@hellaweb3/wiremock-testcontainers-nodejs";
 

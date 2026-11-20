@@ -2,7 +2,7 @@
  * Unit test of the lifecycle helpers, with a fake container: code that needs only a container's
  * URL should ask for `Pick<StartedWiremockContainer, "getUrl">`.
  *
- * @see https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/guides/container-lifecycle
+ * @see https://hellalabs.dev/wiremock-testcontainers-nodejs/docs/guides/container-lifecycle
  */
 import { describe, expect, it } from "vitest";
 import { paymentsEnvironment, READINESS } from "./lifecycle";

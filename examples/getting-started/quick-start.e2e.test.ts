@@ -2,7 +2,7 @@
  * The quick start: one WireMock container per suite, `reset()` between tests, assertions through
  * WireMock's request journal. Needs Docker, or Java 11+ with `npm test --no-docker`.
  *
- * @see https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/getting-started/quick-start
+ * @see https://hellalabs.dev/wiremock-testcontainers-nodejs/docs/getting-started/quick-start
  */
 // #region quick-start
 import { afterAll, afterEach, beforeAll, expect, it } from "vitest"; // or Jest

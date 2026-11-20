@@ -4,7 +4,7 @@ import { tempDir } from "../helpers.ts";
 
 describe("site", () => {
   it("publishes the docs on GitHub Pages", () => {
-    expect(DOCS_URL).toBe("https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/");
+    expect(DOCS_URL).toBe("https://hellalabs.dev/wiremock-testcontainers-nodejs/docs/");
   });
 
   it("links sources on GitHub, on main by default, optionally with lines", () => {

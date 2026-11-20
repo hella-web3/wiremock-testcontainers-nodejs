@@ -3,7 +3,7 @@
  * validated as they are made – a typo in a fixture path fails here, in a unit test, before any
  * container starts.
  *
- * @see https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/getting-started/quick-start
+ * @see https://hellalabs.dev/wiremock-testcontainers-nodejs/docs/getting-started/quick-start
  */
 // #region definition
 import { WiremockContainer } from "@hellaweb3/wiremock-testcontainers-nodejs";

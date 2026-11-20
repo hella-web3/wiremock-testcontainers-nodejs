@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "description": "Runnable, tested examples for @hellaweb3/wiremock-testcontainers-nodejs – the single source of every code snippet in the docs. Consumes the library via npm link, exactly like an end user.",
-  "homepage": "https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/",
+  "homepage": "https://hellalabs.dev/wiremock-testcontainers-nodejs/",
   "license": "MIT",
   "type": "module",
   "scripts": {

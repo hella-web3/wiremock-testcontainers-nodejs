@@ -72,7 +72,7 @@ interface Claim {
  * A WireMock Testcontainer: register stubs, response bodies and extensions, then {@link start} it.
  * Registrations are validated at once and may not overwrite one another. Every Testcontainers
  * `GenericContainer` builder method is available, too.
- * @see {@link https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/getting-started/quick-start | Quick start}
+ * @see {@link https://hellalabs.dev/wiremock-testcontainers-nodejs/docs/getting-started/quick-start | Quick start}
  */
 export class WiremockContainer extends GenericContainer {
   /** Container path → origin of every registered file. */
@@ -93,7 +93,7 @@ export class WiremockContainer extends GenericContainer {
 
   /**
    * @param image Docker image, default `wiremock/wiremock` – pin a tag for reproducible tests.
-   * @see {@link https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/guides/configuring-the-container#the-image | Configuring the container}
+   * @see {@link https://hellalabs.dev/wiremock-testcontainers-nodejs/docs/guides/configuring-the-container#the-image | Configuring the container}
    */
   constructor(image: string = "wiremock/wiremock") {
     super(image);
@@ -103,7 +103,7 @@ export class WiremockContainer extends GenericContainer {
 
   /**
    * WireMock CLI arguments, e.g. `["--verbose"]`; extensions add theirs on `start()`.
-   * @see {@link https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/guides/configuring-the-container#wiremock-options | WireMock options}
+   * @see {@link https://hellalabs.dev/wiremock-testcontainers-nodejs/docs/guides/configuring-the-container#wiremock-options | WireMock options}
    */
   public override withCommand(command: string[]): this {
     this.#command = command;
@@ -114,7 +114,7 @@ export class WiremockContainer extends GenericContainer {
    * Copies `directory/mappings/` (required) and `directory/__files/` (optional) into the container.
    * @param directory A path, relative to the working directory.
    * @throws If `mappings/` is missing or a file would overwrite an earlier registration.
-   * @see {@link https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/guides/registering-stubs#a-recorded-directory | Registering stubs}
+   * @see {@link https://hellalabs.dev/wiremock-testcontainers-nodejs/docs/guides/registering-stubs#a-recorded-directory | Registering stubs}
    */
   public withMappings(directory: string): this {
     within("WiremockContainer.withMappings", () => {
@@ -148,7 +148,7 @@ export class WiremockContainer extends GenericContainer {
    * .withMapping("maintenance", { json: MAINTENANCE_STUB }) // …or a JSON string
    * .withMapping("payments/refunds", REFUND_STUBS) // "/" nests: mappings/payments/refunds.json
    * @throws If the source is invalid, not a WireMock stub, or would overwrite an earlier registration.
-   * @see {@link https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/guides/registering-stubs#mapping-files | Registering stubs}
+   * @see {@link https://hellalabs.dev/wiremock-testcontainers-nodejs/docs/guides/registering-stubs#mapping-files | Registering stubs}
    */
   public withMapping(name: string, source: WiremockMappingSource): this {
     within(`WiremockContainer.withMapping("${name}")`, () => {
@@ -168,7 +168,7 @@ export class WiremockContainer extends GenericContainer {
    * @example
    * .withFiles(STATEMENT_BODY, INVOICE_BODY, EXCHANGE_RATES_BODY); // bodies → __files/
    * @throws If a source or name is invalid, or a file would overwrite an earlier registration.
-   * @see {@link https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/guides/registering-stubs#response-bodies | Registering stubs}
+   * @see {@link https://hellalabs.dev/wiremock-testcontainers-nodejs/docs/guides/registering-stubs#response-bodies | Registering stubs}
    */
   public withFiles(...files: WiremockStaticFile[]): this {
     within("WiremockContainer.withFiles", () => {
@@ -190,7 +190,7 @@ export class WiremockContainer extends GenericContainer {
    * .withExtension("com.hellaweb3.wiremock.extensions.UppercaseTransformer") // --extensions <class>
    * .withExtension(shortJournal)
    * @throws If a class name, an extension or its JARs are invalid, or an option conflicts.
-   * @see {@link https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/extensions/typescript-extensions#registering-extensions | Registering extensions}
+   * @see {@link https://hellalabs.dev/wiremock-testcontainers-nodejs/docs/extensions/typescript-extensions#registering-extensions | Registering extensions}
    */
   public withExtension(extension: ExtensionInput): this {
     return this.#addExtensions("withExtension", [extension]);
@@ -208,7 +208,7 @@ export class WiremockContainer extends GenericContainer {
    * its `META-INF/services` load by themselves; others need {@link withExtension}.
    * @param jar Any file source; `{ file, name }` renames the JAR.
    * @throws If the source is missing, unreadable or not a JAR, or another JAR has the same name.
-   * @see {@link https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/extensions/java-extensions#load-a-jar-and-name-its-classes | Java extensions}
+   * @see {@link https://hellalabs.dev/wiremock-testcontainers-nodejs/docs/extensions/java-extensions#load-a-jar-and-name-its-classes | Java extensions}
    */
   public withExtensionJar(jar: WiremockExtensionJar): this {
     return this.#addJars("withExtensionJar", [jar]);
@@ -226,7 +226,7 @@ export class WiremockContainer extends GenericContainer {
   /**
    * Configures how extensions load; options not given keep their value.
    * @throws For an unknown option or a non-boolean value.
-   * @see {@link https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/extensions/java-extensions#extension-options | Extension options}
+   * @see {@link https://hellalabs.dev/wiremock-testcontainers-nodejs/docs/extensions/java-extensions#extension-options | Extension options}
    */
   public withExtensionOptions(options: WiremockExtensionOptions): this {
     within("WiremockContainer.withExtensionOptions", () => {
@@ -245,7 +245,7 @@ export class WiremockContainer extends GenericContainer {
    * listens; {@link StartedWiremockContainer.waitUntilReady} waits until WireMock is healthy.
    * @throws Before starting, for a class with no registered JAR or options conflicting with
    * `withCommand()`; if WireMock fails, naming the extensions in use.
-   * @see {@link https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/guides/container-lifecycle#starting-and-readiness | Container lifecycle}
+   * @see {@link https://hellalabs.dev/wiremock-testcontainers-nodejs/docs/guides/container-lifecycle#starting-and-readiness | Container lifecycle}
    */
   public override async start(): Promise<StartedWiremockContainer> {
     const extensionArgs = within("WiremockContainer.start", () => this.#extensionCommand());
@@ -361,7 +361,7 @@ export class WiremockContainer extends GenericContainer {
 
 /**
  * WireMock [request-matching](https://wiremock.org/docs/request-matching/) criteria; unknown fields pass through.
- * @see {@link https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/guides/verifying-requests#request-criteria | Request criteria}
+ * @see {@link https://hellalabs.dev/wiremock-testcontainers-nodejs/docs/guides/verifying-requests#request-criteria | Request criteria}
  */
 export interface WiremockRequestCriteria {
   /** E.g. `"GET"`; `"ANY"` matches every method. */
@@ -385,7 +385,7 @@ export interface WiremockRequestCriteria {
 
 /**
  * A request from WireMock's journal; fields not modelled here are kept as-is.
- * @see {@link https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/guides/verifying-requests#recorded-requests | Recorded requests}
+ * @see {@link https://hellalabs.dev/wiremock-testcontainers-nodejs/docs/guides/verifying-requests#recorded-requests | Recorded requests}
  */
 export interface RecordedRequest {
   /** The journal entry's id, where WireMock reports one. */
@@ -422,7 +422,7 @@ const ADMIN_PATH = "/__admin";
 /**
  * A started WireMock container with URL, health, reset and verification helpers – and every
  * Testcontainers `StartedTestContainer` method, such as `stop()` and `logs()`.
- * @see {@link https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/guides/container-lifecycle | Container lifecycle}
+ * @see {@link https://hellalabs.dev/wiremock-testcontainers-nodejs/docs/guides/container-lifecycle | Container lifecycle}
  */
 export class StartedWiremockContainer extends AbstractStartedContainer {
   readonly #rpcUrl: string;
@@ -447,7 +447,7 @@ export class StartedWiremockContainer extends AbstractStartedContainer {
    * @example
    * expect(wiremock.getUrl("/payments")).toBe(`${wiremock.rpcUrl}/payments`);
    * expect(wiremock.getUrl("payments?page=2")).toBe(`${wiremock.rpcUrl}/payments?page=2`); // "/" added
-   * @see {@link https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/guides/container-lifecycle#urls | URLs}
+   * @see {@link https://hellalabs.dev/wiremock-testcontainers-nodejs/docs/guides/container-lifecycle#urls | URLs}
    */
   public getUrl(path = ""): string {
     if (path === "") return this.#rpcUrl;
@@ -464,7 +464,7 @@ export class StartedWiremockContainer extends AbstractStartedContainer {
 
   /**
    * Stub mappings endpoint: `<rpcUrl>/__admin/mappings` – e.g. to add stubs at runtime.
-   * @see {@link https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/guides/test-isolation#stubs-added-at-runtime | Stubs added at runtime}
+   * @see {@link https://hellalabs.dev/wiremock-testcontainers-nodejs/docs/guides/test-isolation#stubs-added-at-runtime | Stubs added at runtime}
    */
   public getMappingUrl(): string {
     return `${this.getAdminUrl()}/mappings`;
@@ -472,7 +472,7 @@ export class StartedWiremockContainer extends AbstractStartedContainer {
 
   /**
    * Whether WireMock responds healthily. Never throws.
-   * @see {@link https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/guides/container-lifecycle#health-checks | Health checks}
+   * @see {@link https://hellalabs.dev/wiremock-testcontainers-nodejs/docs/guides/container-lifecycle#health-checks | Health checks}
    */
   public async isRunning(): Promise<boolean> {
     try {
@@ -488,7 +488,7 @@ export class StartedWiremockContainer extends AbstractStartedContainer {
   /**
    * Polls {@link isRunning} until healthy.
    * @throws If not healthy within `options.timeout`.
-   * @see {@link https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/guides/container-lifecycle#starting-and-readiness | Container lifecycle}
+   * @see {@link https://hellalabs.dev/wiremock-testcontainers-nodejs/docs/guides/container-lifecycle#starting-and-readiness | Container lifecycle}
    */
   public async waitUntilReady(options: WaitUntilReadyOptions = {}): Promise<void> {
     const { timeout = 30_000, interval = 250 } = options;
@@ -508,7 +508,7 @@ export class StartedWiremockContainer extends AbstractStartedContainer {
    * Restores registered stubs and scenarios and clears the journal – no restart.
    * @example
    * afterEach(() => wiremock.reset()); // pristine stubs, empty journal – no restart
-   * @see {@link https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/guides/test-isolation#resetting-between-tests | Test isolation}
+   * @see {@link https://hellalabs.dev/wiremock-testcontainers-nodejs/docs/guides/test-isolation#resetting-between-tests | Test isolation}
    */
   public async reset(): Promise<void> {
     await this.#admin("POST", "/reset");
@@ -516,7 +516,7 @@ export class StartedWiremockContainer extends AbstractStartedContainer {
 
   /**
    * Clears the request journal; stubs – and scenario states – are kept.
-   * @see {@link https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/guides/test-isolation#clearing-only-the-journal | Test isolation}
+   * @see {@link https://hellalabs.dev/wiremock-testcontainers-nodejs/docs/guides/test-isolation#clearing-only-the-journal | Test isolation}
    */
   public async resetRequests(): Promise<void> {
     await this.#admin("DELETE", "/requests");
@@ -528,7 +528,7 @@ export class StartedWiremockContainer extends AbstractStartedContainer {
    * expect(await wiremock.countRequests({ method: "GET", url: "/payments" })).toBe(1); // exact path and query
    * expect(await wiremock.countRequests({ method: "GET", urlPath: "/payments" })).toBe(2); // any query
    * @throws If WireMock rejects the criteria, with its explanation.
-   * @see {@link https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/guides/verifying-requests#counting-requests | Verifying requests}
+   * @see {@link https://hellalabs.dev/wiremock-testcontainers-nodejs/docs/guides/verifying-requests#counting-requests | Verifying requests}
    */
   public async countRequests(request: WiremockRequestCriteria): Promise<number> {
     const response = await this.#admin("POST", "/requests/count", request);
@@ -539,7 +539,7 @@ export class StartedWiremockContainer extends AbstractStartedContainer {
   /**
    * Journal entries matching `request` since the last reset.
    * @throws If WireMock rejects the criteria, with its explanation.
-   * @see {@link https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/guides/verifying-requests#finding-requests | Verifying requests}
+   * @see {@link https://hellalabs.dev/wiremock-testcontainers-nodejs/docs/guides/verifying-requests#finding-requests | Verifying requests}
    */
   public async findRequests(request: WiremockRequestCriteria): Promise<RecordedRequest[]> {
     const response = await this.#admin("POST", "/requests/find", request);

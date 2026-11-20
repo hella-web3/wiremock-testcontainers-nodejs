@@ -2,7 +2,7 @@
  * Registering stubs: a recorded directory, single mapping files, inline stubs and response bodies –
  * all in one container definition.
  *
- * @see https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/guides/registering-stubs
+ * @see https://hellalabs.dev/wiremock-testcontainers-nodejs/docs/guides/registering-stubs
  */
 import {
   WiremockContainer,

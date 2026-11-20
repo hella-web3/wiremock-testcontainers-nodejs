@@ -1,7 +1,7 @@
 /**
  * A JAR-only extension, loaded by WireMock's extension scanning.
  *
- * @see https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/extensions/authoring-extensions
+ * @see https://hellalabs.dev/wiremock-testcontainers-nodejs/docs/extensions/authoring-extensions
  */
 import type { WireMockExtension, WiremockExtensionJar } from "@hellaweb3/wiremock-testcontainers-nodejs";
 import { JARS } from "./jars";
