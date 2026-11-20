@@ -1,25 +1,265 @@
-/* Brand colours: WireMock teal. */
+/*
+ * Hella Labs brand (ported from the hellalabs.dev Astro site, src/styles/style.css): pink → purple
+ * neon gradient, Poppins headings over Roboto Mono body text, dark by default, glass navbar.
+ * Brand tokens are --hl-*; Infima's --ifm-* variables are mapped onto them.
+ */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Roboto+Mono:wght@400;500;700&display=swap");
+
 :root {
-  --ifm-color-primary: #0e7c86;
-  --ifm-color-primary-dark: #0d7079;
-  --ifm-color-primary-darker: #0c6a72;
-  --ifm-color-primary-darkest: #0a575e;
-  --ifm-color-primary-light: #108893;
-  --ifm-color-primary-lighter: #118e9a;
-  --ifm-color-primary-lightest: #14a1ae;
-  --ifm-code-font-size: 92%;
-  --docusaurus-highlighted-code-line-bg: rgb(0 0 0 / 10%);
+  --hl-primary: #ae00ee;
+  --hl-gradient-from: #f70077;
+  --hl-gradient-to: #ae00ee;
+  --hl-bg: #fff;
+  --hl-bg-alt: #ecf0f6;
+  --hl-bg-muted: #f8fafc;
+  --hl-bg-glass: rgb(255 255 255 / 0.95);
+  --hl-text: #10141f;
+  --hl-text-muted: #697585;
+  --hl-heading: #10141f;
+  --hl-border: #f3f3f4;
+  --hl-border-alt: #e7e7e9;
+  --hl-code-bg: #f3f3f3;
+  --hl-shadow-button: 0 0 2px 3px rgb(239 151 232 / 0.25), 0 0 4px 5px rgb(239 151 232 / 0.25);
+  --hl-shadow-button-hover: 0 0 10px rgb(239 151 232), 0 0 20px #ef97e8, 0 0 20px rgb(255 255 255) inset;
+  --hl-shadow-card: rgb(50 50 93 / 0.25) 0 13px 27px -5px, rgb(0 0 0 / 0.3) 0 8px 16px -8px;
+
+  --ifm-color-primary: #ae00ee;
+  --ifm-color-primary-dark: #9d00d6;
+  --ifm-color-primary-darker: #9400ca;
+  --ifm-color-primary-darkest: #7a00a7;
+  --ifm-color-primary-light: #bf0dff;
+  --ifm-color-primary-lighter: #c31aff;
+  --ifm-color-primary-lightest: #cc40ff;
+
+  --ifm-font-family-base: "Roboto Mono", "Courier New", "Lucida Console", Monaco, monospace;
+  --ifm-font-family-monospace: "Roboto Mono", "Courier New", "Lucida Console", Monaco, monospace;
+  --ifm-heading-font-family: "Poppins", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --ifm-heading-font-weight: 700;
+  --ifm-heading-line-height: 1.3;
+  --ifm-line-height-base: 1.6;
+  --ifm-code-font-size: 88%;
+  --ifm-global-radius: 0.5rem;
+  --ifm-code-border-radius: 0.375rem;
+
+  --ifm-background-color: var(--hl-bg);
+  --ifm-background-surface-color: var(--hl-bg-muted);
+  --ifm-font-color-base: var(--hl-text);
+  --ifm-heading-color: var(--hl-heading);
+  --ifm-color-emphasis-300: var(--hl-border-alt);
+  --ifm-toc-border-color: var(--hl-border-alt);
+  --ifm-hr-background-color: var(--hl-border-alt);
+  --ifm-code-background: var(--hl-code-bg);
+  --ifm-navbar-background-color: var(--hl-bg-glass);
+  --ifm-navbar-shadow: none;
+  --ifm-footer-background-color: var(--hl-bg-muted);
+  --ifm-footer-title-color: var(--hl-heading);
+  --ifm-footer-link-color: var(--hl-heading);
+  --ifm-footer-color: var(--hl-text-muted);
+  --docusaurus-highlighted-code-line-bg: rgb(174 0 238 / 10%);
 }
 
 [data-theme="dark"] {
-  --ifm-color-primary: #3cc4cf;
-  --ifm-color-primary-dark: #30b8c3;
-  --ifm-color-primary-darker: #2daeb8;
-  --ifm-color-primary-darkest: #258f98;
-  --ifm-color-primary-light: #52cbd5;
-  --ifm-color-primary-lighter: #5dcfd8;
-  --ifm-color-primary-lightest: #7ed9e0;
-  --docusaurus-highlighted-code-line-bg: rgb(0 0 0 / 30%);
+  --hl-primary: #d60067;
+  --hl-gradient-from: #d60067;
+  --hl-gradient-to: #8311c0;
+  --hl-bg: #0f172a;
+  --hl-bg-alt: #2d3b4e;
+  --hl-bg-muted: #1a2334;
+  --hl-bg-glass: rgb(15 23 42 / 0.85);
+  --hl-text: #9e9e9e;
+  --hl-text-muted: #9e9e9e;
+  --hl-heading: #f0f0f0;
+  --hl-border: #232939;
+  --hl-border-alt: #232939;
+  --hl-code-bg: #1e293b;
+
+  /* Lighter than the brand #d60067 so links stay readable on the navy background. */
+  --ifm-color-primary: #ff3d9a;
+  --ifm-color-primary-dark: #ff1f8b;
+  --ifm-color-primary-darker: #ff0f83;
+  --ifm-color-primary-darkest: #e0006c;
+  --ifm-color-primary-light: #ff5ba9;
+  --ifm-color-primary-lighter: #ff6bb1;
+  --ifm-color-primary-lightest: #ff99c9;
+  --docusaurus-highlighted-code-line-bg: rgb(214 0 103 / 20%);
+}
+
+body {
+  letter-spacing: -0.2px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  letter-spacing: -0.2px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--hl-primary);
+  outline-offset: 2px;
+}
+
+/* Brand gradient as a text fill. */
+.text-gradient {
+  background-image: linear-gradient(90deg, var(--hl-gradient-from) 0%, var(--hl-gradient-to) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* Sticky glass navbar with a hairline instead of a shadow. */
+.navbar {
+  backdrop-filter: blur(12px) saturate(1.8);
+  -webkit-backdrop-filter: blur(12px) saturate(1.8);
+  border-bottom: 1px solid var(--hl-border);
+}
+
+.navbar__title {
+  font-family: var(--ifm-heading-font-family);
+  font-weight: 700;
+}
+
+.navbar__link,
+.menu__link,
+.footer__link-item,
+.table-of-contents__link,
+.pagination-nav__label,
+.breadcrumbs__link {
+  font-family: var(--ifm-heading-font-family);
+  font-weight: 500;
+}
+
+.navbar__link {
+  border-radius: 0.5rem;
+  padding: 0.375rem 0.875rem;
+  margin: 0 0.125rem;
+}
+
+.navbar__link:hover,
+.navbar__link--active {
+  background: var(--hl-bg-alt);
+  color: var(--hl-heading);
+}
+
+.menu__link--active:not(.menu__link--sublist) {
+  background: var(--hl-bg-alt);
+}
+
+/* Buttons: primary is the neon gradient with a rotating sheen (the site's .btn-glow). */
+.button {
+  font-family: var(--ifm-heading-font-family);
+  font-weight: 600;
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+}
+
+@property --hl-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes hl-spin-angle {
+  to {
+    --hl-angle: 360deg;
+  }
+}
+
+.button--primary,
+.button--glow {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border: none;
+  color: #fff;
+  background-image: linear-gradient(90deg, var(--hl-gradient-from) 0%, var(--hl-gradient-to) 100%);
+  box-shadow: var(--hl-shadow-button);
+}
+
+.button--primary::after,
+.button--glow::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 115%;
+  height: 115%;
+  opacity: 0.35;
+  background: linear-gradient(var(--hl-angle), rgb(255 255 255 / 0.65), rgb(239 151 232 / 0.85), rgb(239 151 232 / 0.15));
+  animation: hl-spin-angle 3s linear infinite;
+}
+
+.button--primary:hover,
+.button--glow:hover {
+  color: #fff;
+  box-shadow: var(--hl-shadow-button-hover);
+  transform: scale(1.05);
+}
+
+/* "light" button: bordered neutral. */
+.button--light {
+  border: 1px solid var(--hl-border-alt);
+  background: var(--hl-bg-muted);
+  color: var(--hl-heading);
+}
+
+.button--light:hover {
+  background: var(--hl-bg-alt);
+  color: var(--hl-heading);
+}
+
+/* Markdown content, after the site's .prose. */
+.markdown a:not([class]) {
+  font-weight: 500;
+}
+
+.markdown :not(pre) > code {
+  border: none;
+  color: var(--ifm-color-primary);
+  font-weight: 700;
+}
+
+.markdown blockquote {
+  border-left-color: var(--hl-primary);
+}
+
+.markdown th {
+  font-family: var(--ifm-heading-font-family);
+}
+
+.markdown hr {
+  height: 1px;
+  background: var(--hl-border-alt);
+}
+
+pre.prism-code,
+.theme-code-block {
+  border-radius: 0.5rem;
+}
+
+.footer {
+  border-top: 1px solid var(--hl-border);
+}
+
+.footer__title {
+  font-family: var(--ifm-heading-font-family);
+  font-weight: 600;
+}
+
+.footer__copyright a {
+  color: var(--hl-heading);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button--primary::after,
+  .button--glow::after {
+    animation: none;
+  }
+
+  .button--primary:hover,
+  .button--glow:hover {
+    transform: none;
+  }
 }
 
 /* The link under each embedded example snippet, to its tested source. */
@@ -32,6 +272,8 @@
 .example-source code {
   background: none;
   border: none;
+  color: inherit;
+  font-weight: 400;
   padding: 0;
 }
 

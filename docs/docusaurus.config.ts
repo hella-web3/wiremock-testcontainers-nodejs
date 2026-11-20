@@ -83,10 +83,15 @@ const config: Config = {
   ],
 
   // Rebuilds pages when the examples they embed change.
-  plugins: [() => exampleSnippetsPlugin({ examplesDir: EXAMPLES_DIR, contentDir: CONTENT_DIR })],
+  plugins: [
+    () => exampleSnippetsPlugin({ examplesDir: EXAMPLES_DIR, contentDir: CONTENT_DIR }),
+    // Generates /llms.txt and /llms-full.txt (https://llmstxt.org) for LLMs and AI tools.
+    ["docusaurus-plugin-llms", { generateLLMsTxt: true, generateLLMsFullTxt: true }],
+  ],
 
   themeConfig: {
-    colorMode: { respectPrefersColorScheme: true },
+    // Dark by default, like hellalabs.dev; the toggle still switches and remembers the choice.
+    colorMode: { defaultMode: "dark", respectPrefersColorScheme: false },
     docs: { sidebar: { hideable: true } },
     navbar: {
       title: "WireMock Testcontainers",
@@ -101,7 +106,7 @@ const config: Config = {
       ],
     },
     footer: {
-      style: "dark",
+      style: "light",
       links: [
         {
           title: "Docs",
@@ -128,12 +133,21 @@ const config: Config = {
             { label: "Testcontainers for Node.js", href: "https://node.testcontainers.org/" },
           ],
         },
+        {
+          title: "Machine-readable",
+          items: [
+            // pathname:// links point at generated static files, not client-side routes.
+            { label: "Sitemap", href: "pathname:///sitemap.xml" },
+            { label: "llms.txt", href: "pathname:///llms.txt" },
+            { label: "llms-full.txt", href: "pathname:///llms-full.txt" },
+          ],
+        },
       ],
       copyright: `${PACKAGE_NAME} – MIT licensed. Maintained by <a href="https://hellalabs.dev/">Hella Labs</a>.`,
     },
     prism: {
       theme: prismThemes.github,
-      darkTheme: prismThemes.dracula,
+      darkTheme: prismThemes.nightOwl,
       additionalLanguages: ["bash", "json", "diff"],
     },
   } satisfies Preset.ThemeConfig,

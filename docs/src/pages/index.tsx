@@ -48,17 +48,17 @@ const FEATURES: readonly Feature[] = [
 function Hero(): ReactNode {
   const { siteConfig } = useDocusaurusContext();
   return (
-    <header className={`hero hero--primary ${styles.hero}`}>
+    <header className={`hero ${styles.hero}`}>
       <div className="container">
-        <Heading as="h1" className="hero__title">
-          {siteConfig.title}
+        <Heading as="h1" className={styles.title}>
+          <span className="text-gradient">{siteConfig.title}</span>
         </Heading>
-        <p className="hero__subtitle">{siteConfig.tagline}</p>
+        <p className={styles.tagline}>{siteConfig.tagline}</p>
         <div className={styles.buttons}>
-          <Link className="button button--secondary button--lg" to="/docs/getting-started/quick-start">
+          <Link className="button button--primary button--lg" to="/docs/getting-started/quick-start">
             Get started
           </Link>
-          <Link className="button button--outline button--secondary button--lg" to="/docs/api">
+          <Link className="button button--light button--lg" to="/docs/api">
             API reference
           </Link>
         </div>
@@ -73,9 +73,9 @@ export default function Home(): ReactNode {
     <Layout description="WireMock in Testcontainers for Node.js: mock HTTP APIs in integration tests with a fluent, fully typed TypeScript API.">
       <Hero />
       <main className="container margin-vert--xl">
-        <section className="row">
+        <section className={styles.features}>
           {FEATURES.map(({ title, description, to }) => (
-            <div key={title} className={`col col--4 ${styles.feature}`}>
+            <div key={title} className={styles.feature}>
               <Heading as="h3">
                 <Link to={to}>{title}</Link>
               </Heading>
