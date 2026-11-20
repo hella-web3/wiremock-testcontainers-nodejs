@@ -1,6 +1,9 @@
 import Link from "@docusaurus/Link";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
+import CodeBlock from "@theme/CodeBlock";
 import Heading from "@theme/Heading";
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
 import Layout from "@theme/Layout";
 import MDXContent from "@theme/MDXContent";
 import type { ReactNode } from "react";
@@ -63,7 +66,19 @@ function Hero(): ReactNode {
             API reference
           </Link>
         </div>
-        <code className={styles.install}>npm install --save-dev @hellaweb3/wiremock-testcontainers-nodejs</code>
+        <div className={styles.install}>
+          <Tabs groupId="package-manager">
+            <TabItem value="npm" label="npm" default>
+              <CodeBlock language="bash">npm install --save-dev @hellaweb3/wiremock-testcontainers-nodejs</CodeBlock>
+            </TabItem>
+            <TabItem value="pnpm" label="pnpm">
+              <CodeBlock language="bash">pnpm add --save-dev @hellaweb3/wiremock-testcontainers-nodejs</CodeBlock>
+            </TabItem>
+            <TabItem value="yarn" label="yarn">
+              <CodeBlock language="bash">yarn add --dev @hellaweb3/wiremock-testcontainers-nodejs</CodeBlock>
+            </TabItem>
+          </Tabs>
+        </div>
       </div>
     </header>
   );

@@ -27,13 +27,13 @@
 }
 
 .install {
-  background: var(--hl-code-bg);
-  border: 1px solid var(--hl-border-alt);
-  border-radius: 0.5rem;
-  color: var(--hl-heading);
-  display: inline-block;
-  font-size: 0.875rem;
-  padding: 0.625rem 1rem;
+  margin: 1.5rem auto 0;
+  max-width: 40rem;
+  text-align: left;
+}
+
+.install :global(.theme-code-block) {
+  margin-bottom: 0;
 }
 
 .features {
