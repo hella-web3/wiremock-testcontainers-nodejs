@@ -2,6 +2,7 @@ import Link from "@docusaurus/Link";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import Heading from "@theme/Heading";
 import Layout from "@theme/Layout";
+import MDXContent from "@theme/MDXContent";
 import type { ReactNode } from "react";
 import QuickStart from "@site/docs/_partials/quick-start.mdx";
 import styles from "./index.module.css";
@@ -85,7 +86,9 @@ export default function Home(): ReactNode {
         </section>
         <section className={styles.example}>
           <Heading as="h2">A complete test suite</Heading>
-          <QuickStart />
+          <MDXContent>
+            <QuickStart />
+          </MDXContent>
         </section>
       </main>
     </Layout>
