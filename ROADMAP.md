@@ -6,7 +6,7 @@ This roadmap reflects the current open issues tracked for this repository and th
 
 ### 1. Add GitHub Pages hosted documentation for the npm integration test tool
 - Issue: #2
-- Status: Implemented – [documentation site](https://hella-labs.github.io/wiremock-testcontainers-nodejs/) in `docs/` (Docusaurus + TypeDoc), deployed by `.github/workflows/docs.yml`; every snippet is embedded from the tested `examples/` project
+- Status: Implemented – [documentation site](https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/) in `docs/` (Docusaurus + TypeDoc), deployed by `.github/workflows/docs.yml`; every snippet is embedded from the tested `examples/` project
 - Type: Feature
 - Summary: Publish a GitHub Pages documentation site covering installation, quick start, configuration, examples, troubleshooting, and API usage for the package.
 - Goal: Improve onboarding and make the project easier to adopt for Node.js developers.

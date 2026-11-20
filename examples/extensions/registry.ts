@@ -1,7 +1,7 @@
 /**
  * The example extensions, ready to register: classes for the defaults, instances to configure.
  *
- * @see https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/extensions/typescript-extensions
+ * @see https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/extensions/typescript-extensions
  */
 import type { ExtensionConstructor, ExtensionInput } from "@hellaweb3/wiremock-testcontainers-nodejs";
 import { BodyLengthMatcher } from "./body-length-matcher";

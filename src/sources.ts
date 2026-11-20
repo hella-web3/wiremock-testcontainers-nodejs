@@ -5,13 +5,13 @@ import { fileURLToPath } from "node:url";
 
 /**
  * A path (relative to the working directory) or a `file:` URL.
- * @see {@link https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/guides/file-sources | File sources}
+ * @see {@link https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/guides/file-sources | File sources}
  */
 export type WiremockPath = string | URL;
 
 /**
  * A path or `file:` URL, `{ file }`, a file of an installed package `{ package, file }`, or one next to a module `{ module, file }`.
- * @see {@link https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/guides/file-sources | File sources}
+ * @see {@link https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/guides/file-sources | File sources}
  */
 export type WiremockFileSource =
   | WiremockPath
@@ -34,7 +34,7 @@ export type WiremockFileSource =
 
 /**
  * A WireMock stub; fields besides `request` and `response` are passed through.
- * @see {@link https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/guides/registering-stubs#inline-stubs | Inline stubs}
+ * @see {@link https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/guides/registering-stubs#inline-stubs | Inline stubs}
  */
 export interface WiremockStubMapping {
   /** What the stub matches, e.g. `{ method: "GET", url: "/ping" }`. */
@@ -46,7 +46,7 @@ export interface WiremockStubMapping {
 
 /**
  * A file source, or inline JSON: a string, a stub or `{ mappings: [...] }`.
- * @see {@link https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/guides/registering-stubs#mapping-files | Registering stubs}
+ * @see {@link https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/guides/registering-stubs#mapping-files | Registering stubs}
  */
 export type WiremockMappingSource =
   | WiremockFileSource
@@ -63,7 +63,7 @@ export type WiremockMappingSource =
 
 /**
  * A file source; object forms may set `name`, the path below `__files/`.
- * @see {@link https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/guides/file-sources#naming-static-files | File sources}
+ * @see {@link https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/guides/file-sources#naming-static-files | File sources}
  */
 export type WiremockStaticFile =
   | WiremockPath

@@ -10,7 +10,7 @@ The repository holds three projects, each with its own dependencies, scripts and
 |---------|-----------|-----------------|------------|
 | Library | `/` | pnpm | The published package |
 | Examples | [`examples/`](./examples) | npm | Runnable, tested examples of every API – the only source of code in the docs |
-| Docs | [`docs/`](./docs) | npm | The [documentation site](https://hella-labs.github.io/wiremock-testcontainers-nodejs/) |
+| Docs | [`docs/`](./docs) | npm | The [documentation site](https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/) |
 
 ## Scripts
 
@@ -48,7 +48,7 @@ CI/CD. Treat a green run as a fast local signal, not E2E sign-off. To get a cont
 
 ## Documentation
 
-The [docs site](https://hella-labs.github.io/wiremock-testcontainers-nodejs/) lives in
+The [docs site](https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/) lives in
 [`docs/`](./docs) – see its [README](./docs/README.md). **Every docs task is a script of
 `docs/package.json`: run it from the repository root with `pnpm docs:<script>`, or from `docs/`
 with `npm run <script>`** – e.g. `pnpm docs:start` to preview, `pnpm docs:check` before pushing.

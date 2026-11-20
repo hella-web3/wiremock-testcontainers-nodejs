@@ -5,23 +5,23 @@ by task. A standalone project consuming the package through **`npm link`**, exac
 user – proof that the *built* package works.
 
 They are the single source of every code snippet in the
-**[documentation](https://hella-labs.github.io/wiremock-testcontainers-nodejs/)**: pages embed
+**[documentation](https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/)**: pages embed
 regions of these files at build time, and each file links back to its page with an `@see` comment.
 So the examples are held to the same standard as library code – type-checked, linted,
 unit-tested with 100 % coverage per module, and run end-to-end against WireMock in CI.
 
 | Folder | Task | Docs |
 |--------|------|------|
-| [`app/`](./app) | The code under test: a `fetch`-based payments client | [Verifying requests](https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/guides/verifying-requests) |
-| [`getting-started/`](./getting-started) | The quick start; ES modules and CommonJS | [Quick start](https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/getting-started/quick-start), [installation](https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/getting-started/installation) |
-| [`stubs/`](./stubs) | `withMappings()`, `withMapping()`, `withFiles()`; every file source | [Registering stubs](https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/guides/registering-stubs), [file sources](https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/guides/file-sources) |
-| [`container/`](./container) | The image, `withCommand()`, `WIREMOCK_OPTIONS`, Testcontainers methods | [Configuring the container](https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/guides/configuring-the-container) |
-| [`lifecycle/`](./lifecycle) | `start()`, `waitUntilReady()`, URLs, `isRunning()`, `await using` | [Container lifecycle](https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/guides/container-lifecycle) |
-| [`isolation/`](./isolation) | `reset()`, `resetRequests()`, scenarios, runtime stubs | [Test isolation](https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/guides/test-isolation) |
-| [`verification/`](./verification) | `countRequests()`, `findRequests()`, request criteria | [Verifying requests](https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/guides/verifying-requests) |
-| [`extensions/`](./extensions) | JARs, class names, TypeScript extensions, extension options | [Java extensions](https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/extensions/java-extensions), [TypeScript extensions](https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/extensions/typescript-extensions), [authoring](https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/extensions/authoring-extensions) |
-| [`no-docker/`](./no-docker) | `installNoDockerRuntime()`, `detectCI()`, `isNoDockerRequested()` | [Running without Docker](https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/guides/running-without-docker) |
-| [`troubleshooting/`](./troubleshooting) | Every error, triggered | [Troubleshooting](https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/reference/troubleshooting) |
+| [`app/`](./app) | The code under test: a `fetch`-based payments client | [Verifying requests](https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/guides/verifying-requests) |
+| [`getting-started/`](./getting-started) | The quick start; ES modules and CommonJS | [Quick start](https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/getting-started/quick-start), [installation](https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/getting-started/installation) |
+| [`stubs/`](./stubs) | `withMappings()`, `withMapping()`, `withFiles()`; every file source | [Registering stubs](https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/guides/registering-stubs), [file sources](https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/guides/file-sources) |
+| [`container/`](./container) | The image, `withCommand()`, `WIREMOCK_OPTIONS`, Testcontainers methods | [Configuring the container](https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/guides/configuring-the-container) |
+| [`lifecycle/`](./lifecycle) | `start()`, `waitUntilReady()`, URLs, `isRunning()`, `await using` | [Container lifecycle](https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/guides/container-lifecycle) |
+| [`isolation/`](./isolation) | `reset()`, `resetRequests()`, scenarios, runtime stubs | [Test isolation](https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/guides/test-isolation) |
+| [`verification/`](./verification) | `countRequests()`, `findRequests()`, request criteria | [Verifying requests](https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/guides/verifying-requests) |
+| [`extensions/`](./extensions) | JARs, class names, TypeScript extensions, extension options | [Java extensions](https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/extensions/java-extensions), [TypeScript extensions](https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/extensions/typescript-extensions), [authoring](https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/extensions/authoring-extensions) |
+| [`no-docker/`](./no-docker) | `installNoDockerRuntime()`, `detectCI()`, `isNoDockerRequested()` | [Running without Docker](https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/guides/running-without-docker) |
+| [`troubleshooting/`](./troubleshooting) | Every error, triggered | [Troubleshooting](https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/reference/troubleshooting) |
 
 Each folder pairs a module with its tests: `*.test.ts` are unit tests – no container – and
 `*.e2e.test.ts` run against WireMock. Shared fixtures: [`__mocks__/`](./__mocks__) – recorded
@@ -77,7 +77,7 @@ The wiring to copy into your own project:
 ## Adding an example
 
 1. Put it in the folder of its task: a module, its unit test, and an E2E test if it talks to
-   WireMock. Name the page it belongs to in a header comment: `@see https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/<page>`.
+   WireMock. Name the page it belongs to in a header comment: `@see https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/<page>`.
 2. Mark what the docs show with `// #region name` … `// #endregion name` and embed it in that page
    with ```` ```ts file=<folder>/<file>.ts#name ````.
 3. Run `pnpm examples:unit`, `pnpm examples:e2e` and `pnpm docs:check` – the docs' tests check

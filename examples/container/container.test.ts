@@ -2,7 +2,7 @@
  * Container configuration checked without Docker: `start()` validates the command line before
  * anything starts, so conflicting options fail in a unit test.
  *
- * @see https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/guides/configuring-the-container
+ * @see https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/guides/configuring-the-container
  */
 import { WiremockContainer } from "@hellaweb3/wiremock-testcontainers-nodejs";
 import { describe, expect, it } from "vitest";

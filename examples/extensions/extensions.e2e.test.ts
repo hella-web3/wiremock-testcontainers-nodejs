@@ -2,7 +2,7 @@
  * The example extensions in a consumer project, each observed through a real request. Needs
  * Docker, or Java 11+ with `npm test --no-docker`.
  *
- * @see https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/extensions/typescript-extensions
+ * @see https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/extensions/typescript-extensions
  */
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 // Imported through `npm link` – exactly how an end user consumes the published package.

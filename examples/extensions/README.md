@@ -1,7 +1,7 @@
 # Example TypeScript extensions
 
 TypeScript extensions for WireMock's Java extensions – what the
-**[guide for extension authors](https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/extensions/authoring-extensions)**
+**[guide for extension authors](https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/extensions/authoring-extensions)**
 builds, recipe by recipe. Every snippet of that guide is embedded from these files.
 
 | Example | File | Kind | Loads |
@@ -18,6 +18,6 @@ extensions, ready to register), all exported by [`index.ts`](./index.ts).
 
 | Tests | Shows | Docs |
 |-------|-------|------|
-| [`extensions.test.ts`](./extensions.test.ts) | Unit tests – what each extension loads, its helpers, validation – no container | [Testing](https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/extensions/authoring-extensions#testing) |
-| [`extensions.e2e.test.ts`](./extensions.e2e.test.ts) | Each extension observed through a real request | [TypeScript extensions](https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/extensions/typescript-extensions) |
-| [`java-extensions.e2e.test.ts`](./java-extensions.e2e.test.ts) | JARs, directories and class names without wrappers; extension options | [Java extensions](https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/extensions/java-extensions) |
+| [`extensions.test.ts`](./extensions.test.ts) | Unit tests – what each extension loads, its helpers, validation – no container | [Testing](https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/extensions/authoring-extensions#testing) |
+| [`extensions.e2e.test.ts`](./extensions.e2e.test.ts) | Each extension observed through a real request | [TypeScript extensions](https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/extensions/typescript-extensions) |
+| [`java-extensions.e2e.test.ts`](./java-extensions.e2e.test.ts) | JARs, directories and class names without wrappers; extension options | [Java extensions](https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/extensions/java-extensions) |

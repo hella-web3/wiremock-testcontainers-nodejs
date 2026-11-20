@@ -1,7 +1,7 @@
 /**
  * Failures that need a running WireMock – or a stopped one: what each error says.
  *
- * @see https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/reference/troubleshooting
+ * @see https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/reference/troubleshooting
  */
 import { WiremockContainer } from "@hellaweb3/wiremock-testcontainers-nodejs";
 import { describe, expect, it } from "vitest";

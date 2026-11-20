@@ -1,7 +1,7 @@
 /**
  * The no-Docker helpers, unit tested with explicit environments – nothing is started.
  *
- * @see https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/guides/running-without-docker
+ * @see https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/guides/running-without-docker
  */
 import {
   detectCI,

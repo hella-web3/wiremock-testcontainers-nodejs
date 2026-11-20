@@ -1,7 +1,7 @@
 /**
  * Unit tests of the verification helpers with a fake journal – no container.
  *
- * @see https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/guides/verifying-requests
+ * @see https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/guides/verifying-requests
  */
 import type { RecordedRequest } from "@hellaweb3/wiremock-testcontainers-nodejs";
 import { describe, expect, it } from "vitest";

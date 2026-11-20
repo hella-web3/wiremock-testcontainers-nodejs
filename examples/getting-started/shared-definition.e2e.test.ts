@@ -2,7 +2,7 @@
  * The same suite with the container defined once, in `payments-api.ts` – the shape that scales to
  * many suites sharing a mock.
  *
- * @see https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/getting-started/quick-start
+ * @see https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/getting-started/quick-start
  */
 import type { StartedWiremockContainer } from "@hellaweb3/wiremock-testcontainers-nodejs";
 import { afterAll, afterEach, beforeAll, expect, it } from "vitest";

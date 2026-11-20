@@ -1,7 +1,7 @@
 /**
  * An admin API extension, wrapped with a typed client for its route.
  *
- * @see https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/extensions/authoring-extensions
+ * @see https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/extensions/authoring-extensions
  */
 import type { StartedWiremockContainer } from "@hellaweb3/wiremock-testcontainers-nodejs";
 import { JavaExtension } from "./java-extension";

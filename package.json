@@ -1,8 +1,8 @@
 {
   "name": "@hellaweb3/wiremock-testcontainers-nodejs",
   "description": "A Node.js library for using WireMock with Testcontainers, providing a fluent API for easy setup and integration testing.",
-  "homepage": "https://hella-labs.github.io/wiremock-testcontainers-nodejs/",
-  "documentation": "https://hella-labs.github.io/wiremock-testcontainers-nodejs/",
+  "homepage": "https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/",
+  "documentation": "https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/hella-labs/wiremock-testcontainers-nodejs.git"
@@ -78,7 +78,8 @@
     "docs:test:e2e": "node scripts/docs.mjs",
     "docs:check": "node scripts/docs.mjs",
     "docs:sync:markdown": "node scripts/docs.mjs",
-    "docs:version:cut": "node scripts/docs.mjs"
+    "docs:version:cut": "node scripts/docs.mjs",
+    "gate": "pnpm build && pnpm lint && pnpm typecheck && pnpm test:unit --coverage && pnpm test:e2e --no-docker && pnpm examples:e2e --no-docker && pnpm examples:unit --coverage"
   },
   "dependencies": {
     "testcontainers": "^12.2.0"

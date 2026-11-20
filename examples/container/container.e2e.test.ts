@@ -1,7 +1,7 @@
 /**
  * Both configurations against a real WireMock: the option switches templating on for every stub.
  *
- * @see https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/guides/configuring-the-container
+ * @see https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/guides/configuring-the-container
  */
 import type { StartedWiremockContainer } from "@hellaweb3/wiremock-testcontainers-nodejs";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";

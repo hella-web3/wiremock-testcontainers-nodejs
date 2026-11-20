@@ -1,7 +1,7 @@
 name: Docs
 
 # Builds the documentation site (docs/) and publishes it to GitHub Pages:
-# https://hella-labs.github.io/wiremock-testcontainers-nodejs/
+# https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/
 #
 # It runs when anything the site is made of changes on main: its content, the examples every
 # snippet is embedded from, or the library whose JSDoc generates the API reference.

@@ -1,7 +1,7 @@
 /**
  * Serving WireMock from a local JVM instead of Docker – local development only.
  *
- * @see https://hella-labs.github.io/wiremock-testcontainers-nodejs/docs/guides/running-without-docker
+ * @see https://hellalabs.dev/docs/wiremock-testcontainers-nodejs/docs/guides/running-without-docker
  */
 import {
   installNoDockerRuntime,
